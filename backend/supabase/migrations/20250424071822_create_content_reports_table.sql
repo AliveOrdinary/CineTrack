@@ -44,18 +44,18 @@ FOR INSERT
 TO authenticated
 WITH CHECK (auth.uid() = reporter_user_id);
 
--- Allow admins to view all reports
-CREATE POLICY "Allow admins to view all reports" ON public.content_reports
+-- Allow admins to view all reports (Updated logic)
+CREATE POLICY "Allow admins to view all reports v2" ON public.content_reports -- New name
 FOR SELECT
 TO authenticated
-USING (public.is_admin(auth.uid())); -- Assumes is_admin function exists
+USING (public.is_admin());
 
--- Allow admins to update report status and resolution details
-CREATE POLICY "Allow admins to update reports" ON public.content_reports
+-- Allow admins to update report status and resolution details (Updated logic)
+CREATE POLICY "Allow admins to update reports v2" ON public.content_reports -- New name
 FOR UPDATE
 TO authenticated
-USING (public.is_admin(auth.uid()))
-WITH CHECK (public.is_admin(auth.uid()));
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
 
 -- Optional: Allow reporters to view their own submitted reports (read-only)
 -- CREATE POLICY "Allow reporters to view their own reports" ON public.content_reports

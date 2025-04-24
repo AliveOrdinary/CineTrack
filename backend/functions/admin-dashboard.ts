@@ -77,23 +77,22 @@ serve(async (req) => {
       return updatedUser
     },
 
-    suspendUser: async (data: { userId: string }) => {
-      // Only admins can suspend users
+    suspendUser: async (data: { userId: string; suspend: boolean }) => {
+      // Only admins can suspend/unsuspend users
       if (userRole.role !== 'admin') {
-        throw new Error('Only admins can suspend users')
+        throw new Error('Only admins can modify user suspension status')
       }
 
-      const { userId } = data
-      
-      // In a real implementation, you would use Supabase Auth Admin API
-      // Here we're just simulating by adding a suspended flag to the user record
+      const { userId, suspend } = data
+
+      // Update the dedicated is_suspended column
       const { data: updatedUser, error } = await supabaseClient
         .from('users')
-        .update({ 
-          preferences: { suspended: true } 
+        .update({
+          is_suspended: suspend, // Update the correct column
         })
         .eq('id', userId)
-        .select()
+        .select('id, email, display_name, role, is_suspended') // Select relevant fields
         .single()
 
       if (error) throw error

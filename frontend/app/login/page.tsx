@@ -30,7 +30,6 @@ export default function LoginPage() {
       console.log('Login page: User authenticated via hook, redirecting to:', redirectTo);
       toast({
         title: "Already Logged In",
-        description: "Redirecting...",
       });
       router.push(redirectTo);
     }
@@ -71,7 +70,7 @@ export default function LoginPage() {
 
         toast({
           title: "Login Successful",
-          description: "Welcome back! Redirecting...",
+          description: "Welcome back!",
         });
       }
     } catch (authError: any) {
