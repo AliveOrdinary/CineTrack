@@ -61,14 +61,14 @@ type ContentReport = Database['public']['Tables']['content_reports']['Row'];
 
 interface ReportWithDetails extends ContentReport {
   reporter: {
-    display_name: string;
+    display_name: string | null;
     avatar_url: string | null;
   } | null;
   review?: {
-    content: string;
+    content: string | null;
     rating: number | null;
-    media_type: string;
-    tmdb_id: number;
+    media_type: string | null;
+    tmdb_id: number | null;
   } | null;
 }
 
@@ -80,7 +80,7 @@ const fetchReports = async (): Promise<ReportWithDetails[]> => {
     .from('content_reports')
     .select(`
       *,
-      reporter:reporter_user_id(display_name, avatar_url),
+      reporter:reporter_user_id!inner(display_name, avatar_url),
       review:reported_content_id(content, rating, media_type, tmdb_id)
     `)
     .order('created_at', { ascending: false });
@@ -90,7 +90,27 @@ const fetchReports = async (): Promise<ReportWithDetails[]> => {
     throw error;
   }
   
-  return (data || []) as ReportWithDetails[];
+  // Put the cast back temporarily
+  const fetchedData = (data || []) as any[]; // Use 'any' for now before mapping
+
+  // Manually map to the desired structure
+  const mappedData: ReportWithDetails[] = fetchedData.map(report => ({
+    ...report,
+    // Ensure the reporter object matches the interface, handling potential nulls
+    reporter: report.reporter ? {
+      display_name: report.reporter.display_name,
+      avatar_url: report.reporter.avatar_url
+    } : null,
+    // Ensure the review object matches the interface, handling potential nulls/undefined
+    review: report.review ? {
+        content: report.review.content,
+        rating: report.review.rating,
+        media_type: report.review.media_type,
+        tmdb_id: report.review.tmdb_id
+    } : null
+  }));
+
+  return mappedData;
 };
 
 export default function AdminReportsPage() {
