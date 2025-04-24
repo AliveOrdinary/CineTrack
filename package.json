@@ -1,0 +1,36 @@
+{
+  "name": "cinetrack",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "setup": "npm install && npm run build --workspace=shared && echo '\\nSetup complete! Next steps:\\n1) Create .env files\\n2) Run npm run init:backend to initialize Supabase\\n3) Run npm run dev to start the frontend'",
+    "init:backend": "npm run init --workspace=backend",
+    "dev": "cd frontend && npx next dev",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:prod": "NODE_ENV=production cd frontend && npx next dev",
+    "dev:all": "npm run supabase:local && npm run dev",
+    "build": "npm run build --workspace=shared && cd frontend && npx next build",
+    "start": "cd frontend && npx next start",
+    "lint": "npm run lint --workspaces",
+    "clean": "rm -rf node_modules && npm run clean --workspaces",
+    "supabase:local": "cd backend && npx supabase start",
+    "supabase:stop": "cd backend && npx supabase stop",
+    "gen:types": "cd backend && npx supabase gen types typescript --local > ../shared/types/supabase.ts",
+    "db:reset": "cd backend && npx supabase db reset",
+    "test": "jest",
+    "supabase:ui": "cd backend && npx supabase studio"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7",
+    "react-hot-toast": "^2.5.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "rimraf": "^5.0.1"
+  }
+}

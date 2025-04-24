@@ -1,0 +1,27 @@
+{
+  "name": "cinetrack-backend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "supabase start",
+    "stop": "supabase stop",
+    "init": "supabase init",
+    "migrate": "supabase db push",
+    "db:reset": "supabase db reset",
+    "lint": "eslint .",
+    "clean": "rm -rf node_modules",
+    "gen:types": "supabase gen types typescript --local > ../shared/types/supabase.ts",
+    "gen:types:prod": "supabase gen types typescript --db-url your-production-db-url > ../shared/types/supabase.ts",
+    "deploy:functions": "supabase functions deploy",
+    "seed": "echo \"Copy contents of seed/combined_seed.sql and run it in Supabase Studio SQL Editor\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.1",
+    "supabase": "^1.136.3",
+    "typescript": "^5.3.3"
+  }
+}

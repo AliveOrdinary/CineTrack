@@ -128,3 +128,40 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Workspace specific
+node_modules/
+.DS_Store
+
+# Frontend specific
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.vercel/
+frontend/coverage/
+
+# Backend specific
+backend/dist/
+backend/.env
+backend/.env.*
+
+# Shared
+shared/dist/
+shared/types/supabase.ts
+
+# npm/yarn
+package-lock.json
+yarn.lock
+yarn-error.log
+.pnp.*
+.yarn/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
