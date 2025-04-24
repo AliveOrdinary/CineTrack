@@ -110,6 +110,18 @@ export default function Header() {
                 <DropdownMenuItem asChild>
                    <Link href="/settings">Settings</Link>
                 </DropdownMenuItem>
+                
+                {userData?.role === 'admin' && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="text-blue-500 font-medium">
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+                
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
                   onClick={handleSignOut}

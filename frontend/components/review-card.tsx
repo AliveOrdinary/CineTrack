@@ -235,9 +235,9 @@ export default function ReviewCard({ review, isLiked, onEdit, onDelete }: Review
 
   return (
     <>
-      <Card className="bg-gray-850 border border-gray-700 shadow-md overflow-hidden">
-        <CardHeader className="flex flex-row justify-between items-start gap-4 p-4 bg-gray-900 border-b border-gray-700">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+    <Card className="bg-gray-850 border border-gray-700 shadow-md overflow-hidden">
+      <CardHeader className="flex flex-row justify-between items-start gap-4 p-4 bg-gray-900 border-b border-gray-700">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
             {canLinkToProfile ? (
               <Link href={profileLink} passHref legacyBehavior>
                 <a aria-label={`${profile?.display_name || "User"}'s profile`}>
@@ -248,12 +248,12 @@ export default function ReviewCard({ review, isLiked, onEdit, onDelete }: Review
                 </a>
               </Link>
             ) : (
-               <Avatar className="h-10 w-10 border border-gray-600">
-                 <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
-                 <AvatarFallback>{profile?.display_name?.charAt(0) || 'U'}</AvatarFallback>
-               </Avatar>
+          <Avatar className="h-10 w-10 border border-gray-600">
+            <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || "User"} />
+            <AvatarFallback>{profile?.display_name?.charAt(0) || 'U'}</AvatarFallback>
+          </Avatar>
             )}
-            <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0">
               {canLinkToProfile ? (
                 <Link href={profileLink} passHref legacyBehavior>
                   <a className="hover:underline">
@@ -261,37 +261,37 @@ export default function ReviewCard({ review, isLiked, onEdit, onDelete }: Review
                   </a>
                 </Link>
               ) : (
-                  <CardTitle className="text-sm font-medium truncate">{profile?.display_name || "Anonymous User"}</CardTitle>
+            <CardTitle className="text-sm font-medium truncate">{profile?.display_name || "Anonymous User"}</CardTitle>
               )}
-              <p className="text-xs text-gray-400">Reviewed on {formattedDate}</p>
-            </div>
+            <p className="text-xs text-gray-400">Reviewed on {formattedDate}</p>
           </div>
-          <div className="flex items-center gap-1">
-            {review.rating && (
-              <Badge variant="secondary" className="flex items-center gap-1 bg-yellow-600/20 text-yellow-300 border-yellow-600">
-                <Star className="h-3 w-3" />
-                <span>{review.rating}/10</span>
-              </Badge>
-            )}
+        </div>
+        <div className="flex items-center gap-1">
+          {review.rating && (
+            <Badge variant="secondary" className="flex items-center gap-1 bg-yellow-600/20 text-yellow-300 border-yellow-600">
+              <Star className="h-3 w-3" />
+              <span>{review.rating}/10</span>
+            </Badge>
+          )}
             {(isAuthor || user) && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8 ml-auto">
-                    <MoreVertical className="h-4 w-4" />
+                  <MoreVertical className="h-4 w-4" />
                     <span className="sr-only">Review Actions</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
                   {isAuthor && (
                      <>
-                       <DropdownMenuItem onClick={() => onEdit(review)}>
-                         <Pencil className="mr-2 h-4 w-4" />
-                         <span>Edit</span>
-                       </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEdit(review)}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  <span>Edit</span>
+                </DropdownMenuItem>
                        <DropdownMenuItem onClick={() => onDelete(review.id)} className="text-red-500 focus:text-red-400 focus:bg-red-900/10">
-                         <Trash2 className="mr-2 h-4 w-4" />
-                         <span>Delete</span>
-                       </DropdownMenuItem>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  <span>Delete</span>
+                </DropdownMenuItem>
                      </>
                   )}
                   {user && !isAuthor && (
@@ -303,58 +303,58 @@ export default function ReviewCard({ review, isLiked, onEdit, onDelete }: Review
                        </DropdownMenuItem>
                      </>
                   )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="p-4">
-          {review.is_spoiler && !isSpoilerVisible ? (
-            <div
-              className="bg-gray-700 p-4 rounded-md border border-gray-600 flex flex-col items-center text-center cursor-pointer hover:bg-gray-600 transition-colors"
-              onClick={handleToggleSpoiler}
-            >
-              <AlertTriangle className="h-6 w-6 text-yellow-400 mb-2" />
-              <p className="font-medium">Spoiler Warning</p>
-              <p className="text-sm text-gray-300">This review contains spoilers. Click to reveal.</p>
-            </div>
-          ) : (
-            <>
-              <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">{displayContent}</p>
-              {isLongReview && (
-                <Button variant="link" onClick={handleToggleContent} className="p-0 h-auto text-blue-400 hover:text-blue-300 mt-2 text-sm">
-                  {showFullContent ? 'Show Less' : 'Show More'}
-                </Button>
-              )}
-              {review.is_spoiler && isSpoilerVisible && (
-                 <Button variant="link" onClick={handleToggleSpoiler} className="p-0 h-auto text-yellow-400 hover:text-yellow-300 ml-2 mt-2 text-sm">
-                   (Hide Spoiler)
-                 </Button>
-              )}
-            </>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
-        </CardContent>
+        </div>
+      </CardHeader>
+      <CardContent className="p-4">
+        {review.is_spoiler && !isSpoilerVisible ? (
+          <div
+            className="bg-gray-700 p-4 rounded-md border border-gray-600 flex flex-col items-center text-center cursor-pointer hover:bg-gray-600 transition-colors"
+            onClick={handleToggleSpoiler}
+          >
+            <AlertTriangle className="h-6 w-6 text-yellow-400 mb-2" />
+            <p className="font-medium">Spoiler Warning</p>
+            <p className="text-sm text-gray-300">This review contains spoilers. Click to reveal.</p>
+          </div>
+        ) : (
+          <>
+            <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">{displayContent}</p>
+            {isLongReview && (
+              <Button variant="link" onClick={handleToggleContent} className="p-0 h-auto text-blue-400 hover:text-blue-300 mt-2 text-sm">
+                {showFullContent ? 'Show Less' : 'Show More'}
+              </Button>
+            )}
+            {review.is_spoiler && isSpoilerVisible && (
+               <Button variant="link" onClick={handleToggleSpoiler} className="p-0 h-auto text-yellow-400 hover:text-yellow-300 ml-2 mt-2 text-sm">
+                 (Hide Spoiler)
+               </Button>
+            )}
+          </>
+        )}
+      </CardContent>
         <CardFooter className="flex flex-wrap justify-between items-center p-4 border-t border-gray-700 bg-gray-900">
           <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
-              size="sm" 
+         <Button 
+           variant="ghost" 
+           size="sm" 
               onClick={handleLikeClick}
               disabled={isLiking || !user}
-              className={cn(
+           className={cn(
                 "flex items-center gap-1 text-gray-400 hover:text-white disabled:text-gray-500 disabled:cursor-not-allowed",
                 optimisticLiked && "text-blue-500 hover:text-blue-400"
-              )}
+           )}
               aria-pressed={optimisticLiked}
               aria-label={optimisticLiked ? "Unlike review" : "Like review"}
-            >
-              {isLiking ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
+         >
+           {isLiking ? (
+             <Loader2 className="h-4 w-4 animate-spin" /> 
+           ) : (
                 <ThumbsUp className="h-4 w-4" />
-              )}
+           )}
               <span>{optimisticLikeCount}</span>
-            </Button>
+         </Button>
             <Button 
               variant="ghost" 
               size="sm" 
@@ -364,10 +364,10 @@ export default function ReviewCard({ review, isLiked, onEdit, onDelete }: Review
               aria-controls={`comment-section-${review.id}`}
               aria-label={showCommentInput ? "Hide comments" : "Show comments"}
             >
-              <MessageSquare className="h-4 w-4" />
+           <MessageSquare className="h-4 w-4" /> 
               <span>{optimisticCommentCount}</span>
-              <span className="sr-only">Comments</span>
-            </Button>
+           <span className="sr-only">Comments</span>
+         </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -382,7 +382,7 @@ export default function ReviewCard({ review, isLiked, onEdit, onDelete }: Review
           <span className="text-xs text-gray-500 mt-2 sm:mt-0">
             {formattedDate}
           </span>
-        </CardFooter>
+      </CardFooter>
 
         {showCommentInput && (
           <div className="p-4 border-t border-gray-700 bg-gray-900">
@@ -447,7 +447,7 @@ export default function ReviewCard({ review, isLiked, onEdit, onDelete }: Review
             </div>
           </div>
         )}
-      </Card>
+    </Card>
       <ReportDialog 
         open={isReportDialogOpen}
         onOpenChange={setIsReportDialogOpen}
