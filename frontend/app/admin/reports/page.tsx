@@ -144,7 +144,7 @@ export default function AdminReportsPage() {
     
     if (activeTab === 'all') return reports;
     
-    return reports.filter(report => report.status === activeTab);
+    return reports.filter((report: ReportWithDetails) => report.status === activeTab);
   }, [reports, activeTab]);
 
   // Mutation for updating report status
