@@ -86,12 +86,12 @@ export default function EditListPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setListData(prev => ({ ...prev, [name]: value }));
+    setListData((prev: Partial<CustomList>) => ({ ...prev, [name]: value }));
     setError(null); // Clear error on input change
   };
 
   const handlePublicToggle = (checked: boolean) => {
-    setListData(prev => ({ ...prev, is_public: checked }));
+    setListData((prev: Partial<CustomList>) => ({ ...prev, is_public: checked }));
   };
 
   const handleUpdateList = async (e: React.FormEvent<HTMLFormElement>) => {
