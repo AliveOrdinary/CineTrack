@@ -102,6 +102,7 @@ async function MoviesContent({ page = 1 }: { page?: number }) {
         currentPage={page}
         totalPages={moviesData.total_pages > 500 ? 500 : moviesData.total_pages} // TMDB API limits to 500 pages
         totalResults={moviesData.total_results}
+        basePath="/movies"
       />
     </div>
   );

@@ -26,10 +26,16 @@ export default function AvatarUpload({
   const [error, setError] = useState<string | null>(null);
   
   const sizeClasses = {
-    // ... size classes ...
+    sm: 'h-10 w-10',
+    md: 'h-16 w-16',
+    lg: 'h-24 w-24',
+    xl: 'h-32 w-32'
   };
   const iconSizeClasses = {
-    // ... icon size classes ...
+    sm: 'h-4 w-4',
+    md: 'h-6 w-6',
+    lg: 'h-8 w-8',
+    xl: 'h-10 w-10'
   };
 
   useEffect(() => {

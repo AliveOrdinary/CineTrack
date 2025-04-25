@@ -8,7 +8,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  basePath: string;
+  basePath?: string;
+  totalResults?: number;
 }
 
 const MAX_VISIBLE_PAGES = 5;

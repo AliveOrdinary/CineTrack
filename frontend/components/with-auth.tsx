@@ -56,7 +56,7 @@ export default function WithAuth({
     return (
       <>
         <AuthPrompt
-          variant={variant as 'modal' | 'banner' | 'inline'}
+          variant={variant}
           message={promptMessage}
         />
         {fallback}

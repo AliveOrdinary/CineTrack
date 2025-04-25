@@ -60,6 +60,7 @@ type ReportStatus = Database['public']['Enums']['report_status'];
 type ContentReport = Database['public']['Tables']['content_reports']['Row'];
 
 interface ReportWithDetails extends ContentReport {
+  status: Database['public']['Enums']['report_status'];
   reporter: {
     display_name: string | null;
     avatar_url: string | null;

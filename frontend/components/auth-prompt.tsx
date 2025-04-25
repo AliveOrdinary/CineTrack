@@ -16,10 +16,18 @@ import {
 import { Button } from '@/components/ui/button';
 import { LogIn } from 'lucide-react';
 
+interface AuthPromptProps {
+  variant?: 'modal' | 'banner' | 'inline';
+  message?: string;
+}
+
 /**
  * Component that displays a login prompt if the user was redirected from a protected route
  */
-export default function AuthPrompt() {
+export default function AuthPrompt({ 
+  variant = 'modal',
+  message
+}: AuthPromptProps = {}) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [visible, setVisible] = useState(false);
@@ -90,27 +98,58 @@ export default function AuthPrompt() {
     router.push(signupUrl.toString());
   };
 
+  // If variant is 'modal', render the dialog
+  if (variant === 'modal') {
+    return (
+      <Dialog open={visible} onOpenChange={setVisible}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <div className="flex justify-center mb-4">
+              <LogIn className="h-12 w-12 text-blue-500" />
+            </div>
+            <DialogTitle className="text-center text-xl">Authentication Required</DialogTitle>
+            <DialogDescription className="text-center">
+              {message || `You need to be signed in to access your ${getFeatureName(attemptedPath)}.`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-col sm:flex-row sm:justify-center gap-2 pt-4">
+            <Button onClick={handleLogin}>
+              Login
+            </Button>
+            <Button variant="outline" onClick={handleSignUp}>
+              Sign Up
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // If variant is 'banner', render a banner at the top
+  if (variant === 'banner') {
+    return (
+      <div className="w-full bg-blue-900/20 border-b border-blue-800 py-2 px-4 text-center">
+        <p className="text-sm mb-2">
+          {message || 'Sign in to access all features'}
+        </p>
+        <div className="flex justify-center gap-2">
+          <Button size="sm" onClick={handleLogin}>Login</Button>
+          <Button size="sm" variant="outline" onClick={handleSignUp}>Sign Up</Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Default 'inline' variant
   return (
-    <Dialog open={visible} onOpenChange={setVisible}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <div className="flex justify-center mb-4">
-            <LogIn className="h-12 w-12 text-blue-500" />
-          </div>
-          <DialogTitle className="text-center text-xl">Authentication Required</DialogTitle>
-          <DialogDescription className="text-center">
-            You need to be signed in to access your {getFeatureName(attemptedPath)}.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex flex-col sm:flex-row sm:justify-center gap-2 pt-4">
-          <Button onClick={handleLogin}>
-            Login
-          </Button>
-          <Button variant="outline" onClick={handleSignUp}>
-            Sign Up
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <div className="border border-blue-800 rounded-lg p-4 mb-4 bg-blue-900/10">
+      <p className="text-sm mb-2">
+        {message || 'Sign in to access this content'}
+      </p>
+      <div className="flex gap-2">
+        <Button size="sm" onClick={handleLogin}>Login</Button>
+        <Button size="sm" variant="outline" onClick={handleSignUp}>Sign Up</Button>
+      </div>
+    </div>
   );
 } 
