@@ -165,3 +165,4 @@ yarn-error.log
 *.sln
 *.sw?
 .DS_Store
+.vercel
