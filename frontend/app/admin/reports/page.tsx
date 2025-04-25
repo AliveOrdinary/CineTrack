@@ -65,6 +65,7 @@ interface ReportWithDetails extends ContentReport {
   reported_content_type: string;
   reason: string;
   created_at: string;
+  admin_notes: string | null;
   reporter: {
     display_name: string | null;
     avatar_url: string | null;
