@@ -9,7 +9,7 @@ import MediaGrid from '@/components/media-grid';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { fetchMediaDetailsBatch } from '@/services/tmdb';
-import { Database } from '@cinetrack/shared/types/supabase';
+import { Database } from '@cinetrack/shared';
 import { MediaType, MovieDetails, TVDetails, PersonDetails } from '@/types/tmdb';
 import { MediaItem } from '@/components/media-grid';
 
