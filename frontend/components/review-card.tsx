@@ -42,6 +42,7 @@ export interface ReviewWithUserProfile extends ReviewRow {
   } | null;
   likes_count: number;
   comments_count: number;
+  id: string;
 }
 
 interface ReviewCardProps {
