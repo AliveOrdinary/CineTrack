@@ -9,11 +9,12 @@ import MediaGrid from '@/components/media-grid';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { fetchMediaDetailsBatch } from '@/services/tmdb';
-import { Tables } from '@cinetrack/shared';
+import { Database } from '@cinetrack/shared/types/supabase';
 import { MediaType, MovieDetails, TVDetails, PersonDetails } from '@/types/tmdb';
 import { MediaItem } from '@/components/media-grid';
 
 // Type alias for Supabase watched content row
+type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
 type WatchedRow = Tables<"watched_content">;
 // Type alias for the detailed items returned by the batch fetch
 type FetchedDetail = MovieDetails | TVDetails | PersonDetails;
