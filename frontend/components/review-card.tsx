@@ -31,6 +31,7 @@ export interface CommentWithUserProfile extends CommentRow {
     display_name: string;
     avatar_url: string | null;
   } | null;
+  id: string;
 }
 
 export type ReviewRow = Database['public']['Tables']['reviews']['Row'];
