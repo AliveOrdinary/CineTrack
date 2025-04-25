@@ -6,7 +6,4 @@
 // Re-export all types
 export * from './types';
 
-// Re-export types from supabase
-export * from './types/supabase';
-
 // Common utilities can be added here 
