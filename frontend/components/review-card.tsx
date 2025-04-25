@@ -44,6 +44,7 @@ export interface ReviewWithUserProfile extends ReviewRow {
   comments_count: number;
   id: string;
   user_id: string;
+  created_at: string;
 }
 
 interface ReviewCardProps {
