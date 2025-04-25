@@ -47,6 +47,7 @@ export interface ReviewWithUserProfile extends ReviewRow {
   created_at: string;
   tmdb_id: number;
   media_type: string;
+  content: string;
 }
 
 interface ReviewCardProps {
