@@ -49,6 +49,7 @@ export interface ReviewWithUserProfile extends ReviewRow {
   media_type: string;
   content: string;
   rating: number | null;
+  is_spoiler: boolean | null;
 }
 
 interface ReviewCardProps {
