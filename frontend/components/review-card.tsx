@@ -40,6 +40,8 @@ export interface ReviewWithUserProfile extends ReviewRow {
     display_name: string;
     avatar_url: string | null;
   } | null;
+  likes_count: number;
+  comments_count: number;
 }
 
 interface ReviewCardProps {
