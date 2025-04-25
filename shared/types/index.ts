@@ -2,7 +2,7 @@
  * Type definitions shared between frontend and backend
  */
 
-import { Database } from './supabase';
+import type { Database } from './supabase';
 
 // Media types
 export type MediaType = 'movie' | 'tv' | 'person';
@@ -35,12 +35,7 @@ export interface UserProfile {
 }
 
 // Export Database types from Supabase
-export type { Database } from './supabase';
+export type { Database };
 
-// Try to import generated Supabase types if they exist
-try {
-  // This will be populated by the 'gen:types' script
-  // export * from './supabase';
-} catch (e) {
-  // Supabase types don't exist yet
-} 
+// Export all other types from supabase
+export * from './supabase'; 

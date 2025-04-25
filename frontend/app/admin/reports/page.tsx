@@ -60,14 +60,6 @@ type ReportStatus = Database['public']['Enums']['report_status'];
 type ContentReport = Database['public']['Tables']['content_reports']['Row'];
 
 interface ReportWithDetails extends ContentReport {
-  status: Database['public']['Enums']['report_status'];
-  id: string;
-  reported_content_type: string;
-  reason: string;
-  created_at: string;
-  admin_notes: string | null;
-  resolved_at: string | null;
-  resolved_by_admin_id: string | null;
   reporter: {
     display_name: string | null;
     avatar_url: string | null;
@@ -104,6 +96,8 @@ const fetchReports = async (): Promise<ReportWithDetails[]> => {
   // Manually map to the desired structure
   const mappedData: ReportWithDetails[] = fetchedData.map(report => ({
     ...report,
+    // Explicitly include the status to ensure TypeScript sees it
+    status: report.status as ReportStatus,
     // Ensure the reporter object matches the interface, handling potential nulls
     reporter: report.reporter ? {
       display_name: report.reporter.display_name,
@@ -139,7 +133,7 @@ export default function AdminReportsPage() {
     data: reports, 
     isLoading: isLoadingReports, 
     error: reportsError 
-  } = useQuery<ReportWithDetails[]>({
+  } = useQuery({
     queryKey: ['adminReports'],
     queryFn: fetchReports,
     enabled: !isUserLoading && userData?.role === 'admin',
@@ -152,7 +146,14 @@ export default function AdminReportsPage() {
     
     if (activeTab === 'all') return reports;
     
-    return reports.filter((report: ReportWithDetails) => report.status === activeTab);
+    return reports.filter((report) => {
+      // Ensure report has a status property
+      if (!report || typeof report.status === 'undefined') {
+        console.warn('Report missing status property', report);
+        return false;
+      }
+      return report.status === activeTab;
+    });
   }, [reports, activeTab]);
 
   // Mutation for updating report status
