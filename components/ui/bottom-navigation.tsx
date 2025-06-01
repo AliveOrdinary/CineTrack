@@ -10,7 +10,7 @@ import {
   User,
   Activity,
   Compass,
-  Bell
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -41,10 +41,10 @@ const navItems: NavItem[] = [
     activePattern: /^\/search/
   },
   {
-    href: "/notifications",
-    label: "Notifications",
-    icon: Bell,
-    activePattern: /^\/notifications/
+    href: "/settings",
+    label: "Settings",
+    icon: Settings,
+    activePattern: /^\/settings/
   },
   {
     href: "/profile",

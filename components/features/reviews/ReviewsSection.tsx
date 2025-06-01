@@ -11,6 +11,7 @@ import { formatDistanceToNow } from "date-fns"
 import { Rating } from "@/components/ui/rating"
 import { ReviewLikeButton } from "./ReviewLikeButton"
 import { ReviewComments } from "./ReviewComments"
+import { ReportButton } from "../reports/ReportButton"
 
 interface ReviewsSectionProps {
   tmdbId: number
@@ -200,6 +201,13 @@ export function ReviewsSection({ tmdbId, mediaType, title }: ReviewsSectionProps
                       <ReviewComments 
                         reviewId={review.id!} 
                         initialCommentsCount={review.comments_count || 0}
+                      />
+                      <ReportButton
+                        contentType="review"
+                        contentId={review.id!}
+                        reportedUserId={review.user_id!}
+                        variant="ghost"
+                        size="sm"
                       />
                     </div>
                   </div>

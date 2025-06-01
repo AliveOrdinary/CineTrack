@@ -1,14 +1,16 @@
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import "./globals.css";
-import AuthStatusHeader from "@/components/features/auth/AuthStatusHeader";
 import SearchBar from "@/components/features/search/SearchBar";
 import { Toaster } from "sonner";
 import { BottomNavigation } from "@/components/ui/bottom-navigation";
-import { NotificationBell } from "@/components/features/notifications/NotificationBell";
 import { ErrorBoundaryWrapper } from "@/components/error-boundary-wrapper";
+import { SecurityLogger } from "@/components/security-logger";
+import { BackupMonitorComponent } from "@/components/backup-monitor";
+import UserAvatar from "@/components/features/auth/UserAvatar";
+import { HeaderActions } from "@/components/features/header/HeaderActions";
+import { MobileNav } from "@/components/features/header/MobileNav";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -48,6 +50,7 @@ export default function RootLayout({
           </a>
           
           <ErrorBoundaryWrapper>
+            <SecurityLogger />
             <div className="flex min-h-screen flex-col pb-16 md:pb-0">
               <header className="w-full border-b border-b-foreground/10 sticky top-0 z-40 bg-background/95 backdrop-blur-sm" role="banner">
                 <nav 
@@ -55,7 +58,9 @@ export default function RootLayout({
                   role="navigation"
                   aria-label="Main navigation"
                 >
-                  <div className="flex items-center gap-3 md:gap-6">
+                  {/* Left side - Logo and Mobile Menu */}
+                  <div className="flex items-center gap-3">
+                    <MobileNav />
                     <Link 
                       href="/" 
                       className="text-lg md:text-xl font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm"
@@ -63,71 +68,49 @@ export default function RootLayout({
                     >
                       CineTrack
                     </Link>
-                    
-                    {/* Desktop Navigation Links */}
-                    <ul className="hidden md:flex items-center gap-4" role="menubar">
-                      <li role="none">
-                        <Link 
-                          href="/feed" 
-                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                          role="menuitem"
-                          aria-label="View activity feed"
-                        >
-                          Feed
-                        </Link>
-                      </li>
-                      <li role="none">
-                        <Link 
-                          href="/watchlist" 
-                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                          role="menuitem"
-                          aria-label="View your watchlist"
-                        >
-                          Watchlist
-                        </Link>
-                      </li>
-                      <li role="none">
-                        <Link 
-                          href="/lists" 
-                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                          role="menuitem"
-                          aria-label="View your custom lists"
-                        >
-                          Lists
-                        </Link>
-                      </li>
-                      <li role="none">
-                        <Link 
-                          href="/discover" 
-                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                          role="menuitem"
-                          aria-label="Discover new content"
-                        >
-                          Discover
-                        </Link>
-                      </li>
-                      <li role="none">
-                        <Link 
-                          href="/profile" 
-                          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                          role="menuitem"
-                          aria-label="View your profile"
-                        >
-                          Profile
-                        </Link>
-                      </li>
-                    </ul>
                   </div>
                   
-                  {/* Search bar - hidden on mobile, shown on desktop */}
+                  {/* Center - Desktop Navigation Links */}
+                  <div className="hidden lg:flex items-center gap-6">
+                    <Link 
+                      href="/discover" 
+                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
+                      aria-label="Discover new content"
+                    >
+                      Discover
+                    </Link>
+                    <Link 
+                      href="/feed" 
+                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
+                      aria-label="View activity feed"
+                    >
+                      Feed
+                    </Link>
+                    <Link 
+                      href="/watchlist" 
+                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
+                      aria-label="View your watchlist"
+                    >
+                      Watchlist
+                    </Link>
+                    <Link 
+                      href="/lists" 
+                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
+                      aria-label="View your custom lists"
+                    >
+                      Lists
+                    </Link>
+                  </div>
+                  
+                  {/* Center/Right - Search bar */}
                   <div className="hidden md:flex flex-1 max-w-md mx-4" role="search" aria-label="Search movies and TV shows">
                     <SearchBar className="w-full" />
                   </div>
                   
-                  <div className="flex items-center gap-2 md:gap-4">
-                    <NotificationBell />
-                    <AuthStatusHeader />
-                    <ThemeSwitcher />
+                  {/* Right side - Actions and User */}
+                  <div className="flex items-center gap-2">
+                    <HeaderActions />
+                    <UserAvatar />
                   </div>
                 </nav>
                 
@@ -158,6 +141,7 @@ export default function RootLayout({
             </div>
           </ErrorBoundaryWrapper>
           <Toaster />
+          <BackupMonitorComponent />
         </ThemeProvider>
       </body>
     </html>
