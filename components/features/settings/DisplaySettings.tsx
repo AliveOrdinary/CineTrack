@@ -1,7 +1,13 @@
 'use client';
 
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { UserPreferences } from '@/types/preferences';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 
@@ -25,7 +31,7 @@ export function DisplaySettings({ preferences }: DisplaySettingsProps) {
     { value: 20, label: '20 items' },
     { value: 30, label: '30 items' },
     { value: 50, label: '50 items' },
-    { value: 100, label: '100 items' }
+    { value: 100, label: '100 items' },
   ];
 
   return (
@@ -38,13 +44,13 @@ export function DisplaySettings({ preferences }: DisplaySettingsProps) {
           </p>
           <Select
             value={preferences.items_per_page.toString()}
-            onValueChange={(value) => handleItemsPerPageChange(parseInt(value))}
+            onValueChange={value => handleItemsPerPageChange(parseInt(value))}
           >
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {itemsPerPageOptions.map((option) => (
+              {itemsPerPageOptions.map(option => (
                 <SelectItem key={option.value} value={option.value.toString()}>
                   {option.label}
                 </SelectItem>
@@ -55,4 +61,4 @@ export function DisplaySettings({ preferences }: DisplaySettingsProps) {
       </div>
     </div>
   );
-} 
+}

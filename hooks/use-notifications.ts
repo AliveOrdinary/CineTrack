@@ -10,7 +10,7 @@ import {
   deleteNotification,
   deleteAllNotifications,
   subscribeToNotifications,
-  getNotificationStats
+  getNotificationStats,
 } from '@/lib/supabase/notifications';
 import { Notification, NotificationStats } from '@/lib/types/notifications';
 
@@ -23,29 +23,28 @@ export function useNotifications() {
   const [error, setError] = useState<string | null>(null);
 
   // Fetch notifications
-  const fetchNotifications = useCallback(async (
-    limit: number = 20,
-    offset: number = 0,
-    unreadOnly: boolean = false
-  ) => {
-    if (!user?.id) return;
+  const fetchNotifications = useCallback(
+    async (limit: number = 20, offset: number = 0, unreadOnly: boolean = false) => {
+      if (!user?.id) return;
 
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getNotifications(user.id, limit, offset, unreadOnly);
-      
-      if (offset === 0) {
-        setNotifications(data);
-      } else {
-        setNotifications(prev => [...prev, ...data]);
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getNotifications(user.id, limit, offset, unreadOnly);
+
+        if (offset === 0) {
+          setNotifications(data);
+        } else {
+          setNotifications(prev => [...prev, ...data]);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch notifications');
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch notifications');
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id]);
+    },
+    [user?.id]
+  );
 
   // Fetch unread count
   const fetchUnreadCount = useCallback(async () => {
@@ -75,16 +74,14 @@ export function useNotifications() {
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
       await markNotificationAsRead(notificationId);
-      
+
       // Update local state
-      setNotifications(prev => 
-        prev.map(notification => 
-          notification.id === notificationId 
-            ? { ...notification, read: true }
-            : notification
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification.id === notificationId ? { ...notification, read: true } : notification
         )
       );
-      
+
       // Update unread count
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
@@ -98,12 +95,10 @@ export function useNotifications() {
 
     try {
       await markAllNotificationsAsRead(user.id);
-      
+
       // Update local state
-      setNotifications(prev => 
-        prev.map(notification => ({ ...notification, read: true }))
-      );
-      
+      setNotifications(prev => prev.map(notification => ({ ...notification, read: true })));
+
       // Reset unread count
       setUnreadCount(0);
     } catch (err) {
@@ -112,22 +107,25 @@ export function useNotifications() {
   }, [user?.id]);
 
   // Delete notification
-  const deleteNotificationById = useCallback(async (notificationId: string) => {
-    try {
-      await deleteNotification(notificationId);
-      
-      // Update local state
-      const notification = notifications.find(n => n.id === notificationId);
-      setNotifications(prev => prev.filter(n => n.id !== notificationId));
-      
-      // Update unread count if notification was unread
-      if (notification && !notification.read) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
+  const deleteNotificationById = useCallback(
+    async (notificationId: string) => {
+      try {
+        await deleteNotification(notificationId);
+
+        // Update local state
+        const notification = notifications.find(n => n.id === notificationId);
+        setNotifications(prev => prev.filter(n => n.id !== notificationId));
+
+        // Update unread count if notification was unread
+        if (notification && !notification.read) {
+          setUnreadCount(prev => Math.max(0, prev - 1));
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to delete notification');
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete notification');
-    }
-  }, [notifications]);
+    },
+    [notifications]
+  );
 
   // Delete all notifications
   const deleteAllNotificationsForUser = useCallback(async () => {
@@ -135,7 +133,7 @@ export function useNotifications() {
 
     try {
       await deleteAllNotifications(user.id);
-      
+
       // Clear local state
       setNotifications([]);
       setUnreadCount(0);
@@ -162,14 +160,14 @@ export function useNotifications() {
   useEffect(() => {
     if (!user?.id) return;
 
-    const subscription = subscribeToNotifications(user.id, (payload) => {
+    const subscription = subscribeToNotifications(user.id, payload => {
       const { eventType, new: newRecord, old: oldRecord } = payload;
 
       switch (eventType) {
         case 'INSERT':
           // Add new notification to the beginning of the list
           setNotifications(prev => [newRecord, ...prev]);
-          
+
           // Increment unread count if notification is unread
           if (!newRecord.read) {
             setUnreadCount(prev => prev + 1);
@@ -178,24 +176,20 @@ export function useNotifications() {
 
         case 'UPDATE':
           // Update existing notification
-          setNotifications(prev => 
-            prev.map(notification => 
-              notification.id === newRecord.id ? newRecord : notification
-            )
+          setNotifications(prev =>
+            prev.map(notification => (notification.id === newRecord.id ? newRecord : notification))
           );
-          
+
           // Update unread count if read status changed
           if (oldRecord.read !== newRecord.read) {
-            setUnreadCount(prev => 
-              newRecord.read ? Math.max(0, prev - 1) : prev + 1
-            );
+            setUnreadCount(prev => (newRecord.read ? Math.max(0, prev - 1) : prev + 1));
           }
           break;
 
         case 'DELETE':
           // Remove notification from list
           setNotifications(prev => prev.filter(n => n.id !== oldRecord.id));
-          
+
           // Update unread count if deleted notification was unread
           if (!oldRecord.read) {
             setUnreadCount(prev => Math.max(0, prev - 1));
@@ -220,6 +214,6 @@ export function useNotifications() {
     markAllAsRead,
     deleteNotification: deleteNotificationById,
     deleteAllNotifications: deleteAllNotificationsForUser,
-    refresh
+    refresh,
   };
-} 
+}

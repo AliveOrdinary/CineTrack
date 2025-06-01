@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       type,
       token_hash,
       options: { redirectTo: next }, // It seems verifyOtp doesn't directly use redirectTo here.
-                                     // The redirect below handles it.
+      // The redirect below handles it.
     });
 
     if (!error) {
@@ -28,9 +28,12 @@ export async function GET(request: NextRequest) {
   // For simplicity, redirecting to login with an error query param.
   // A dedicated /auth/error page would be better for UX.
   const redirectUrl = new URL('/login', request.url);
-  redirectUrl.searchParams.set('error', 'Email verification failed. Please try again or contact support.');
+  redirectUrl.searchParams.set(
+    'error',
+    'Email verification failed. Please try again or contact support.'
+  );
   if (!token_hash || !type) {
     redirectUrl.searchParams.set('error', 'Invalid confirmation link. Missing token or type.');
   }
   return NextResponse.redirect(redirectUrl);
-} 
+}

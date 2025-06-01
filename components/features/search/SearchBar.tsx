@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Search, X, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { searchMulti } from "@/lib/tmdb/client";
-import { TmdbMedia } from "@/lib/tmdb/types";
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search, X, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { searchMulti } from '@/lib/tmdb/client';
+import { TmdbMedia } from '@/lib/tmdb/types';
 
 interface SearchBarProps {
   placeholder?: string;
@@ -14,12 +14,12 @@ interface SearchBarProps {
   showSuggestions?: boolean;
 }
 
-export default function SearchBar({ 
-  placeholder = "Search movies, TV shows, and people...", 
-  className = "",
-  showSuggestions = true 
+export default function SearchBar({
+  placeholder = 'Search movies, TV shows, and people...',
+  className = '',
+  showSuggestions = true,
 }: SearchBarProps) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<TmdbMedia[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -28,8 +28,8 @@ export default function SearchBar({
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const listboxId = "search-suggestions";
-  const comboboxId = "search-combobox";
+  const listboxId = 'search-suggestions';
+  const comboboxId = 'search-combobox';
 
   // Debounced search for suggestions
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function SearchBar({
           setShowDropdown(true);
           setSelectedIndex(-1); // Reset selection
         } catch (error) {
-          console.error("Search error:", error);
+          console.error('Search error:', error);
           setSuggestions([]);
         } finally {
           setIsLoading(false);
@@ -75,19 +75,19 @@ export default function SearchBar({
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // If a suggestion is selected, navigate to it
     if (selectedIndex >= 0 && suggestions[selectedIndex]) {
       handleSuggestionClick(suggestions[selectedIndex]);
       return;
     }
-    
+
     // Otherwise, go to search results
     if (query.trim()) {
       router.push(`/search?q=${encodeURIComponent(query.trim())}`);
@@ -99,13 +99,13 @@ export default function SearchBar({
   const handleSuggestionClick = (suggestion: TmdbMedia) => {
     const mediaType = suggestion.media_type || (suggestion.title ? 'movie' : 'tv');
     router.push(`/${mediaType}/${suggestion.id}`);
-    setQuery("");
+    setQuery('');
     setShowDropdown(false);
     setSelectedIndex(-1);
   };
 
   const clearSearch = () => {
-    setQuery("");
+    setQuery('');
     setSuggestions([]);
     setShowDropdown(false);
     setSelectedIndex(-1);
@@ -118,13 +118,11 @@ export default function SearchBar({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex(prev => 
-          prev < suggestions.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setSelectedIndex(prev => prev > -1 ? prev - 1 : -1);
+        setSelectedIndex(prev => (prev > -1 ? prev - 1 : -1));
         break;
       case 'Escape':
         e.preventDefault();
@@ -139,7 +137,7 @@ export default function SearchBar({
   };
 
   const getSuggestionTitle = (item: TmdbMedia) => {
-    return item.title || item.name || "Unknown";
+    return item.title || item.name || 'Unknown';
   };
 
   const getSuggestionYear = (item: TmdbMedia) => {
@@ -154,13 +152,19 @@ export default function SearchBar({
   };
 
   return (
-    <div ref={searchRef} className={`relative ${className}`} role="combobox" aria-expanded={showDropdown} aria-haspopup="listbox">
+    <div
+      ref={searchRef}
+      className={`relative ${className}`}
+      role="combobox"
+      aria-expanded={showDropdown}
+      aria-haspopup="listbox"
+    >
       <form onSubmit={handleSubmit} className="relative">
         <label htmlFor={comboboxId} className="sr-only">
           Search for movies, TV shows, and people
         </label>
-        <Search 
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" 
+        <Search
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4"
           aria-hidden="true"
         />
         <Input
@@ -169,15 +173,13 @@ export default function SearchBar({
           type="text"
           placeholder={placeholder}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           className="pl-10 pr-10"
           autoComplete="off"
           aria-autocomplete="list"
           aria-controls={showDropdown ? listboxId : undefined}
-          aria-activedescendant={
-            selectedIndex >= 0 ? `suggestion-${selectedIndex}` : undefined
-          }
+          aria-activedescendant={selectedIndex >= 0 ? `suggestion-${selectedIndex}` : undefined}
           aria-describedby="search-instructions"
         />
         <div id="search-instructions" className="sr-only">
@@ -205,7 +207,7 @@ export default function SearchBar({
 
       {/* Suggestions dropdown */}
       {showDropdown && suggestions.length > 0 && (
-        <ul 
+        <ul
           id={listboxId}
           role="listbox"
           className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto"
@@ -234,16 +236,15 @@ export default function SearchBar({
           ))}
         </ul>
       )}
-      
+
       {/* Live region for search results count */}
       {showDropdown && (
         <div className="sr-only" aria-live="polite" aria-atomic="true">
-          {suggestions.length > 0 
+          {suggestions.length > 0
             ? `${suggestions.length} search suggestions available`
-            : 'No search suggestions found'
-          }
+            : 'No search suggestions found'}
         </div>
       )}
     </div>
   );
-} 
+}

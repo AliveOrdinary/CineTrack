@@ -3,10 +3,9 @@
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase/client';
 // Import icons for social providers, e.g., from lucide-react
-// import { ChromeIcon, GithubIcon } from 'lucide-react'; 
+// import { ChromeIcon, GithubIcon } from 'lucide-react';
 
 export default function SocialLogins() {
-
   const handleOAuthLogin = async (provider: 'google' | 'github') => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -32,9 +31,7 @@ export default function SocialLogins() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
+          <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
         </div>
       </div>
       <Button variant="outline" className="w-full" onClick={() => handleOAuthLogin('google')}>
@@ -49,4 +46,4 @@ export default function SocialLogins() {
       </Button>
     </div>
   );
-} 
+}

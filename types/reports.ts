@@ -3,7 +3,7 @@
  * Types for content reporting and moderation
  */
 
-export type ReportReason = 
+export type ReportReason =
   | 'spam'
   | 'harassment'
   | 'hate_speech'
@@ -17,7 +17,7 @@ export type ReportStatus = 'pending' | 'reviewed' | 'resolved' | 'dismissed';
 
 export type ReportedContentType = 'review' | 'list' | 'user' | 'comment';
 
-export type ResolutionAction = 
+export type ResolutionAction =
   | 'no_action'
   | 'content_removed'
   | 'user_warned'
@@ -59,17 +59,17 @@ export interface UpdateReportData {
 export interface ReportWithReporter extends Report {
   reporter: {
     id: string;
-    username: string;
+    display_name: string;
     avatar_url?: string;
   };
   reported_user: {
     id: string;
-    username: string;
+    display_name: string;
     avatar_url?: string;
   };
   moderator?: {
     id: string;
-    username: string;
+    display_name: string;
     avatar_url?: string;
   };
 }
@@ -95,7 +95,7 @@ export const REPORT_REASON_LABELS: Record<ReportReason, string> = {
   copyright_violation: 'Copyright violation',
   misinformation: 'False or misleading information',
   violence: 'Violence or threats',
-  other: 'Other (please specify)'
+  other: 'Other (please specify)',
 };
 
 // Report status labels for UI
@@ -103,7 +103,7 @@ export const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
   pending: 'Pending Review',
   reviewed: 'Under Review',
   resolved: 'Resolved',
-  dismissed: 'Dismissed'
+  dismissed: 'Dismissed',
 };
 
 // Resolution action labels for UI
@@ -112,5 +112,5 @@ export const RESOLUTION_ACTION_LABELS: Record<ResolutionAction, string> = {
   content_removed: 'Content Removed',
   user_warned: 'User Warned',
   user_suspended: 'User Suspended',
-  user_banned: 'User Banned'
-}; 
+  user_banned: 'User Banned',
+};

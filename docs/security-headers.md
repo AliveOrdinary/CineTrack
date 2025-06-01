@@ -7,9 +7,11 @@ CineTrack implements comprehensive security headers to protect against common we
 ## Implemented Security Headers
 
 ### 1. Content Security Policy (CSP)
+
 **Purpose**: Prevents Cross-Site Scripting (XSS) and injection attacks
 
 **Configuration**:
+
 ```
 default-src 'self';
 script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com;
@@ -27,6 +29,7 @@ upgrade-insecure-requests
 ```
 
 **Explanation**:
+
 - `default-src 'self'`: Only allow resources from same origin by default
 - `script-src`: Allow scripts from self, Vercel analytics, and inline scripts (required for Next.js)
 - `style-src`: Allow styles from self, inline styles, and Google Fonts
@@ -37,16 +40,19 @@ upgrade-insecure-requests
 - `upgrade-insecure-requests`: Automatically upgrade HTTP to HTTPS
 
 ### 2. HTTP Strict Transport Security (HSTS)
+
 **Purpose**: Enforces secure HTTPS connections
 
 **Configuration**: `max-age=31536000; includeSubDomains; preload`
 
 **Explanation**:
+
 - `max-age=31536000`: Cache for 1 year (365 days)
 - `includeSubDomains`: Apply to all subdomains
 - `preload`: Eligible for browser preload lists
 
 ### 3. X-Frame-Options
+
 **Purpose**: Prevents clickjacking attacks
 
 **Configuration**: `DENY`
@@ -54,6 +60,7 @@ upgrade-insecure-requests
 **Explanation**: Completely prevents the page from being embedded in frames
 
 ### 4. X-Content-Type-Options
+
 **Purpose**: Prevents MIME type sniffing
 
 **Configuration**: `nosniff`
@@ -61,6 +68,7 @@ upgrade-insecure-requests
 **Explanation**: Forces browsers to respect declared content types
 
 ### 5. Referrer-Policy
+
 **Purpose**: Controls referrer information sent with requests
 
 **Configuration**: `strict-origin-when-cross-origin`
@@ -68,6 +76,7 @@ upgrade-insecure-requests
 **Explanation**: Sends full URL for same-origin, only origin for cross-origin HTTPS, nothing for HTTP
 
 ### 6. Permissions-Policy
+
 **Purpose**: Controls browser features and APIs
 
 **Configuration**: `camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()`
@@ -77,18 +86,22 @@ upgrade-insecure-requests
 ### 7. Cross-Origin Policies
 
 #### Cross-Origin-Embedder-Policy
+
 **Configuration**: `credentialless`
 **Purpose**: Controls cross-origin resource embedding
 
 #### Cross-Origin-Opener-Policy
+
 **Configuration**: `same-origin`
 **Purpose**: Controls cross-origin window interactions
 
 #### Cross-Origin-Resource-Policy
+
 **Configuration**: `cross-origin`
 **Purpose**: Controls cross-origin resource sharing
 
 ### 8. X-XSS-Protection (Legacy)
+
 **Purpose**: Legacy XSS protection for older browsers
 
 **Configuration**: `1; mode=block`
@@ -98,6 +111,7 @@ upgrade-insecure-requests
 ## Security Testing
 
 ### Automated Testing
+
 The application includes a security header testing utility at `lib/security-headers.ts` that can:
 
 1. Test deployed URLs for header presence and correctness
@@ -108,16 +122,19 @@ The application includes a security header testing utility at `lib/security-head
 ### Manual Testing Tools
 
 #### Online Tools
+
 - [Security Headers](https://securityheaders.com/) - Comprehensive header analysis
 - [Mozilla Observatory](https://observatory.mozilla.org/) - Security assessment
 - [CSP Evaluator](https://csp-evaluator.withgoogle.com/) - CSP policy analysis
 
 #### Browser DevTools
+
 1. Open DevTools → Network tab
 2. Reload page and check response headers
 3. Look for security headers in the response
 
 #### Command Line Testing
+
 ```bash
 # Test security headers with curl
 curl -I https://your-domain.com
@@ -133,7 +150,7 @@ curl -I https://your-domain.com | grep -i "content-security-policy"
 When adding new external resources, update the CSP policy:
 
 1. **Scripts**: Add to `script-src` directive
-2. **Styles**: Add to `style-src` directive  
+2. **Styles**: Add to `style-src` directive
 3. **Images**: Add to `img-src` directive
 4. **APIs**: Add to `connect-src` directive
 5. **Fonts**: Add to `font-src` directive
@@ -143,7 +160,7 @@ When adding new external resources, update the CSP policy:
 To enable CSP violation reporting, add a `report-uri` directive:
 
 ```javascript
-"report-uri https://your-domain.com/api/csp-report"
+'report-uri https://your-domain.com/api/csp-report';
 ```
 
 ### Testing Changes
@@ -170,12 +187,15 @@ To enable CSP violation reporting, add a `report-uri` directive:
 ## Compliance
 
 ### Standards Compliance
+
 - **OWASP**: Follows OWASP security header recommendations
 - **Mozilla**: Implements Mozilla's web security guidelines
 - **W3C**: Compliant with W3C security specifications
 
 ### Security Ratings
+
 Target security ratings:
+
 - Security Headers: A+
 - Mozilla Observatory: A+
 - SSL Labs: A+
@@ -183,11 +203,13 @@ Target security ratings:
 ## Monitoring
 
 ### Production Monitoring
+
 - Monitor CSP violation reports
 - Track security header compliance
 - Alert on security misconfigurations
 
 ### Development Monitoring
+
 - Automatic security status logging
 - CI/CD security header validation
 - Pre-deployment security checks
@@ -195,12 +217,14 @@ Target security ratings:
 ## Incident Response
 
 ### CSP Violations
+
 1. Review violation reports
 2. Determine if legitimate or attack
 3. Update CSP policy if needed
 4. Monitor for recurring violations
 
 ### Security Header Issues
+
 1. Verify header presence and values
 2. Check for configuration drift
 3. Update Next.js configuration
@@ -211,4 +235,4 @@ Target security ratings:
 - [OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/)
 - [MDN Security Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers#security)
 - [Content Security Policy Reference](https://content-security-policy.com/)
-- [Security Headers Best Practices](https://securityheaders.com/) 
+- [Security Headers Best Practices](https://securityheaders.com/)

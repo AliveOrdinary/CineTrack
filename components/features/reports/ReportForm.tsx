@@ -21,11 +21,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { 
-  ReportedContentType, 
-  ReportReason, 
+import {
+  ReportedContentType,
+  ReportReason,
   REPORT_REASON_LABELS,
-  ReportFormData 
+  ReportFormData,
 } from '@/types/reports';
 import { createReport } from '@/lib/supabase/reports';
 import { toast } from 'sonner';
@@ -39,9 +39,12 @@ const reportFormSchema = z.object({
     'copyright_violation',
     'misinformation',
     'violence',
-    'other'
+    'other',
   ] as const),
-  details: z.string().min(10, 'Please provide at least 10 characters of detail').max(500, 'Details must be less than 500 characters')
+  details: z
+    .string()
+    .min(10, 'Please provide at least 10 characters of detail')
+    .max(500, 'Details must be less than 500 characters'),
 });
 
 interface ReportFormProps {
@@ -57,7 +60,7 @@ export function ReportForm({
   contentId,
   reportedUserId,
   onSubmitted,
-  onCancel
+  onCancel,
 }: ReportFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -65,8 +68,8 @@ export function ReportForm({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       reason: undefined,
-      details: ''
-    }
+      details: '',
+    },
   });
 
   const onSubmit = async (data: ReportFormData) => {
@@ -78,10 +81,12 @@ export function ReportForm({
         reported_content_id: contentId,
         reported_user_id: reportedUserId,
         reason: data.reason,
-        details: data.details.trim()
+        details: data.details.trim(),
       });
 
-      toast.success('Report submitted successfully. Thank you for helping keep our community safe.');
+      toast.success(
+        'Report submitted successfully. Thank you for helping keep our community safe.'
+      );
       onSubmitted();
     } catch (error) {
       console.error('Error submitting report:', error);
@@ -138,12 +143,7 @@ export function ReportForm({
         />
 
         <div className="flex justify-end space-x-2 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button
@@ -157,4 +157,4 @@ export function ReportForm({
       </form>
     </Form>
   );
-} 
+}

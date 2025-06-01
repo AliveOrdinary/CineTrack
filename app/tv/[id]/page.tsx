@@ -1,16 +1,17 @@
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import { getTvShowDetails } from "@/lib/tmdb/client";
-import { TmdbTvDetails, TmdbGenre } from "@/lib/tmdb/types";
-import MediaSection from "@/components/features/content/MediaSection";
-import MediaSectionSkeleton from "@/components/features/content/MediaSectionSkeleton";
-import { WatchedContentButton } from "@/components/features/tracking/WatchedContentButton";
-import { WatchlistButton } from "@/components/features/tracking/WatchlistButton";
-import { AddToListButton } from "@/components/features/lists/AddToListButton";
-import { ReviewButton } from "@/components/features/reviews/ReviewButton";
-import { ReviewsSection } from "@/components/features/reviews/ReviewsSection";
-import { TvShowProgress } from "@/components/features/tracking/TvShowProgress";
+import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import { getTvShowDetails, getTvShowWatchProviders } from '@/lib/tmdb/client';
+import { TmdbTvDetails, TmdbGenre } from '@/lib/tmdb/types';
+import MediaSection from '@/components/features/content/MediaSection';
+import MediaSectionSkeleton from '@/components/features/content/MediaSectionSkeleton';
+import { WatchProviders } from '@/components/features/content/WatchProviders';
+import { WatchedContentButton } from '@/components/features/tracking/WatchedContentButton';
+import { WatchlistButton } from '@/components/features/tracking/WatchlistButton';
+import { AddToListButton } from '@/components/features/lists/AddToListButton';
+import { ReviewButton } from '@/components/features/reviews/ReviewButton';
+import { ReviewsSection } from '@/components/features/reviews/ReviewsSection';
+import { TvShowProgress } from '@/components/features/tracking/TvShowProgress';
 
 interface TvPageProps {
   params: Promise<{
@@ -21,16 +22,21 @@ interface TvPageProps {
 async function TvShowDetails({ id }: { id: string }) {
   try {
     const tvShow = await getTvShowDetails(parseInt(id));
-    
+
     if (!tvShow) {
       notFound();
     }
 
-    const backdropUrl = tvShow.backdrop_path 
+    // Fetch watch providers
+    const [providers] = await Promise.allSettled([getTvShowWatchProviders(parseInt(id))]);
+
+    const providersValue = providers.status === 'fulfilled' ? providers.value : null;
+
+    const backdropUrl = tvShow.backdrop_path
       ? `https://image.tmdb.org/t/p/w1280${tvShow.backdrop_path}`
       : null;
 
-    const posterUrl = tvShow.poster_path 
+    const posterUrl = tvShow.poster_path
       ? `https://image.tmdb.org/t/p/w500${tvShow.poster_path}`
       : null;
 
@@ -39,13 +45,7 @@ async function TvShowDetails({ id }: { id: string }) {
         {/* Hero Section with Backdrop */}
         {backdropUrl && (
           <div className="relative h-[50vh] w-full">
-            <Image
-              src={backdropUrl}
-              alt={tvShow.name}
-              fill
-              className="object-cover"
-              priority
-            />
+            <Image src={backdropUrl} alt={tvShow.name} fill className="object-cover" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
           </div>
         )}
@@ -65,32 +65,16 @@ async function TvShowDetails({ id }: { id: string }) {
                   />
                 </div>
               )}
-              
+
               {/* Action Buttons */}
               <div className="space-y-3">
-                <WatchedContentButton
-                  tmdbId={parseInt(id)}
-                  mediaType="tv"
-                  title={tvShow.name}
-                />
-                
-                <WatchlistButton
-                  tmdbId={parseInt(id)}
-                  mediaType="tv"
-                  title={tvShow.name}
-                />
-                
-                <AddToListButton
-                  tmdbId={parseInt(id)}
-                  mediaType="tv"
-                  title={tvShow.name}
-                />
-                
-                <ReviewButton
-                  tmdbId={parseInt(id)}
-                  mediaType="tv"
-                  title={tvShow.name}
-                />
+                <WatchedContentButton tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
+
+                <WatchlistButton tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
+
+                <AddToListButton tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
+
+                <ReviewButton tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
               </div>
 
               {/* Show Stats */}
@@ -134,7 +118,7 @@ async function TvShowDetails({ id }: { id: string }) {
                     {new Date(tvShow.first_air_date).getFullYear()}
                   </p>
                 )}
-                
+
                 <div className="flex flex-wrap gap-4 mb-6">
                   {tvShow.vote_average && tvShow.vote_average > 0 && (
                     <div className="flex items-center gap-1">
@@ -148,7 +132,7 @@ async function TvShowDetails({ id }: { id: string }) {
                 {tvShow.genres && tvShow.genres.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-6">
                     {tvShow.genres.map((genre: TmdbGenre) => (
-                      <span 
+                      <span
                         key={genre.id}
                         className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm"
                       >
@@ -166,6 +150,13 @@ async function TvShowDetails({ id }: { id: string }) {
                 )}
               </div>
 
+              {/* Where to Watch */}
+              {providersValue && (
+                <div>
+                  <WatchProviders providers={providersValue} title={tvShow.name} mediaType="tv" />
+                </div>
+              )}
+
               {/* Episode Tracking */}
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Episode Tracking</h2>
@@ -174,21 +165,19 @@ async function TvShowDetails({ id }: { id: string }) {
 
               {/* Reviews Section */}
               <div className="mt-12">
-                <Suspense fallback={
-                  <div className="space-y-4">
-                    <div className="h-8 bg-muted rounded w-1/4 animate-pulse" />
+                <Suspense
+                  fallback={
                     <div className="space-y-4">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="h-32 bg-muted rounded animate-pulse" />
-                      ))}
+                      <div className="h-8 bg-muted rounded w-1/4 animate-pulse" />
+                      <div className="space-y-4">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                          <div key={i} className="h-32 bg-muted rounded animate-pulse" />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                }>
-                  <ReviewsSection
-                    tmdbId={parseInt(id)}
-                    mediaType="tv"
-                    title={tvShow.name}
-                  />
+                  }
+                >
+                  <ReviewsSection tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
                 </Suspense>
               </div>
             </div>
@@ -211,21 +200,23 @@ export default async function TvPage({ params }: TvPageProps) {
   }
 
   return (
-    <Suspense fallback={
-      <div className="w-full max-w-7xl mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-muted rounded w-1/3 mb-4" />
-          <div className="h-6 bg-muted rounded w-1/4 mb-6" />
-          <div className="h-32 bg-muted rounded mb-6" />
-          <div className="grid grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-32 bg-muted rounded" />
-            ))}
+    <Suspense
+      fallback={
+        <div className="w-full max-w-7xl mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-muted rounded w-1/3 mb-4" />
+            <div className="h-6 bg-muted rounded w-1/4 mb-6" />
+            <div className="h-32 bg-muted rounded mb-6" />
+            <div className="grid grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-32 bg-muted rounded" />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <TvShowDetails id={id} />
     </Suspense>
   );
-} 
+}

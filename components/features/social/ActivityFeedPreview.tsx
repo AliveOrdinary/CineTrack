@@ -1,54 +1,44 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { 
-  Eye, 
-  MessageSquare, 
-  Bookmark, 
-  List, 
-  ArrowRight,
-  Users
-} from "lucide-react"
-import { 
-  getFilteredActivity, 
-  type ActivityItem 
-} from "@/lib/supabase/client"
-import { getMovieDetails, getTvShowDetails } from "@/lib/tmdb/client"
-import { formatDistanceToNow } from "date-fns"
-import Link from "next/link"
-import Image from "next/image"
-import { createClient } from "@/lib/supabase/client"
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Eye, MessageSquare, Bookmark, List, ArrowRight, Users } from 'lucide-react';
+import { getFilteredActivity, type ActivityItem } from '@/lib/supabase/client';
+import { getMovieDetails, getTvShowDetails } from '@/lib/tmdb/client';
+import { formatDistanceToNow } from 'date-fns';
+import Link from 'next/link';
+import Image from 'next/image';
+import { createClient } from '@/lib/supabase/client';
 
 interface ActivityFeedPreviewProps {
-  className?: string
+  className?: string;
 }
 
 interface ActivityItemWithMedia extends ActivityItem {
-  mediaDetails?: any
+  mediaDetails?: any;
 }
 
 function ActivityPreviewCard({ activity }: { activity: ActivityItemWithMedia }) {
-  const user = activity.details?.user
-  const mediaDetails = activity.mediaDetails
+  const user = activity.details?.user;
+  const mediaDetails = activity.mediaDetails;
 
   const getActivityIcon = () => {
     switch (activity.type) {
       case 'watched':
-        return <Eye className="h-3 w-3 text-green-500" />
+        return <Eye className="h-3 w-3 text-green-500" />;
       case 'review':
-        return <MessageSquare className="h-3 w-3 text-blue-500" />
+        return <MessageSquare className="h-3 w-3 text-blue-500" />;
       case 'watchlist':
-        return <Bookmark className="h-3 w-3 text-yellow-500" />
+        return <Bookmark className="h-3 w-3 text-yellow-500" />;
       case 'list':
-        return <List className="h-3 w-3 text-purple-500" />
+        return <List className="h-3 w-3 text-purple-500" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <div className="flex items-center gap-3 p-3 hover:bg-muted/50 rounded-lg transition-colors">
@@ -64,26 +54,23 @@ function ActivityPreviewCard({ activity }: { activity: ActivityItemWithMedia }) 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1 text-sm">
           {getActivityIcon()}
-          <Link 
-            href={`/profile/${user?.id}`}
-            className="font-medium hover:underline truncate"
-          >
+          <Link href={`/profile/${user?.id}`} className="font-medium hover:underline truncate">
             {user?.display_name || 'Anonymous'}
           </Link>
           <span className="text-muted-foreground truncate">{activity.action}</span>
         </div>
-        
+
         {activity.tmdb_id && mediaDetails && (
-          <Link 
+          <Link
             href={`/${activity.media_type}/${activity.tmdb_id}`}
             className="text-sm text-muted-foreground hover:underline truncate block"
           >
             {mediaDetails.title || mediaDetails.name}
           </Link>
         )}
-        
+
         {activity.type === 'list' && (
-          <Link 
+          <Link
             href={`/lists/${activity.details?.list_id}`}
             className="text-sm text-muted-foreground hover:underline truncate block"
           >
@@ -96,60 +83,63 @@ function ActivityPreviewCard({ activity }: { activity: ActivityItemWithMedia }) 
         {formatDistanceToNow(new Date(activity.created_at), { addSuffix: true })}
       </div>
     </div>
-  )
+  );
 }
 
 export function ActivityFeedPreview({ className }: ActivityFeedPreviewProps) {
-  const [activities, setActivities] = useState<ActivityItemWithMedia[]>([])
-  const [loading, setLoading] = useState(true)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [activities, setActivities] = useState<ActivityItemWithMedia[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      setIsAuthenticated(!!user)
-      
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+
       if (user) {
         try {
           const { activities: newActivities } = await getFilteredActivity(
-            ['watched', 'review', 'watchlist', 'list'], 
-            5, 
+            ['watched', 'review', 'watchlist', 'list'],
+            5,
             0
-          )
+          );
 
           // Fetch media details for activities that have TMDB IDs
           const activitiesWithMedia = await Promise.all(
-            newActivities.map(async (activity) => {
+            newActivities.map(async activity => {
               if (activity.tmdb_id && activity.media_type) {
                 try {
-                  const mediaDetails = activity.media_type === 'movie'
-                    ? await getMovieDetails(activity.tmdb_id)
-                    : await getTvShowDetails(activity.tmdb_id)
-                  
-                  return { ...activity, mediaDetails }
+                  const mediaDetails =
+                    activity.media_type === 'movie'
+                      ? await getMovieDetails(activity.tmdb_id)
+                      : await getTvShowDetails(activity.tmdb_id);
+
+                  return { ...activity, mediaDetails };
                 } catch (error) {
-                  return activity
+                  return activity;
                 }
               }
-              return activity
+              return activity;
             })
-          )
+          );
 
-          setActivities(activitiesWithMedia)
+          setActivities(activitiesWithMedia);
         } catch (error) {
-          console.error('Error loading activity preview:', error)
+          console.error('Error loading activity preview:', error);
         }
       }
-      
-      setLoading(false)
-    }
 
-    checkAuth()
-  }, [])
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, []);
 
   if (!isAuthenticated) {
-    return null
+    return null;
   }
 
   return (
@@ -192,12 +182,12 @@ export function ActivityFeedPreview({ className }: ActivityFeedPreviewProps) {
           </div>
         ) : (
           <div className="space-y-1">
-            {activities.map((activity) => (
+            {activities.map(activity => (
               <ActivityPreviewCard key={activity.id} activity={activity} />
             ))}
           </div>
         )}
       </CardContent>
     </Card>
-  )
-} 
+  );
+}

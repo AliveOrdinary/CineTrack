@@ -66,13 +66,13 @@
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Mobile viewport optimization */
   html {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
-  
+
   /* Safe area support for devices with notches */
   body {
     padding-left: env(safe-area-inset-left);
@@ -131,7 +131,7 @@
     .border {
       border-width: 2px;
     }
-    
+
     .focus\:ring-2:focus {
       box-shadow: 0 0 0 3px hsl(var(--ring));
     }
@@ -154,83 +154,83 @@
   .skip-link:focus {
     top: 6px;
   }
-  
+
   /* Mobile-specific utilities */
   .touch-manipulation {
     touch-action: manipulation;
   }
-  
+
   /* Safe area utilities */
   .h-safe-area-inset-bottom {
     height: env(safe-area-inset-bottom);
   }
-  
+
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
-  
+
   .pt-safe {
     padding-top: env(safe-area-inset-top);
   }
-  
+
   /* Touch-friendly minimum sizes */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Mobile-optimized scrolling */
   .scroll-smooth-mobile {
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
   }
-  
+
   /* Prevent zoom on input focus (iOS) */
   @media screen and (max-width: 768px) {
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="search"],
+    input[type='text'],
+    input[type='email'],
+    input[type='password'],
+    input[type='search'],
     textarea,
     select {
       font-size: 16px;
     }
   }
-  
+
   /* Mobile grid improvements */
   .mobile-grid-2 {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .mobile-grid-3 {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   @media (min-width: 640px) {
     .mobile-grid-2 {
       grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .mobile-grid-3 {
       grid-template-columns: repeat(4, 1fr);
     }
   }
-  
+
   @media (min-width: 768px) {
     .mobile-grid-2 {
       grid-template-columns: repeat(4, 1fr);
     }
-    
+
     .mobile-grid-3 {
       grid-template-columns: repeat(5, 1fr);
     }
   }
-  
+
   @media (min-width: 1024px) {
     .mobile-grid-2 {
       grid-template-columns: repeat(5, 1fr);
     }
-    
+
     .mobile-grid-3 {
       grid-template-columns: repeat(6, 1fr);
     }

@@ -1,24 +1,24 @@
-"use client"
+'use client';
 
-import { useState, useEffect, useCallback } from "react"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Search, Users } from "lucide-react"
-import { searchUsers, type UserWithFollowStatus } from "@/lib/supabase/client"
-import { FollowButton } from "./FollowButton"
-import { formatDistanceToNow } from "date-fns"
-import Link from "next/link"
-import { useDebounce } from "@/hooks/useDebounce"
+import { useState, useEffect, useCallback } from 'react';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Search, Users } from 'lucide-react';
+import { searchUsers, type UserWithFollowStatus } from '@/lib/supabase/client';
+import { FollowButton } from './FollowButton';
+import { formatDistanceToNow } from 'date-fns';
+import Link from 'next/link';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface UserSearchProps {
-  placeholder?: string
-  className?: string
+  placeholder?: string;
+  className?: string;
 }
 
 interface SearchUserCardProps {
-  user: UserWithFollowStatus
+  user: UserWithFollowStatus;
 }
 
 function SearchUserCard({ user }: SearchUserCardProps) {
@@ -29,39 +29,32 @@ function SearchUserCard({ user }: SearchUserCardProps) {
           <div className="flex items-center gap-3">
             <Avatar className="h-12 w-12">
               <AvatarImage src={user.avatar_url} />
-              <AvatarFallback>
-                {user.display_name?.charAt(0) || 'U'}
-              </AvatarFallback>
+              <AvatarFallback>{user.display_name?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <Link 
-                  href={`/profile/${user.id}`}
-                  className="font-medium hover:underline"
-                >
+                <Link href={`/profile/${user.id}`} className="font-medium hover:underline">
                   {user.display_name || 'User'}
                 </Link>
-                
+
                 {user.is_followed_by && (
                   <Badge variant="secondary" className="text-xs">
                     Follows you
                   </Badge>
                 )}
-                
+
                 {user.is_following && (
                   <Badge variant="outline" className="text-xs">
                     Following
                   </Badge>
                 )}
               </div>
-              
+
               {user.bio && (
-                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                  {user.bio}
-                </p>
+                <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{user.bio}</p>
               )}
-              
+
               <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                 <span>{user.followers_count || 0} followers</span>
                 <span>{user.following_count || 0} following</span>
@@ -73,49 +66,49 @@ function SearchUserCard({ user }: SearchUserCardProps) {
               </div>
             </div>
           </div>
-          
+
           <FollowButton userId={user.id} size="sm" />
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export function UserSearch({ 
-  placeholder = "Search for users to follow...",
-  className 
+export function UserSearch({
+  placeholder = 'Search for users to follow...',
+  className,
 }: UserSearchProps) {
-  const [query, setQuery] = useState("")
-  const [users, setUsers] = useState<UserWithFollowStatus[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [hasSearched, setHasSearched] = useState(false)
-  
-  const debouncedQuery = useDebounce(query, 500)
+  const [query, setQuery] = useState('');
+  const [users, setUsers] = useState<UserWithFollowStatus[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const debouncedQuery = useDebounce(query, 500);
 
   const performSearch = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim()) {
-      setUsers([])
-      setHasSearched(false)
-      return
+      setUsers([]);
+      setHasSearched(false);
+      return;
     }
 
-    setIsLoading(true)
-    setHasSearched(true)
-    
+    setIsLoading(true);
+    setHasSearched(true);
+
     try {
-      const results = await searchUsers(searchQuery)
-      setUsers(results)
+      const results = await searchUsers(searchQuery);
+      setUsers(results);
     } catch (error) {
-      console.error('Error searching users:', error)
-      setUsers([])
+      console.error('Error searching users:', error);
+      setUsers([]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    performSearch(debouncedQuery)
-  }, [debouncedQuery, performSearch])
+    performSearch(debouncedQuery);
+  }, [debouncedQuery, performSearch]);
 
   return (
     <div className={className}>
@@ -125,7 +118,7 @@ export function UserSearch({
           type="text"
           placeholder={placeholder}
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
           className="pl-10"
         />
       </div>
@@ -163,7 +156,7 @@ export function UserSearch({
 
       {!isLoading && users.length > 0 && (
         <div className="space-y-3">
-          {users.map((user) => (
+          {users.map(user => (
             <SearchUserCard key={user.id} user={user} />
           ))}
         </div>
@@ -181,5 +174,5 @@ export function UserSearch({
         </Card>
       )}
     </div>
-  )
-} 
+  );
+}

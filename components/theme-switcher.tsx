@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Laptop, Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+} from '@/components/ui/dropdown-menu';
+import { Laptop, Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 const ThemeSwitcher = () => {
   const [mounted, setMounted] = useState(false);
@@ -29,92 +29,88 @@ const ThemeSwitcher = () => {
 
   const getThemeLabel = (currentTheme: string | undefined) => {
     switch (currentTheme) {
-      case "light":
-        return "Light theme";
-      case "dark":
-        return "Dark theme";
-      case "system":
-        return "System theme";
+      case 'light':
+        return 'Light theme';
+      case 'dark':
+        return 'Dark theme';
+      case 'system':
+        return 'System theme';
       default:
-        return "Theme selector";
+        return 'Theme selector';
     }
   };
 
   const getCurrentThemeDescription = (currentTheme: string | undefined) => {
     switch (currentTheme) {
-      case "light":
-        return "Currently using light theme";
-      case "dark":
-        return "Currently using dark theme";
-      case "system":
-        return "Currently using system theme";
+      case 'light':
+        return 'Currently using light theme';
+      case 'dark':
+        return 'Currently using dark theme';
+      case 'system':
+        return 'Currently using system theme';
       default:
-        return "Theme not set";
+        return 'Theme not set';
     }
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size={"sm"}
+        <Button
+          variant="ghost"
+          size={'sm'}
           aria-label={`${getThemeLabel(theme)}. Click to change theme.`}
           aria-describedby="theme-description"
         >
-          {theme === "light" ? (
+          {theme === 'light' ? (
             <Sun
               key="light"
               size={ICON_SIZE}
-              className={"text-muted-foreground"}
+              className={'text-muted-foreground'}
               aria-hidden="true"
             />
-          ) : theme === "dark" ? (
+          ) : theme === 'dark' ? (
             <Moon
               key="dark"
               size={ICON_SIZE}
-              className={"text-muted-foreground"}
+              className={'text-muted-foreground'}
               aria-hidden="true"
             />
           ) : (
             <Laptop
               key="system"
               size={ICON_SIZE}
-              className={"text-muted-foreground"}
+              className={'text-muted-foreground'}
               aria-hidden="true"
             />
           )}
           <span className="sr-only">{getCurrentThemeDescription(theme)}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent 
-        className="w-content" 
-        align="start"
-        aria-label="Theme selection menu"
-      >
+      <DropdownMenuContent className="w-content" align="start" aria-label="Theme selection menu">
         <DropdownMenuRadioGroup
           value={theme}
-          onValueChange={(e) => setTheme(e)}
+          onValueChange={e => setTheme(e)}
           aria-label="Choose theme"
         >
-          <DropdownMenuRadioItem 
-            className="flex gap-2" 
+          <DropdownMenuRadioItem
+            className="flex gap-2"
             value="light"
             aria-label="Switch to light theme"
           >
             <Sun size={ICON_SIZE} className="text-muted-foreground" aria-hidden="true" />
             <span>Light</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem 
-            className="flex gap-2" 
+          <DropdownMenuRadioItem
+            className="flex gap-2"
             value="dark"
             aria-label="Switch to dark theme"
           >
             <Moon size={ICON_SIZE} className="text-muted-foreground" aria-hidden="true" />
             <span>Dark</span>
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem 
-            className="flex gap-2" 
+          <DropdownMenuRadioItem
+            className="flex gap-2"
             value="system"
             aria-label="Use system theme preference"
           >

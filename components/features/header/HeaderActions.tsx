@@ -11,15 +11,15 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu';
-import { 
-  MoreHorizontal, 
-  Sun, 
-  Moon, 
-  Laptop, 
+import {
+  MoreHorizontal,
+  Sun,
+  Moon,
+  Laptop,
   Palette,
   Shield,
   HelpCircle,
-  Settings
+  Settings,
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
@@ -92,22 +92,18 @@ export function HeaderActions() {
   };
 
   // Check if user has moderation access
-  const hasModeratorAccess = userRole === 'admin' || userRole === 'moderator' || process.env.NODE_ENV === 'development';
+  const hasModeratorAccess =
+    userRole === 'admin' || userRole === 'moderator' || process.env.NODE_ENV === 'development';
 
   return (
     <div className="flex items-center gap-1">
       {/* Notifications */}
       <NotificationBell />
-      
+
       {/* Theme Switcher - Quick Access */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="h-8 w-8 p-0"
-            aria-label="Change theme"
-          >
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="Change theme">
             {getThemeIcon()}
           </Button>
         </DropdownMenuTrigger>
@@ -134,19 +130,14 @@ export function HeaderActions() {
       {/* More Actions Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="h-8 w-8 p-0"
-            aria-label="More options"
-          >
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0" aria-label="More options">
             <MoreHorizontal size={ICON_SIZE} className="text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuLabel>More Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          
+
           {/* Moderation Dashboard Link - Only for moderators/admins or development */}
           {hasModeratorAccess && (
             <>
@@ -173,7 +164,7 @@ export function HeaderActions() {
               <DropdownMenuSeparator />
             </>
           )}
-          
+
           <DropdownMenuItem asChild>
             <Link href="/help" className="flex items-center">
               <HelpCircle className="mr-2 h-4 w-4" />
@@ -184,4 +175,4 @@ export function HeaderActions() {
       </DropdownMenu>
     </div>
   );
-} 
+}

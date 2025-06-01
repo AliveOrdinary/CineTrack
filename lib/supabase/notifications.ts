@@ -31,8 +31,9 @@ export async function getNotifications(
 }
 
 export async function getUnreadNotificationCount(userId: string): Promise<number> {
-  const { data, error } = await supabase
-    .rpc('get_unread_notification_count', { user_uuid: userId });
+  const { data, error } = await supabase.rpc('get_unread_notification_count', {
+    user_uuid: userId,
+  });
 
   if (error) {
     console.error('Error fetching unread count:', error);
@@ -68,10 +69,7 @@ export async function markAllNotificationsAsRead(userId: string): Promise<void> 
 }
 
 export async function deleteNotification(notificationId: string): Promise<void> {
-  const { error } = await supabase
-    .from('notifications')
-    .delete()
-    .eq('id', notificationId);
+  const { error } = await supabase.from('notifications').delete().eq('id', notificationId);
 
   if (error) {
     console.error('Error deleting notification:', error);
@@ -80,10 +78,7 @@ export async function deleteNotification(notificationId: string): Promise<void> 
 }
 
 export async function deleteAllNotifications(userId: string): Promise<void> {
-  const { error } = await supabase
-    .from('notifications')
-    .delete()
-    .eq('user_id', userId);
+  const { error } = await supabase.from('notifications').delete().eq('user_id', userId);
 
   if (error) {
     console.error('Error deleting all notifications:', error);
@@ -127,8 +122,8 @@ export async function getNotificationStats(userId: string): Promise<Notification
       list_like: 0,
       list_comment: 0,
       recommendation: 0,
-      system: 0
-    }
+      system: 0,
+    },
   };
 
   notifications?.forEach(notification => {
@@ -139,10 +134,7 @@ export async function getNotificationStats(userId: string): Promise<Notification
 }
 
 // Real-time subscription for notifications
-export function subscribeToNotifications(
-  userId: string,
-  callback: (payload: any) => void
-) {
+export function subscribeToNotifications(userId: string, callback: (payload: any) => void) {
   return supabase
     .channel('notifications')
     .on(
@@ -151,7 +143,7 @@ export function subscribeToNotifications(
         event: '*',
         schema: 'public',
         table: 'notifications',
-        filter: `user_id=eq.${userId}`
+        filter: `user_id=eq.${userId}`,
       },
       callback
     )
@@ -169,7 +161,7 @@ export async function createFollowNotification(
     type: 'follow',
     title: 'New Follower',
     message: `${followerName} started following you`,
-    data: { follower_id: followerId, follower_name: followerName }
+    data: { follower_id: followerId, follower_name: followerName },
   });
 }
 
@@ -185,12 +177,12 @@ export async function createReviewLikeNotification(
     type: 'review_like',
     title: 'Review Liked',
     message: `${likerName} liked your review of "${movieTitle}"`,
-    data: { 
-      liker_id: likerId, 
-      liker_name: likerName, 
+    data: {
+      liker_id: likerId,
+      liker_name: likerName,
       review_id: reviewId,
-      movie_title: movieTitle 
-    }
+      movie_title: movieTitle,
+    },
   });
 }
 
@@ -206,12 +198,12 @@ export async function createReviewCommentNotification(
     type: 'review_comment',
     title: 'New Comment',
     message: `${commenterName} commented on your review of "${movieTitle}"`,
-    data: { 
-      commenter_id: commenterId, 
-      commenter_name: commenterName, 
+    data: {
+      commenter_id: commenterId,
+      commenter_name: commenterName,
       review_id: reviewId,
-      movie_title: movieTitle 
-    }
+      movie_title: movieTitle,
+    },
   });
 }
 
@@ -227,12 +219,12 @@ export async function createListLikeNotification(
     type: 'list_like',
     title: 'List Liked',
     message: `${likerName} liked your list "${listTitle}"`,
-    data: { 
-      liker_id: likerId, 
-      liker_name: likerName, 
+    data: {
+      liker_id: likerId,
+      liker_name: likerName,
       list_id: listId,
-      list_title: listTitle 
-    }
+      list_title: listTitle,
+    },
   });
 }
 
@@ -248,12 +240,12 @@ export async function createRecommendationNotification(
     type: 'recommendation',
     title: 'New Recommendation',
     message: `${recommenderName} recommended "${movieTitle}" to you`,
-    data: { 
-      recommender_id: recommenderId, 
-      recommender_name: recommenderName, 
+    data: {
+      recommender_id: recommenderId,
+      recommender_name: recommenderName,
       movie_id: movieId,
-      movie_title: movieTitle 
-    }
+      movie_title: movieTitle,
+    },
   });
 }
 
@@ -268,6 +260,6 @@ export async function createSystemNotification(
     type: 'system',
     title,
     message,
-    data: data || {}
+    data: data || {},
   });
-} 
+}

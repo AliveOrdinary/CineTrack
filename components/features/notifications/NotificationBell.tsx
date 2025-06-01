@@ -15,13 +15,8 @@ import { NotificationItem } from './NotificationItem';
 import Link from 'next/link';
 
 export function NotificationBell() {
-  const {
-    notifications,
-    unreadCount,
-    loading,
-    markAsRead,
-    deleteNotification,
-  } = useNotifications();
+  const { notifications, unreadCount, loading, markAsRead, deleteNotification } =
+    useNotifications();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -49,11 +44,7 @@ export function NotificationBell() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent
-        align="end"
-        className="w-80 p-0"
-        sideOffset={8}
-      >
+      <DropdownMenuContent align="end" className="w-80 p-0" sideOffset={8}>
         <div className="flex items-center justify-between p-4 border-b">
           <h3 className="font-semibold">Notifications</h3>
           {unreadCount > 0 && (
@@ -76,7 +67,7 @@ export function NotificationBell() {
             </div>
           ) : (
             <div className="divide-y">
-              {recentNotifications.map((notification) => (
+              {recentNotifications.map(notification => (
                 <div key={notification.id} className="p-0">
                   <NotificationItem
                     notification={notification}
@@ -101,4 +92,4 @@ export function NotificationBell() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}

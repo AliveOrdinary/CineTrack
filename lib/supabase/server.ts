@@ -20,7 +20,10 @@ export async function createClient() {
           } catch (error) {
             // Errors can occur in Server Components if `set` is called after streaming has started.
             // This can usually be ignored if middleware handles session refresh.
-            console.warn('Supabase server client: Failed to set cookie in Server Component/Route Handler. Error:', error);
+            console.warn(
+              'Supabase server client: Failed to set cookie in Server Component/Route Handler. Error:',
+              error
+            );
           }
         },
         remove(name: string, options: CookieOptions) {
@@ -28,10 +31,13 @@ export async function createClient() {
             cookieStore.set({ name, value: '', ...options }); // `remove` is often implemented by setting an empty value
           } catch (error) {
             // Similar to `set`, errors can occur.
-            console.warn('Supabase server client: Failed to remove cookie in Server Component/Route Handler. Error:', error);
+            console.warn(
+              'Supabase server client: Failed to remove cookie in Server Component/Route Handler. Error:',
+              error
+            );
           }
         },
       },
     }
   );
-} 
+}

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 interface SearchFiltersProps {
   currentType: string;
@@ -28,16 +28,16 @@ export default function SearchFilters({ currentType, query }: SearchFiltersProps
       params.delete('type');
     }
     params.delete('page'); // Reset to first page when changing filters
-    
+
     router.push(`/search?${params.toString()}`);
   };
 
   return (
     <div className="flex flex-wrap gap-2 justify-center">
-      {filters.map((filter) => (
+      {filters.map(filter => (
         <Button
           key={filter.key}
-          variant={currentType === filter.key ? "default" : "outline"}
+          variant={currentType === filter.key ? 'default' : 'outline'}
           size="sm"
           onClick={() => handleFilterChange(filter.key)}
           className="min-w-[80px] touch-target"
@@ -47,4 +47,4 @@ export default function SearchFilters({ currentType, query }: SearchFiltersProps
       ))}
     </div>
   );
-} 
+}

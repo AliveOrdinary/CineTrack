@@ -8,4 +8,4 @@ export default function ResetPasswordPage() {
       {/* TODO: Add links to Login/Signup pages */}
     </div>
   );
-} 
+}

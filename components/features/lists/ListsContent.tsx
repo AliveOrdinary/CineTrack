@@ -1,136 +1,165 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { createClient, getUserCustomLists, createCustomList, deleteCustomList, type CustomListWithItems, type CustomList } from "@/lib/supabase/client"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { EditListDialog } from "./EditListDialog"
-import { Plus, List, Eye, EyeOff, Users, Trash2, Edit, Calendar } from "lucide-react"
-import { toast } from "sonner"
-import { formatDistanceToNow } from "date-fns"
-import Link from "next/link"
-import Image from "next/image"
+import { useState, useEffect } from 'react';
+import {
+  createClient,
+  getUserCustomLists,
+  createCustomList,
+  deleteCustomList,
+  type CustomListWithItems,
+  type CustomList,
+} from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { EditListDialog } from './EditListDialog';
+import { Plus, List, Eye, EyeOff, Users, Trash2, Edit, Calendar } from 'lucide-react';
+import { toast } from 'sonner';
+import { formatDistanceToNow } from 'date-fns';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export function ListsContent() {
-  const [lists, setLists] = useState<CustomListWithItems[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [editingList, setEditingList] = useState<CustomList | null>(null)
+  const [lists, setLists] = useState<CustomListWithItems[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingList, setEditingList] = useState<CustomList | null>(null);
   const [createForm, setCreateForm] = useState({
     name: '',
     description: '',
-    visibility: 'public' as 'public' | 'followers' | 'private'
-  })
+    visibility: 'public' as 'public' | 'followers' | 'private',
+  });
 
   useEffect(() => {
-    loadLists()
-  }, [])
+    loadLists();
+  }, []);
 
   const loadLists = async () => {
     try {
-      setIsLoading(true)
-      
+      setIsLoading(true);
+
       // Check if user is authenticated
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        toast.error("Please log in to view your lists")
-        return
+        toast.error('Please log in to view your lists');
+        return;
       }
 
-      const listsData = await getUserCustomLists()
-      setLists(listsData)
+      const listsData = await getUserCustomLists();
+      setLists(listsData);
     } catch (error) {
-      console.error('Error loading lists:', error)
-      toast.error("Failed to load lists")
+      console.error('Error loading lists:', error);
+      toast.error('Failed to load lists');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCreateList = async () => {
     try {
       if (!createForm.name.trim()) {
-        toast.error("Please enter a list name")
-        return
+        toast.error('Please enter a list name');
+        return;
       }
 
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        toast.error("Please log in to create lists")
-        return
+        toast.error('Please log in to create lists');
+        return;
       }
 
       const newList = await createCustomList({
         user_id: user.id,
         name: createForm.name.trim(),
         description: createForm.description.trim() || undefined,
-        visibility: createForm.visibility
-      })
+        visibility: createForm.visibility,
+      });
 
-      setLists(prev => [{ ...newList, item_count: 0 }, ...prev])
-      setIsCreateOpen(false)
-      setCreateForm({ name: '', description: '', visibility: 'public' })
-      toast.success("List created successfully")
+      setLists(prev => [{ ...newList, item_count: 0 }, ...prev]);
+      setIsCreateOpen(false);
+      setCreateForm({ name: '', description: '', visibility: 'public' });
+      toast.success('List created successfully');
     } catch (error) {
-      console.error('Error creating list:', error)
-      toast.error("Failed to create list")
+      console.error('Error creating list:', error);
+      toast.error('Failed to create list');
     }
-  }
+  };
 
   const handleDeleteList = async (listId: string, listName: string) => {
     if (!confirm(`Are you sure you want to delete "${listName}"? This action cannot be undone.`)) {
-      return
+      return;
     }
 
     try {
-      await deleteCustomList(listId)
-      setLists(prev => prev.filter(list => list.id !== listId))
-      toast.success("List deleted successfully")
+      await deleteCustomList(listId);
+      setLists(prev => prev.filter(list => list.id !== listId));
+      toast.success('List deleted successfully');
     } catch (error) {
-      console.error('Error deleting list:', error)
-      toast.error("Failed to delete list")
+      console.error('Error deleting list:', error);
+      toast.error('Failed to delete list');
     }
-  }
+  };
 
   const handleEditList = (list: CustomListWithItems) => {
-    setEditingList(list as CustomList)
-  }
+    setEditingList(list as CustomList);
+  };
 
   const handleUpdateList = (updatedList: CustomList) => {
-    setLists(prev => prev.map(list => 
-      list.id === updatedList.id 
-        ? { ...list, ...updatedList }
-        : list
-    ))
-  }
+    setLists(prev =>
+      prev.map(list => (list.id === updatedList.id ? { ...list, ...updatedList } : list))
+    );
+  };
 
   const getVisibilityIcon = (visibility: string) => {
     switch (visibility) {
-      case 'public': return <Users className="h-3 w-3" />
-      case 'followers': return <Eye className="h-3 w-3" />
-      case 'private': return <EyeOff className="h-3 w-3" />
-      default: return <Users className="h-3 w-3" />
+      case 'public':
+        return <Users className="h-3 w-3" />;
+      case 'followers':
+        return <Eye className="h-3 w-3" />;
+      case 'private':
+        return <EyeOff className="h-3 w-3" />;
+      default:
+        return <Users className="h-3 w-3" />;
     }
-  }
+  };
 
   const getVisibilityColor = (visibility: string) => {
     switch (visibility) {
-      case 'public': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-      case 'followers': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-      case 'private': return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+      case 'public':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'followers':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      case 'private':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -139,7 +168,7 @@ export function ListsContent() {
           <div key={i} className="h-64 bg-muted rounded-lg animate-pulse" />
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -152,7 +181,7 @@ export function ListsContent() {
             {lists.length} {lists.length === 1 ? 'List' : 'Lists'}
           </span>
         </div>
-        
+
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -170,7 +199,7 @@ export function ListsContent() {
                 <Input
                   id="name"
                   value={createForm.name}
-                  onChange={(e) => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={e => setCreateForm(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="Enter list name"
                   maxLength={100}
                 />
@@ -180,7 +209,7 @@ export function ListsContent() {
                 <Textarea
                   id="description"
                   value={createForm.description}
-                  onChange={(e) => setCreateForm(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={e => setCreateForm(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Describe your list..."
                   rows={3}
                   maxLength={500}
@@ -190,7 +219,7 @@ export function ListsContent() {
                 <Label htmlFor="visibility">Visibility</Label>
                 <Select
                   value={createForm.visibility}
-                  onValueChange={(value: 'public' | 'followers' | 'private') => 
+                  onValueChange={(value: 'public' | 'followers' | 'private') =>
                     setCreateForm(prev => ({ ...prev, visibility: value }))
                   }
                 >
@@ -223,9 +252,7 @@ export function ListsContent() {
                 <Button variant="outline" onClick={() => setIsCreateOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleCreateList}>
-                  Create List
-                </Button>
+                <Button onClick={handleCreateList}>Create List</Button>
               </div>
             </div>
           </DialogContent>
@@ -247,7 +274,7 @@ export function ListsContent() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {lists.map((list) => (
+          {lists.map(list => (
             <Card key={list.id} className="group hover:shadow-md transition-shadow overflow-hidden">
               {/* Banner Image */}
               {list.banner_image_url && (
@@ -261,7 +288,7 @@ export function ListsContent() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 </div>
               )}
-              
+
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
@@ -272,7 +299,7 @@ export function ListsContent() {
                       </p>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center gap-1 ml-2">
                     <Button
                       variant="ghost"
@@ -293,7 +320,7 @@ export function ListsContent() {
                   </div>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="pt-0">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -301,21 +328,20 @@ export function ListsContent() {
                       {getVisibilityIcon(list.visibility!)}
                       <span className="ml-1 capitalize">{list.visibility}</span>
                     </Badge>
-                    
+
                     <span className="text-sm text-muted-foreground">
                       {list.item_count || 0} items
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    Updated {formatDistanceToNow(new Date(list.updated_at || ''), { addSuffix: true })}
+                    Updated{' '}
+                    {formatDistanceToNow(new Date(list.updated_at || ''), { addSuffix: true })}
                   </div>
-                  
+
                   <Button variant="outline" className="w-full" asChild>
-                    <Link href={`/lists/${list.id}`}>
-                      View List
-                    </Link>
+                    <Link href={`/lists/${list.id}`}>View List</Link>
                   </Button>
                 </div>
               </CardContent>
@@ -323,16 +349,16 @@ export function ListsContent() {
           ))}
         </div>
       )}
-      
+
       {/* Edit List Dialog */}
       {editingList && (
         <EditListDialog
           list={editingList}
           isOpen={!!editingList}
-          onOpenChange={(open) => !open && setEditingList(null)}
+          onOpenChange={open => !open && setEditingList(null)}
           onUpdate={handleUpdateList}
         />
       )}
     </div>
-  )
-} 
+  );
+}

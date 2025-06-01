@@ -8,4 +8,4 @@ export default function SignupPage() {
       {/* TODO: Add link to Login page */}
     </div>
   );
-} 
+}

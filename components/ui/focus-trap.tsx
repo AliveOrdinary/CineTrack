@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 interface FocusTrapProps {
   children: React.ReactNode;
@@ -9,11 +9,11 @@ interface FocusTrapProps {
   className?: string;
 }
 
-export function FocusTrap({ 
-  children, 
-  active = true, 
+export function FocusTrap({
+  children,
+  active = true,
   restoreFocus = true,
-  className 
+  className,
 }: FocusTrapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
@@ -36,12 +36,10 @@ export function FocusTrap({
         'textarea:not([disabled])',
         'a[href]',
         '[tabindex]:not([tabindex="-1"])',
-        '[contenteditable="true"]'
+        '[contenteditable="true"]',
       ].join(', ');
 
-      return Array.from(
-        container.querySelectorAll(focusableSelectors)
-      ) as HTMLElement[];
+      return Array.from(container.querySelectorAll(focusableSelectors)) as HTMLElement[];
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -80,7 +78,7 @@ export function FocusTrap({
     // Cleanup
     return () => {
       container.removeEventListener('keydown', handleKeyDown);
-      
+
       // Restore focus to the previously focused element
       if (restoreFocus && previousActiveElement.current) {
         previousActiveElement.current.focus();
@@ -97,4 +95,4 @@ export function FocusTrap({
       {children}
     </div>
   );
-} 
+}

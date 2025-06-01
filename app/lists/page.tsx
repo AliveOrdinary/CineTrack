@@ -1,5 +1,5 @@
-import { Suspense } from "react";
-import { ListsContent } from "@/components/features/lists/ListsContent";
+import { Suspense } from 'react';
+import { ListsContent } from '@/components/features/lists/ListsContent';
 
 export default function ListsPage() {
   return (
@@ -10,16 +10,18 @@ export default function ListsPage() {
           Create and manage your custom movie and TV show lists
         </p>
       </div>
-      
-      <Suspense fallback={
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-64 bg-muted rounded-lg animate-pulse" />
-          ))}
-        </div>
-      }>
+
+      <Suspense
+        fallback={
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-64 bg-muted rounded-lg animate-pulse" />
+            ))}
+          </div>
+        }
+      >
         <ListsContent />
       </Suspense>
     </div>
   );
-} 
+}

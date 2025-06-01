@@ -14,13 +14,13 @@ export default function AuthCallbackClientPage() {
     // This client page will redirect based on the outcome handled by the server route or if user lands here directly.
     // Typically, after the server route processes the code, it redirects.
     // If the user is redirected here, we can try to push them to the homepage or login.
-    
+
     // A small delay to allow any server-side session processing and redirection to occur.
     const timer = setTimeout(() => {
       // Check if a user session exists after the server-side callback might have run.
       // This check here is a bit indirect; ideally the server route handles the final redirect.
       // For now, we just redirect to home, assuming success, or user can navigate if stuck.
-      router.replace('/'); 
+      router.replace('/');
     }, 1500); // Increased delay slightly
 
     return () => clearTimeout(timer);
@@ -33,4 +33,4 @@ export default function AuthCallbackClientPage() {
       {/* You can add a spinner component here */}
     </div>
   );
-} 
+}

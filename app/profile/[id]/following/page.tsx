@@ -1,20 +1,20 @@
-import { FollowList } from "@/components/features/social/FollowList"
-import { getUserProfile } from "@/lib/supabase/client"
-import { notFound } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
+import { FollowList } from '@/components/features/social/FollowList';
+import { getUserProfile } from '@/lib/supabase/client';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 
 interface FollowingPageProps {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }
 
 export default async function FollowingPage({ params }: FollowingPageProps) {
-  const { id } = await params
-  
+  const { id } = await params;
+
   try {
-    const profile = await getUserProfile(id)
-    
+    const profile = await getUserProfile(id);
+
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-6">
@@ -24,16 +24,14 @@ export default async function FollowingPage({ params }: FollowingPageProps) {
               Back to Profile
             </Button>
           </Link>
-          
-          <h1 className="text-3xl font-bold">
-            {profile.display_name || 'User'} is Following
-          </h1>
+
+          <h1 className="text-3xl font-bold">{profile.display_name || 'User'} is Following</h1>
         </div>
-        
+
         <FollowList userId={id} initialTab="following" />
       </div>
-    )
+    );
   } catch (error) {
-    notFound()
+    notFound();
   }
-} 
+}

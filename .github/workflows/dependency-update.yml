@@ -10,31 +10,31 @@ jobs:
   update-dependencies:
     name: Update Dependencies
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
-          
+
       - name: Install npm-check-updates
         run: npm install -g npm-check-updates
-        
+
       - name: Update dependencies
         run: |
           ncu -u
           npm install
-          
+
       - name: Run tests
         run: npm run test:ci
         continue-on-error: true
-        
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -43,25 +43,25 @@ jobs:
           title: 'chore: automated dependency updates'
           body: |
             ## 🔄 Automated Dependency Updates
-            
+
             This PR contains automated dependency updates.
-            
+
             ### Changes
             - Updated npm dependencies to latest versions
             - Ran tests to ensure compatibility
-            
+
             ### Review Checklist
             - [ ] All tests pass
             - [ ] No breaking changes introduced
             - [ ] Security vulnerabilities addressed
-            
+
             **Note:** This PR was created automatically. Please review carefully before merging.
           branch: chore/dependency-updates
           delete-branch: true
-          
+
       - name: Enable auto-merge for dependency updates
         if: steps.create-pr.outputs.pull-request-number
         run: |
           gh pr merge ${{ steps.create-pr.outputs.pull-request-number }} --auto --squash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

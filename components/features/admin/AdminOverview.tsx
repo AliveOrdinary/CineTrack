@@ -3,15 +3,15 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Users, 
-  Eye, 
-  MessageSquare, 
-  Heart, 
-  List, 
+import {
+  Users,
+  Eye,
+  MessageSquare,
+  Heart,
+  List,
   AlertTriangle,
   TrendingUp,
-  Activity
+  Activity,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -48,15 +48,21 @@ export function AdminOverview() {
         watchedResult,
         reportsResult,
         pendingReportsResult,
-        newUsersResult
+        newUsersResult,
       ] = await Promise.all([
         supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('reviews').select('id', { count: 'exact', head: true }),
         supabase.from('lists').select('id', { count: 'exact', head: true }),
         supabase.from('watched_content').select('id', { count: 'exact', head: true }),
         supabase.from('review_reports').select('id', { count: 'exact', head: true }),
-        supabase.from('review_reports').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('users').select('id', { count: 'exact', head: true }).gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        supabase
+          .from('review_reports')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'pending'),
+        supabase
+          .from('users')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
       ]);
 
       setStats({
@@ -67,7 +73,7 @@ export function AdminOverview() {
         totalReports: reportsResult.count || 0,
         pendingReports: pendingReportsResult.count || 0,
         newUsersToday: newUsersResult.count || 0,
-        activeUsersToday: 0 // Would need session tracking for this
+        activeUsersToday: 0, // Would need session tracking for this
       });
     } catch (error) {
       console.error('Error loading overview stats:', error);
@@ -117,57 +123,57 @@ export function AdminOverview() {
       value: stats.totalUsers.toLocaleString(),
       description: `+${stats.newUsersToday} today`,
       icon: Users,
-      trend: stats.newUsersToday > 0 ? 'up' : 'neutral'
+      trend: stats.newUsersToday > 0 ? 'up' : 'neutral',
     },
     {
       title: 'Total Reviews',
       value: stats.totalReviews.toLocaleString(),
       description: 'User reviews',
       icon: MessageSquare,
-      trend: 'neutral'
+      trend: 'neutral',
     },
     {
       title: 'Custom Lists',
       value: stats.totalLists.toLocaleString(),
       description: 'User-created lists',
       icon: List,
-      trend: 'neutral'
+      trend: 'neutral',
     },
     {
       title: 'Watched Entries',
       value: stats.totalWatchedEntries.toLocaleString(),
       description: 'Content tracked',
       icon: Eye,
-      trend: 'neutral'
+      trend: 'neutral',
     },
     {
       title: 'Total Reports',
       value: stats.totalReports.toLocaleString(),
       description: 'Content reports',
       icon: AlertTriangle,
-      trend: 'neutral'
+      trend: 'neutral',
     },
     {
       title: 'Pending Reports',
       value: stats.pendingReports.toLocaleString(),
       description: 'Needs attention',
       icon: AlertTriangle,
-      trend: stats.pendingReports > 0 ? 'warning' : 'neutral'
+      trend: stats.pendingReports > 0 ? 'warning' : 'neutral',
     },
     {
       title: 'New Users Today',
       value: stats.newUsersToday.toLocaleString(),
       description: 'Last 24 hours',
       icon: TrendingUp,
-      trend: stats.newUsersToday > 0 ? 'up' : 'neutral'
+      trend: stats.newUsersToday > 0 ? 'up' : 'neutral',
     },
     {
       title: 'Active Users',
       value: stats.activeUsersToday.toLocaleString(),
       description: 'Today',
       icon: Activity,
-      trend: 'neutral'
-    }
+      trend: 'neutral',
+    },
   ];
 
   return (
@@ -178,16 +184,16 @@ export function AdminOverview() {
           return (
             <Card key={index}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
+                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
                 <Icon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   {stat.trend === 'up' && <TrendingUp className="h-3 w-3 text-green-500" />}
-                  {stat.trend === 'warning' && <AlertTriangle className="h-3 w-3 text-yellow-500" />}
+                  {stat.trend === 'warning' && (
+                    <AlertTriangle className="h-3 w-3 text-yellow-500" />
+                  )}
                   {stat.description}
                 </p>
               </CardContent>
@@ -200,9 +206,7 @@ export function AdminOverview() {
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>
-            Common administrative tasks
-          </CardDescription>
+          <CardDescription>Common administrative tasks</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
@@ -225,4 +229,4 @@ export function AdminOverview() {
       </Card>
     </div>
   );
-} 
+}

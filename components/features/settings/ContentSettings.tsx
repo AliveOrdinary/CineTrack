@@ -26,18 +26,18 @@ export function ContentSettings({ preferences }: ContentSettingsProps) {
       key: 'adult_content' as keyof UserPreferences,
       label: 'Adult Content',
       description: 'Show adult/mature content in search results and recommendations',
-      warning: true
+      warning: true,
     },
     {
       key: 'spoiler_protection' as keyof UserPreferences,
       label: 'Spoiler Protection',
-      description: 'Hide potential spoilers in reviews and discussions'
+      description: 'Hide potential spoilers in reviews and discussions',
     },
     {
       key: 'auto_mark_watched' as keyof UserPreferences,
       label: 'Auto-mark as Watched',
-      description: 'Automatically mark content as watched when you rate or review it'
-    }
+      description: 'Automatically mark content as watched when you rate or review it',
+    },
   ];
 
   return (
@@ -45,13 +45,11 @@ export function ContentSettings({ preferences }: ContentSettingsProps) {
       <div>
         <h3 className="text-lg font-medium mb-4">Content Filtering</h3>
         <div className="space-y-4">
-          {contentSettings.map((setting) => (
+          {contentSettings.map(setting => (
             <div key={setting.key} className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-base">{setting.label}</Label>
-                <p className="text-sm text-muted-foreground">
-                  {setting.description}
-                </p>
+                <p className="text-sm text-muted-foreground">{setting.description}</p>
                 {setting.warning && (
                   <p className="text-sm text-orange-600 dark:text-orange-400">
                     ⚠️ This setting affects content visibility across the platform
@@ -68,4 +66,4 @@ export function ContentSettings({ preferences }: ContentSettingsProps) {
       </div>
     </div>
   );
-} 
+}

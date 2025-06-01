@@ -1,69 +1,76 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { createClient, getCustomListWithItems, type CustomListWithItems, type CustomList } from "@/lib/supabase/client"
-import { EditListDialog } from "./EditListDialog"
-import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
-import { toast } from "sonner"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { notFound } from "next/navigation"
+import { useState, useEffect } from 'react';
+import {
+  createClient,
+  getCustomListWithItems,
+  type CustomListWithItems,
+  type CustomList,
+} from '@/lib/supabase/client';
+import { EditListDialog } from './EditListDialog';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 interface EditListPageContentProps {
   listId: string;
 }
 
 export function EditListPageContent({ listId }: EditListPageContentProps) {
-  const [list, setList] = useState<CustomListWithItems | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isOwner, setIsOwner] = useState(false)
-  const router = useRouter()
+  const [list, setList] = useState<CustomListWithItems | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    loadListData()
-  }, [listId])
+    loadListData();
+  }, [listId]);
 
   const loadListData = async () => {
     try {
-      setIsLoading(true)
-      
+      setIsLoading(true);
+
       // Check if user is authenticated
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        toast.error("Please log in to edit lists")
-        return
+        toast.error('Please log in to edit lists');
+        return;
       }
 
       // Get list data
-      const listData = await getCustomListWithItems(listId)
-      setList(listData)
-      
+      const listData = await getCustomListWithItems(listId);
+      setList(listData);
+
       // Check if current user is the owner
-      setIsOwner(user.id === listData.user_id)
-      
+      setIsOwner(user.id === listData.user_id);
+
       if (user.id !== listData.user_id) {
-        toast.error("You can only edit your own lists")
-        return
+        toast.error('You can only edit your own lists');
+        return;
       }
     } catch (error) {
-      console.error('Error loading list:', error)
+      console.error('Error loading list:', error);
       if (error instanceof Error && error.message.includes('not found')) {
-        notFound()
+        notFound();
       }
-      toast.error("Failed to load list")
+      toast.error('Failed to load list');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleUpdate = (updatedList: CustomList) => {
-    setList(prev => prev ? { ...prev, ...updatedList } : null)
+    setList(prev => (prev ? { ...prev, ...updatedList } : null));
     // Redirect back to the list after successful update
-    router.push(`/lists/${listId}`)
-  }
+    router.push(`/lists/${listId}`);
+  };
 
   if (isLoading) {
     return (
@@ -73,14 +80,14 @@ export function EditListPageContent({ listId }: EditListPageContentProps) {
         <div className="h-12 bg-muted rounded animate-pulse" />
         <div className="h-24 bg-muted rounded animate-pulse" />
       </div>
-    )
+    );
   }
 
   if (!list || !isOwner) {
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">
-          {!list ? "List not found." : "You can only edit your own lists."}
+          {!list ? 'List not found.' : 'You can only edit your own lists.'}
         </p>
         <Button variant="outline" className="mt-4" asChild>
           <Link href="/lists">
@@ -89,7 +96,7 @@ export function EditListPageContent({ listId }: EditListPageContentProps) {
           </Link>
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -103,7 +110,7 @@ export function EditListPageContent({ listId }: EditListPageContentProps) {
           </Link>
         </Button>
       </div>
-      
+
       <div>
         <h1 className="text-2xl font-bold">Edit List</h1>
         <p className="text-muted-foreground">
@@ -115,14 +122,14 @@ export function EditListPageContent({ listId }: EditListPageContentProps) {
       <EditListDialog
         list={list as CustomList}
         isOpen={true}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           if (!open) {
             // If dialog is closed, redirect back to the list
-            router.push(`/lists/${listId}`)
+            router.push(`/lists/${listId}`);
           }
         }}
         onUpdate={handleUpdate}
       />
     </div>
-  )
-} 
+  );
+}

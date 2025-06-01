@@ -3,7 +3,7 @@ import { withSentryConfig } from '@sentry/nextjs';
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   serverExternalPackages: ['@sentry/nextjs'],
-  
+
   // Comprehensive security headers
   async headers() {
     return [
@@ -26,8 +26,8 @@ const nextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
-              "upgrade-insecure-requests"
-            ].join('; ')
+              'upgrade-insecure-requests',
+            ].join('; '),
           },
           // HTTP Strict Transport Security
           {
@@ -52,7 +52,8 @@ const nextConfig = {
           // Permissions policy
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
+            value:
+              'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
           },
           // Cross-Origin policies
           {
@@ -76,13 +77,13 @@ const nextConfig = {
       },
     ];
   },
-  
+
   // Image optimization
   images: {
     domains: ['image.tmdb.org'],
     formats: ['image/webp', 'image/avif'],
   },
-  
+
   // Webpack configuration for better error handling
   webpack: (config, { dev, isServer }) => {
     if (dev && !isServer) {
@@ -105,4 +106,4 @@ const sentryWebpackPluginOptions = {
 
 export default process.env.NEXT_PUBLIC_SENTRY_DSN
   ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
-  : nextConfig; 
+  : nextConfig;

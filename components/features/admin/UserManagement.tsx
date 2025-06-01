@@ -28,16 +28,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { 
-  Search, 
-  MoreHorizontal, 
-  UserCheck, 
-  UserX, 
-  Shield, 
+import {
+  Search,
+  MoreHorizontal,
+  UserCheck,
+  UserX,
+  Shield,
   User,
   Calendar,
   Mail,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
@@ -109,12 +109,12 @@ export function UserManagement() {
   };
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = 
+    const matchesSearch =
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.display_name.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-    
+
     return matchesSearch && matchesRole;
   });
 
@@ -167,7 +167,7 @@ export function UserManagement() {
           <Input
             placeholder="Search users by email or name..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -205,7 +205,7 @@ export function UserManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredUsers.map((user) => (
+            {filteredUsers.map(user => (
               <TableRow key={user.id}>
                 <TableCell>
                   <div className="flex flex-col">
@@ -214,7 +214,10 @@ export function UserManagement() {
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={getRoleBadgeVariant(user.role)} className="flex items-center gap-1 w-fit">
+                  <Badge
+                    variant={getRoleBadgeVariant(user.role)}
+                    className="flex items-center gap-1 w-fit"
+                  >
                     {getRoleIcon(user.role)}
                     {user.role}
                   </Badge>
@@ -236,11 +239,9 @@ export function UserManagement() {
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Manage User: {user.display_name}</DialogTitle>
-                        <DialogDescription>
-                          Update user role and permissions
-                        </DialogDescription>
+                        <DialogDescription>Update user role and permissions</DialogDescription>
                       </DialogHeader>
-                      
+
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
@@ -303,7 +304,8 @@ export function UserManagement() {
                               <span className="font-medium">Admin User</span>
                             </div>
                             <p className="text-yellow-700 dark:text-yellow-300 mt-1">
-                              This user has full administrative privileges. Use caution when modifying admin roles.
+                              This user has full administrative privileges. Use caution when
+                              modifying admin roles.
                             </p>
                           </div>
                         )}
@@ -324,4 +326,4 @@ export function UserManagement() {
       )}
     </div>
   );
-} 
+}

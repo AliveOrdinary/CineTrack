@@ -10,10 +10,13 @@ export const metadata: Metadata = {
 
 async function checkAdminAccess() {
   const supabase = await createClient();
-  
+
   // Check if user is authenticated
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
   if (authError || !user) {
     redirect('/login?message=Authentication required');
   }
@@ -57,8 +60,8 @@ export default async function AdminPage() {
           </div>
         )}
       </div>
-      
+
       <AdminDashboard />
     </div>
   );
-} 
+}

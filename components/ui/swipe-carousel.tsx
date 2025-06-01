@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useRef, useState, useEffect, ReactNode } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useRef, useState, useEffect, ReactNode } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface SwipeCarouselProps {
   children: ReactNode[];
@@ -16,11 +16,11 @@ interface SwipeCarouselProps {
 
 export function SwipeCarousel({
   children,
-  className = "",
-  itemClassName = "",
+  className = '',
+  itemClassName = '',
   showArrows = true,
   autoScroll = false,
-  scrollInterval = 5000
+  scrollInterval = 5000,
 }: SwipeCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -62,7 +62,7 @@ export function SwipeCarousel({
     if (scrollRef.current) {
       const scrollAmount = scrollRef.current.clientWidth * 0.8;
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      
+
       // If we're at the end, scroll back to the beginning
       if (scrollLeft >= scrollWidth - clientWidth - 1) {
         scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
@@ -81,7 +81,7 @@ export function SwipeCarousel({
   };
 
   return (
-    <div className={cn("relative group", className)}>
+    <div className={cn('relative group', className)}>
       {/* Left Arrow */}
       {showArrows && canScrollLeft && (
         <Button
@@ -118,16 +118,13 @@ export function SwipeCarousel({
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch'
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {children.map((child, index) => (
           <div
             key={index}
-            className={cn(
-              "flex-shrink-0 w-32 sm:w-36 md:w-40 lg:w-44",
-              itemClassName
-            )}
+            className={cn('flex-shrink-0 w-32 sm:w-36 md:w-40 lg:w-44', itemClassName)}
           >
             {child}
           </div>
@@ -138,10 +135,7 @@ export function SwipeCarousel({
       <div className="flex justify-center mt-2 md:hidden">
         <div className="flex gap-1">
           {Array.from({ length: Math.ceil(children.length / 3) }).map((_, index) => (
-            <div
-              key={index}
-              className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30"
-            />
+            <div key={index} className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
           ))}
         </div>
       </div>
@@ -165,4 +159,4 @@ if (typeof document !== 'undefined') {
   const style = document.createElement('style');
   style.textContent = scrollbarHideStyles;
   document.head.appendChild(style);
-} 
+}

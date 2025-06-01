@@ -44,7 +44,7 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
 
   const handleMarkAsRead = async () => {
     if (notification.read) return;
-    
+
     setIsMarkingRead(true);
     try {
       await onMarkAsRead(notification.id);
@@ -64,7 +64,7 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
 
   const getNotificationLink = () => {
     const { type, data } = notification;
-    
+
     switch (type) {
       case 'follow':
         return `/profile/${data.follower_id}`;
@@ -84,23 +84,21 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
   const link = getNotificationLink();
 
   const NotificationContent = () => (
-    <div className={cn(
-      "flex items-start gap-3 p-4 transition-colors",
-      !notification.read && "bg-blue-50 dark:bg-blue-950/20"
-    )}>
-      <div className={cn("flex-shrink-0 mt-1", iconColor)}>
+    <div
+      className={cn(
+        'flex items-start gap-3 p-4 transition-colors',
+        !notification.read && 'bg-blue-50 dark:bg-blue-950/20'
+      )}
+    >
+      <div className={cn('flex-shrink-0 mt-1', iconColor)}>
         <Icon className="h-5 w-5" />
       </div>
-      
+
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1">
-            <h4 className="font-medium text-sm text-foreground">
-              {notification.title}
-            </h4>
-            <p className="text-sm text-muted-foreground mt-1">
-              {notification.message}
-            </p>
+            <h4 className="font-medium text-sm text-foreground">{notification.title}</h4>
+            <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
             <div className="flex items-center gap-2 mt-2">
               <time className="text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
@@ -112,7 +110,7 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
               )}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-1 flex-shrink-0">
             {!notification.read && (
               <Button
@@ -126,7 +124,7 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
                 <Check className="h-4 w-4" />
               </Button>
             )}
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -146,7 +144,7 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
   if (link) {
     return (
       <Card className="overflow-hidden hover:shadow-md transition-shadow">
-        <a 
+        <a
           href={link}
           className="block hover:bg-muted/50 transition-colors"
           onClick={!notification.read ? handleMarkAsRead : undefined}
@@ -162,4 +160,4 @@ export function NotificationItem({ notification, onMarkAsRead, onDelete }: Notif
       <NotificationContent />
     </Card>
   );
-} 
+}

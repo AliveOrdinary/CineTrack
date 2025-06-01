@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { AlertTriangle } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface EnvVarWarningProps {
-  missingVars: string[]
+  missingVars: string[];
 }
 
 export function EnvVarWarning({ missingVars }: EnvVarWarningProps) {
   if (process.env.NODE_ENV === 'production' || missingVars.length === 0) {
-    return null
+    return null;
   }
 
   return (
@@ -19,7 +19,7 @@ export function EnvVarWarning({ missingVars }: EnvVarWarningProps) {
       <AlertDescription>
         The following environment variables are missing or invalid:
         <ul className="mt-2 list-disc list-inside">
-          {missingVars.map((varName) => (
+          {missingVars.map(varName => (
             <li key={varName} className="font-mono text-sm">
               {varName}
             </li>
@@ -28,7 +28,7 @@ export function EnvVarWarning({ missingVars }: EnvVarWarningProps) {
         Please check your <code className="bg-muted px-1 rounded">.env.local</code> file.
       </AlertDescription>
     </Alert>
-  )
+  );
 }
 
 // Utility function to check environment variables
@@ -38,16 +38,16 @@ export function checkEnvVars(): string[] {
     'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     'NEXT_PUBLIC_TMDB_API_KEY',
     'NEXT_PUBLIC_TMDB_API_BASE_URL',
-  ]
+  ];
 
-  const missingVars: string[] = []
+  const missingVars: string[] = [];
 
-  requiredVars.forEach((varName) => {
-    const value = process.env[varName]
+  requiredVars.forEach(varName => {
+    const value = process.env[varName];
     if (!value || value.trim() === '') {
-      missingVars.push(varName)
+      missingVars.push(varName);
     }
-  })
+  });
 
-  return missingVars
+  return missingVars;
 }

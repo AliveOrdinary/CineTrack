@@ -1,122 +1,117 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { 
-  Eye, 
-  EyeOff, 
-  Star, 
-  Calendar,
-  Clock,
-  MoreHorizontal
-} from "lucide-react"
-import { 
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Eye, EyeOff, Star, Calendar, Clock, MoreHorizontal } from 'lucide-react';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { 
+} from '@/components/ui/dropdown-menu';
+import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
-import { Rating } from "@/components/ui/rating"
-import { 
-  markEpisodeWatched, 
-  unmarkEpisodeWatched, 
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Rating } from '@/components/ui/rating';
+import {
+  markEpisodeWatched,
+  unmarkEpisodeWatched,
   updateEpisodeTracking,
-  type EpisodeTracking 
-} from "@/lib/supabase/client"
-import { type TmdbEpisode } from "@/lib/tmdb/types"
-import { formatDistanceToNow } from "date-fns"
-import { toast } from "sonner"
-import Image from "next/image"
-import { cn } from "@/lib/utils"
+  type EpisodeTracking,
+} from '@/lib/supabase/client';
+import { type TmdbEpisode } from '@/lib/tmdb/types';
+import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 interface EpisodeCardProps {
-  episode: TmdbEpisode
-  tmdbTvId: number
-  isWatched: boolean
-  watchedData?: EpisodeTracking
-  onWatchedChange: () => void
-  className?: string
+  episode: TmdbEpisode;
+  tmdbTvId: number;
+  isWatched: boolean;
+  watchedData?: EpisodeTracking;
+  onWatchedChange: () => void;
+  className?: string;
 }
 
-export function EpisodeCard({ 
-  episode, 
-  tmdbTvId, 
-  isWatched, 
-  watchedData, 
+export function EpisodeCard({
+  episode,
+  tmdbTvId,
+  isWatched,
+  watchedData,
   onWatchedChange,
-  className 
+  className,
 }: EpisodeCardProps) {
-  const [loading, setLoading] = useState(false)
-  const [showDetails, setShowDetails] = useState(false)
-  const [rating, setRating] = useState(watchedData?.rating || 0)
-  const [notes, setNotes] = useState(watchedData?.notes || "")
+  const [loading, setLoading] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [rating, setRating] = useState(watchedData?.rating || 0);
+  const [notes, setNotes] = useState(watchedData?.notes || '');
 
   const handleToggleWatched = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       if (isWatched) {
-        await unmarkEpisodeWatched(tmdbTvId, episode.season_number, episode.episode_number)
-        toast.success("Episode unmarked as watched")
+        await unmarkEpisodeWatched(tmdbTvId, episode.season_number, episode.episode_number);
+        toast.success('Episode unmarked as watched');
       } else {
         await markEpisodeWatched({
           tmdb_tv_id: tmdbTvId,
           season_number: episode.season_number,
-          episode_number: episode.episode_number
-        })
-        toast.success("Episode marked as watched")
+          episode_number: episode.episode_number,
+        });
+        toast.success('Episode marked as watched');
       }
-      onWatchedChange()
+      onWatchedChange();
     } catch (error) {
-      console.error('Error toggling episode watched status:', error)
-      toast.error("Failed to update episode status")
+      console.error('Error toggling episode watched status:', error);
+      toast.error('Failed to update episode status');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSaveDetails = async () => {
-    if (!watchedData?.id) return
+    if (!watchedData?.id) return;
 
     try {
       await updateEpisodeTracking(watchedData.id, {
         rating: rating || undefined,
-        notes: notes || undefined
-      })
-      toast.success("Episode details updated")
-      setShowDetails(false)
-      onWatchedChange()
+        notes: notes || undefined,
+      });
+      toast.success('Episode details updated');
+      setShowDetails(false);
+      onWatchedChange();
     } catch (error) {
-      console.error('Error updating episode details:', error)
-      toast.error("Failed to update episode details")
+      console.error('Error updating episode details:', error);
+      toast.error('Failed to update episode details');
     }
-  }
+  };
 
   const formatRuntime = (runtime: number | null) => {
-    if (!runtime) return null
-    const hours = Math.floor(runtime / 60)
-    const minutes = runtime % 60
+    if (!runtime) return null;
+    const hours = Math.floor(runtime / 60);
+    const minutes = runtime % 60;
     if (hours > 0) {
-      return `${hours}h ${minutes}m`
+      return `${hours}h ${minutes}m`;
     }
-    return `${minutes}m`
-  }
+    return `${minutes}m`;
+  };
 
   return (
-    <Card className={cn(
-      "transition-all duration-200 hover:shadow-md",
-      isWatched && "bg-muted/50 border-green-200 dark:border-green-800",
-      className
-    )}>
+    <Card
+      className={cn(
+        'transition-all duration-200 hover:shadow-md',
+        isWatched && 'bg-muted/50 border-green-200 dark:border-green-800',
+        className
+      )}
+    >
       <CardContent className="p-4">
         <div className="flex gap-3">
           {/* Episode Still */}
@@ -155,11 +150,9 @@ export function EpisodeCard({
                     </div>
                   )}
                 </div>
-                <h4 className="font-medium text-sm line-clamp-1 mb-1">
-                  {episode.name}
-                </h4>
+                <h4 className="font-medium text-sm line-clamp-1 mb-1">{episode.name}</h4>
                 <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                  {episode.overview || "No overview available."}
+                  {episode.overview || 'No overview available.'}
                 </p>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   {episode.air_date && (
@@ -180,17 +173,13 @@ export function EpisodeCard({
               {/* Actions */}
               <div className="flex items-center gap-1">
                 <Button
-                  variant={isWatched ? "default" : "outline"}
+                  variant={isWatched ? 'default' : 'outline'}
                   size="sm"
                   onClick={handleToggleWatched}
                   disabled={loading}
                   className="h-8 px-2"
                 >
-                  {isWatched ? (
-                    <Eye className="h-3 w-3" />
-                  ) : (
-                    <EyeOff className="h-3 w-3" />
-                  )}
+                  {isWatched ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                 </Button>
 
                 {isWatched && (
@@ -222,7 +211,8 @@ export function EpisodeCard({
                   )}
                   {watchedData.watched_date && (
                     <span>
-                      Watched {formatDistanceToNow(new Date(watchedData.watched_date), { addSuffix: true })}
+                      Watched{' '}
+                      {formatDistanceToNow(new Date(watchedData.watched_date), { addSuffix: true })}
                     </span>
                   )}
                 </div>
@@ -248,29 +238,19 @@ export function EpisodeCard({
               <h4 className="font-medium mb-2">
                 {episode.episode_number}. {episode.name}
               </h4>
-              <p className="text-sm text-muted-foreground">
-                {episode.overview}
-              </p>
+              <p className="text-sm text-muted-foreground">{episode.overview}</p>
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">
-                Your Rating
-              </label>
-              <Rating
-                value={rating}
-                onChange={setRating}
-                size="lg"
-              />
+              <label className="text-sm font-medium mb-2 block">Your Rating</label>
+              <Rating value={rating} onChange={setRating} size="lg" />
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">
-                Notes
-              </label>
+              <label className="text-sm font-medium mb-2 block">Notes</label>
               <Textarea
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChange={e => setNotes(e.target.value)}
                 placeholder="Add your thoughts about this episode..."
                 rows={3}
               />
@@ -280,13 +260,11 @@ export function EpisodeCard({
               <Button variant="outline" onClick={() => setShowDetails(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSaveDetails}>
-                Save
-              </Button>
+              <Button onClick={handleSaveDetails}>Save</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
     </Card>
-  )
-} 
+  );
+}

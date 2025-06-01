@@ -1,8 +1,22 @@
 'use client';
 
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { UserPreferences, LANGUAGE_LABELS, REGION_LABELS, DATE_FORMAT_LABELS, Language, Region, DateFormat } from '@/types/preferences';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  UserPreferences,
+  LANGUAGE_LABELS,
+  REGION_LABELS,
+  DATE_FORMAT_LABELS,
+  Language,
+  Region,
+  DateFormat,
+} from '@/types/preferences';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 
 interface RegionalSettingsProps {
@@ -59,7 +73,7 @@ export function RegionalSettings({ preferences }: RegionalSettingsProps) {
     'Asia/Seoul',
     'Asia/Shanghai',
     'Australia/Sydney',
-    'Australia/Melbourne'
+    'Australia/Melbourne',
   ];
 
   return (
@@ -70,10 +84,7 @@ export function RegionalSettings({ preferences }: RegionalSettingsProps) {
           <p className="text-sm text-muted-foreground">
             Choose your preferred language for the interface
           </p>
-          <Select
-            value={preferences.language}
-            onValueChange={handleLanguageChange}
-          >
+          <Select value={preferences.language} onValueChange={handleLanguageChange}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -92,10 +103,7 @@ export function RegionalSettings({ preferences }: RegionalSettingsProps) {
           <p className="text-sm text-muted-foreground">
             Your region affects content recommendations and regional settings
           </p>
-          <Select
-            value={preferences.region}
-            onValueChange={handleRegionChange}
-          >
+          <Select value={preferences.region} onValueChange={handleRegionChange}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -114,15 +122,12 @@ export function RegionalSettings({ preferences }: RegionalSettingsProps) {
           <p className="text-sm text-muted-foreground">
             Used for displaying dates and times in your local timezone
           </p>
-          <Select
-            value={preferences.timezone}
-            onValueChange={handleTimezoneChange}
-          >
+          <Select value={preferences.timezone} onValueChange={handleTimezoneChange}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {timezones.map((timezone) => (
+              {timezones.map(timezone => (
                 <SelectItem key={timezone} value={timezone}>
                   {timezone}
                 </SelectItem>
@@ -136,10 +141,7 @@ export function RegionalSettings({ preferences }: RegionalSettingsProps) {
           <p className="text-sm text-muted-foreground">
             How dates are displayed throughout the application
           </p>
-          <Select
-            value={preferences.date_format}
-            onValueChange={handleDateFormatChange}
-          >
+          <Select value={preferences.date_format} onValueChange={handleDateFormatChange}>
             <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -155,4 +157,4 @@ export function RegionalSettings({ preferences }: RegionalSettingsProps) {
       </div>
     </div>
   );
-} 
+}

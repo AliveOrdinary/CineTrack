@@ -6,7 +6,7 @@ export default function MediaSectionSkeleton() {
         <div className="h-8 w-48 bg-muted rounded animate-pulse" />
         <div className="h-5 w-16 bg-muted rounded animate-pulse" />
       </div>
-      
+
       {/* Grid skeleton */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {Array.from({ length: 12 }).map((_, index) => (
@@ -23,4 +23,4 @@ export default function MediaSectionSkeleton() {
       </div>
     </section>
   );
-} 
+}

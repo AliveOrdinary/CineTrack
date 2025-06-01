@@ -11,6 +11,7 @@ CineTrack aims to be the definitive platform for users to manage their viewing h
 ## 2. Technology Stack
 
 ### Frontend
+
 - **Framework**: React with Next.js (v14.0.0+)
   - App Router for routing and layouts.
   - Server Components for enhanced performance and data fetching.
@@ -25,6 +26,7 @@ CineTrack aims to be the definitive platform for users to manage their viewing h
   - Realtime updates facilitated by Supabase Realtime subscriptions.
 
 ### Backend
+
 - **Platform**: Supabase (latest stable version)
   - PostgreSQL database as the primary data store.
   - Supabase Auth for user authentication (Email/Password, Social Logins) and authorization (Row Level Security).
@@ -73,21 +75,25 @@ cinetrack/
 ## 4. Naming Conventions
 
 ### File and Directory Structure
+
 - **camelCase** for non-component TypeScript/JavaScript files: `movieService.ts`, `authHelpers.ts`
 - **kebab-case** for directories and Next.js route segments: `user-profile/`, `movie-details/`
 - **PascalCase** for React component files: `MovieCard.tsx`, `WatchListPage.tsx`
 
 ### Code Conventions
+
 - **camelCase** for variables, functions, and methods: `getUserRatings`, `movieDetails`
 - **PascalCase** for React components, classes, interfaces, and types: `UserProfile`, `interface MovieDetails`, `type UserRole`
 - **UPPER_SNAKE_CASE** for constants and enum members: `API_BASE_URL`, `DEFAULT_REGION`, `Role.ADMIN`
 - **Prefix `$` for observables/streams (if applicable, e.g., with RxJS, though less common with TanStack Query):** `$userProfileChanges`
 
 ### API Endpoints (Internal API Routes if used)
+
 - **kebab-case** for path segments: `/api/users/me`, `/api/reviews/:id/comments`
 - **snake_case** for query parameters: `?sort_by=popularity&page=1`
 
 ### Database (Supabase/PostgreSQL)
+
 - **snake_case** for tables, columns, functions, and constraints: `watched_content`, `user_id`, `created_at`, `fk_user_id`
 - Plural names for tables representing collections: `users`, `reviews`, `custom_lists`
 - Primary keys named `id` (UUID type preferred).
@@ -95,198 +101,214 @@ cinetrack/
 - Timestamps: `created_at`, `updated_at` (using `TIMESTAMPTZ`).
 
 ### CSS/Styling (Tailwind CSS)
+
 - Utilize Tailwind utility classes primarily.
 - For custom CSS classes (if needed), use **kebab-case**: `movie-card-glow`, `loading-spinner`.
 - Adhere to BEM conventions if creating complex custom components outside of utility classes: `card__header--large`.
 
 ### Documentation (JSDoc)
+
 - Use JSDoc syntax for documenting functions, components, hooks, and types.
 - Include `@param`, `@returns`, `@throws`, `@example`, and clear descriptions.
 - Document component props using `@param` or interface descriptions.
 
 ## 5. Core Features Implementation
 
-*(Note: Authentication requirements are explicitly mentioned for clarity)*
+_(Note: Authentication requirements are explicitly mentioned for clarity)_
 
 ### User Management
--   **Authentication**:
-    -   User registration via email/password.
-    -   Secure password handling (hashing via Supabase Auth).
-    -   Option for social logins (e.g., Google, GitHub - configurable).
-    -   Login/logout functionality.
-    -   Password reset mechanism.
-    -   **[Authentication Required for most actions]**
--   **Profile Management**:
-    -   Users can view and edit their profile: display name, avatar, bio.
-    -   View user's activity feed (reviews, ratings, lists created).
-    -   **[Authentication Required]**
--   **Follow System**:
-    -   Users can follow/unfollow other users.
-    -   View follower/following lists on profiles.
-    -   **[Authentication Required]**
--   **Preferences**:
-    -   Set preferred region (for watch providers, release dates - defaults to 'US').
-    -   Content language preferences.
-    -   Notification settings (via `user_preferences` table).
-    -   Theme settings (via `user_preferences` table).
-    -   **[Authentication Required]**
+
+- **Authentication**:
+  - User registration via email/password.
+  - Secure password handling (hashing via Supabase Auth).
+  - Option for social logins (e.g., Google, GitHub - configurable).
+  - Login/logout functionality.
+  - Password reset mechanism.
+  - **[Authentication Required for most actions]**
+- **Profile Management**:
+  - Users can view and edit their profile: display name, avatar, bio.
+  - View user's activity feed (reviews, ratings, lists created).
+  - **[Authentication Required]**
+- **Follow System**:
+  - Users can follow/unfollow other users.
+  - View follower/following lists on profiles.
+  - **[Authentication Required]**
+- **Preferences**:
+  - Set preferred region (for watch providers, release dates - defaults to 'US').
+  - Content language preferences.
+  - Notification settings (via `user_preferences` table).
+  - Theme settings (via `user_preferences` table).
+  - **[Authentication Required]**
 
 ### Content Discovery
--   **Homepage**:
-    -   Sections for Trending (Movies/TV), Popular, Now Playing, Upcoming.
-    -   Personalized recommendations (if logged in).
-    -   **[No Authentication Required for browsing]**
--   **Search**:
-    -   Search bar with autocomplete suggestions (movies, TV shows, people).
-    -   Dedicated search results page.
-    -   Advanced filtering (genre, release year range, cast/crew, rating range).
-    -   **[No Authentication Required for browsing/searching]**
--   **Browsing**:
-    -   Browse content by genre, network, keywords.
-    -   Explore curated lists (e.g., "Best Sci-Fi of the 90s").
-    -   View profiles of actors, directors, etc., with their filmography.
-    -   **[No Authentication Required for browsing]**
+
+- **Homepage**:
+  - Sections for Trending (Movies/TV), Popular, Now Playing, Upcoming.
+  - Personalized recommendations (if logged in).
+  - **[No Authentication Required for browsing]**
+- **Search**:
+  - Search bar with autocomplete suggestions (movies, TV shows, people).
+  - Dedicated search results page.
+  - Advanced filtering (genre, release year range, cast/crew, rating range).
+  - **[No Authentication Required for browsing/searching]**
+- **Browsing**:
+  - Browse content by genre, network, keywords.
+  - Explore curated lists (e.g., "Best Sci-Fi of the 90s").
+  - View profiles of actors, directors, etc., with their filmography.
+  - **[No Authentication Required for browsing]**
 
 ### Content Details
--   **Information Display**:
-    -   Dedicated pages for each movie and TV show.
-    -   Display title, synopsis, poster, backdrop images, genres, release date, runtime, official rating.
-    -   TMDB average rating and user count.
-    -   Trailers and video clips (via TMDB).
-    -   **[No Authentication Required]**
--   **Cast & Crew**:
-    -   Detailed cast and crew lists with links to their profiles.
-    -   **[No Authentication Required]**
--   **Watch Providers**:
-    -   "Where to Watch" section showing streaming, rental, and purchase options based on user's region (requires TMDB API key permission).
-    -   **[No Authentication Required]**
--   **Related Content**:
-    -   Sections for "Similar Movies/Shows" and "Recommendations" based on TMDB data.
-    -   **[No Authentication Required]**
--   **User Interactions Section**:
-    -   Display user reviews for the content (respecting visibility).
-    -   Show aggregate user rating from CineTrack users.
-    -   Buttons for adding to Watched, Watchlist, or Custom Lists (prompts login if not authenticated).
-    -   **[No Authentication Required for viewing, Authentication Required for interaction]**
+
+- **Information Display**:
+  - Dedicated pages for each movie and TV show.
+  - Display title, synopsis, poster, backdrop images, genres, release date, runtime, official rating.
+  - TMDB average rating and user count.
+  - Trailers and video clips (via TMDB).
+  - **[No Authentication Required]**
+- **Cast & Crew**:
+  - Detailed cast and crew lists with links to their profiles.
+  - **[No Authentication Required]**
+- **Watch Providers**:
+  - "Where to Watch" section showing streaming, rental, and purchase options based on user's region (requires TMDB API key permission).
+  - **[No Authentication Required]**
+- **Related Content**:
+  - Sections for "Similar Movies/Shows" and "Recommendations" based on TMDB data.
+  - **[No Authentication Required]**
+- **User Interactions Section**:
+  - Display user reviews for the content (respecting visibility).
+  - Show aggregate user rating from CineTrack users.
+  - Buttons for adding to Watched, Watchlist, or Custom Lists (prompts login if not authenticated).
+  - **[No Authentication Required for viewing, Authentication Required for interaction]**
 
 ### Enhanced List Management
--   **Watched Content Tracking**:
-    -   Log movies and TV shows (including individual episodes) as watched via `watched_content` table.
-    -   Record the date watched.
-    -   Assign a personal rating (1-10 scale).
-    -   Track rewatches (`is_rewatch`, `rewatch_count`).
-    -   Add optional private notes/diary entry.
-    -   Optionally, flag entry as basis for a public review (`posted_as_review`).
-    -   Mark if notes/associated review contain spoilers (`contains_spoilers`).
-    -   Set visibility (`public`, `followers`, `private`).
-    -   **[Authentication Required]**
--   **Watchlist**:
-    -   Add movies/TV shows to a personal watchlist (`watchlist_content` table).
-    -   Set priority, add notes, set visibility.
-    -   **[Authentication Required]**
--   **Custom Lists**:
-    -   Create personalized lists (`custom_lists` table).
-    -   Add movies/TV shows (`list_items` table).
-    -   Add descriptions, set visibility, reorder items.
-    -   Upload banner/cover images for custom lists.
-    -   **[Authentication Required]**
--   **List Interaction**:
-    -   Sort and filter items within Watched, Watchlist, and Custom Lists.
-    -   View lists on user profiles (respecting visibility settings).
-    -   Users can "like" or "clone" public/followers-only custom lists (requires interaction table, e.g. `list_likes`).
-    -   **[Authentication Required for personal list management and liking/cloning]**
+
+- **Watched Content Tracking**:
+  - Log movies and TV shows (including individual episodes) as watched via `watched_content` table.
+  - Record the date watched.
+  - Assign a personal rating (1-10 scale).
+  - Track rewatches (`is_rewatch`, `rewatch_count`).
+  - Add optional private notes/diary entry.
+  - Optionally, flag entry as basis for a public review (`posted_as_review`).
+  - Mark if notes/associated review contain spoilers (`contains_spoilers`).
+  - Set visibility (`public`, `followers`, `private`).
+  - **[Authentication Required]**
+- **Watchlist**:
+  - Add movies/TV shows to a personal watchlist (`watchlist_content` table).
+  - Set priority, add notes, set visibility.
+  - **[Authentication Required]**
+- **Custom Lists**:
+  - Create personalized lists (`custom_lists` table).
+  - Add movies/TV shows (`list_items` table).
+  - Add descriptions, set visibility, reorder items.
+  - Upload banner/cover images for custom lists.
+  - **[Authentication Required]**
+- **List Interaction**:
+  - Sort and filter items within Watched, Watchlist, and Custom Lists.
+  - View lists on user profiles (respecting visibility settings).
+  - Users can "like" or "clone" public/followers-only custom lists (requires interaction table, e.g. `list_likes`).
+  - **[Authentication Required for personal list management and liking/cloning]**
 
 ### TV Show Episode Tracking
--   **Granular Tracking**: Mark individual episodes as watched using `episode_tracking` table.
--   **Progress Visualization**: Display season progress bars based on tracked episodes vs total episodes (fetched from TMDB).
--   **Bulk Actions**: Option to mark entire seasons or shows as watched (creates multiple `episode_tracking` entries).
--   **Episode Details**: Allow episode-specific ratings and notes within `episode_tracking`.
--   **Up Next**: "Continue Watching" section suggesting the next unwatched episode based on `episode_tracking` data.
--   **[Authentication Required]**
+
+- **Granular Tracking**: Mark individual episodes as watched using `episode_tracking` table.
+- **Progress Visualization**: Display season progress bars based on tracked episodes vs total episodes (fetched from TMDB).
+- **Bulk Actions**: Option to mark entire seasons or shows as watched (creates multiple `episode_tracking` entries).
+- **Episode Details**: Allow episode-specific ratings and notes within `episode_tracking`.
+- **Up Next**: "Continue Watching" section suggesting the next unwatched episode based on `episode_tracking` data.
+- **[Authentication Required]**
 
 ### Enhanced Rating System
--   **Primary Rating**: Core 1-10 user rating stored in `watched_content` or `episode_tracking`.
--   **Detailed Ratings**: Store category-based ratings (`acting`, `story`, etc.) in `detailed_ratings` table, linked to `watched_content`.
--   **Emotional Reactions**: Store quick reactions (`loved`, `liked`, etc.) in `emotional_reactions` table, linked to `watched_content`.
--   **Rating History**: (Implicitly tracked via `updated_at` on `watched_content` if rating changes; explicit history table could be added if needed).
--   **[Authentication Required]**
+
+- **Primary Rating**: Core 1-10 user rating stored in `watched_content` or `episode_tracking`.
+- **Detailed Ratings**: Store category-based ratings (`acting`, `story`, etc.) in `detailed_ratings` table, linked to `watched_content`.
+- **Emotional Reactions**: Store quick reactions (`loved`, `liked`, etc.) in `emotional_reactions` table, linked to `watched_content`.
+- **Rating History**: (Implicitly tracked via `updated_at` on `watched_content` if rating changes; explicit history table could be added if needed).
+- **[Authentication Required]**
 
 ### Social Features
--   **Reviews**:
-    -   Write detailed reviews (`reviews` table), optionally linked to a `watched_content` entry.
-    -   Include the 1-10 rating.
-    -   Mark reviews containing spoilers (`is_spoiler`).
-    -   Option to post anonymously (`is_anonymous`). Set visibility.
-    -   **[Authentication Required]**
--   **Review Interaction**:
-    -   Like/unlike reviews (`review_interactions` table).
-    -   Comment on reviews (`review_interactions` table).
-    -   **[Authentication Required]**
--   **Activity Feed**:
-    -   Personalized feed showing activities from followed users (new ratings, reviews, list creations/updates - generated by querying relevant tables based on `follows`).
-    -   Filter feed by activity type.
-    -   **[Authentication Required]**
--   **Sharing**:
-    -   Share links to content pages, reviews, or public lists on external platforms.
-    -   "Recommend to a friend" feature (`content_recommendations` table).
-    -   **[Authentication Required for recommending]**
+
+- **Reviews**:
+  - Write detailed reviews (`reviews` table), optionally linked to a `watched_content` entry.
+  - Include the 1-10 rating.
+  - Mark reviews containing spoilers (`is_spoiler`).
+  - Option to post anonymously (`is_anonymous`). Set visibility.
+  - **[Authentication Required]**
+- **Review Interaction**:
+  - Like/unlike reviews (`review_interactions` table).
+  - Comment on reviews (`review_interactions` table).
+  - **[Authentication Required]**
+- **Activity Feed**:
+  - Personalized feed showing activities from followed users (new ratings, reviews, list creations/updates - generated by querying relevant tables based on `follows`).
+  - Filter feed by activity type.
+  - **[Authentication Required]**
+- **Sharing**:
+  - Share links to content pages, reviews, or public lists on external platforms.
+  - "Recommend to a friend" feature (`content_recommendations` table).
+  - **[Authentication Required for recommending]**
 
 ### Content Reflection and Engagement
--   **Guided Prompts**: Store prompt/response pairs in `review_responses` table, linked to `reviews`.
--   **Social Watching Tags**: Track users watched together using `social_watching` table, linked to `watched_content`.
--   **[Authentication Required]**
+
+- **Guided Prompts**: Store prompt/response pairs in `review_responses` table, linked to `reviews`.
+- **Social Watching Tags**: Track users watched together using `social_watching` table, linked to `watched_content`.
+- **[Authentication Required]**
 
 ### Privacy Controls
--   **Granular Settings**: Set default visibility via `user_preferences`.
--   **Per-Item Override**: `visibility` column present in `watched_content`, `watchlist_content`, `custom_lists`, `reviews`.
--   **Activity Sharing**: Control implicitly via item visibility settings.
--   **Profile Visibility**: (Could add a `profile_visibility` flag to `users` or `user_preferences` if needed beyond item-level controls).
--   **Anonymous Reviews**: `is_anonymous` flag in `reviews` table.
--   **[Authentication Required]**
+
+- **Granular Settings**: Set default visibility via `user_preferences`.
+- **Per-Item Override**: `visibility` column present in `watched_content`, `watchlist_content`, `custom_lists`, `reviews`.
+- **Activity Sharing**: Control implicitly via item visibility settings.
+- **Profile Visibility**: (Could add a `profile_visibility` flag to `users` or `user_preferences` if needed beyond item-level controls).
+- **Anonymous Reviews**: `is_anonymous` flag in `reviews` table.
+- **[Authentication Required]**
 
 ### Personalization and Learning
--   **(Phase 2/3) Basic Recommendations**: Suggest content based on user's aggregated data from `watched_content`, `reviews`, `detailed_ratings`, `emotional_reactions`, `watchlist_content`.
--   **(Phase 3+) Taste Profile**: Analyze user data to show top genres, actors, directors.
--   **(Phase 3+) Alerts**: Notify users based on watchlist items matching new releases or streaming availability (requires background jobs/TMDB change monitoring).
--   **[Authentication Required]**
+
+- **(Phase 2/3) Basic Recommendations**: Suggest content based on user's aggregated data from `watched_content`, `reviews`, `detailed_ratings`, `emotional_reactions`, `watchlist_content`.
+- **(Phase 3+) Taste Profile**: Analyze user data to show top genres, actors, directors.
+- **(Phase 3+) Alerts**: Notify users based on watchlist items matching new releases or streaming availability (requires background jobs/TMDB change monitoring).
+- **[Authentication Required]**
 
 ### Content Moderation and Reporting System
--   **User Reporting**: Users can report reviews (`review_reports` table).
--   **Moderation Queue**: Admins/Mods view reports filtered by `status='pending'`.
--   **Moderation Actions**: Admins/Mods update report `status`, `resolution_notes`, `moderator_id`. Actions may trigger updates to `reviews` table or user status.
--   **Notifications**: Use `notifications` table to inform users about report outcomes.
--   **[Authentication Required for Reporting, Admin/Mod Role Required for Moderation Actions]**
+
+- **User Reporting**: Users can report reviews (`review_reports` table).
+- **Moderation Queue**: Admins/Mods view reports filtered by `status='pending'`.
+- **Moderation Actions**: Admins/Mods update report `status`, `resolution_notes`, `moderator_id`. Actions may trigger updates to `reviews` table or user status.
+- **Notifications**: Use `notifications` table to inform users about report outcomes.
+- **[Authentication Required for Reporting, Admin/Mod Role Required for Moderation Actions]**
 
 ### Admin/Moderator Dashboard
--   **User Management**: Interface to query `users` table, update `role` or add a suspension flag/table.
--   **Content Moderation**: Interface to manage `review_reports`.
--   **Site Analytics**: Dashboards summarizing data from various tables (user counts, review counts, etc.).
--   **System Configuration**: Manage application-level settings (e.g., feature flags stored in config or a dedicated table).
--   **(Optional) Curated Content**: Interface to manage a `featured_content` table/mechanism.
--   **[Admin/Moderator Role Required]**
+
+- **User Management**: Interface to query `users` table, update `role` or add a suspension flag/table.
+- **Content Moderation**: Interface to manage `review_reports`.
+- **Site Analytics**: Dashboards summarizing data from various tables (user counts, review counts, etc.).
+- **System Configuration**: Manage application-level settings (e.g., feature flags stored in config or a dedicated table).
+- **(Optional) Curated Content**: Interface to manage a `featured_content` table/mechanism.
+- **[Admin/Moderator Role Required]**
 
 ### Notifications System
--   **In-App Notifications**: Use `notifications` table.
--   **Notification Triggers**: Create entries in `notifications` table based on actions (likes, comments, follows, recommendations, moderation). Use Supabase Realtime to push updates.
--   **Management**: Update `is_read` / `read_at` fields in `notifications` table.
--   **[Authentication Required]**
+
+- **In-App Notifications**: Use `notifications` table.
+- **Notification Triggers**: Create entries in `notifications` table based on actions (likes, comments, follows, recommendations, moderation). Use Supabase Realtime to push updates.
+- **Management**: Update `is_read` / `read_at` fields in `notifications` table.
+- **[Authentication Required]**
 
 ### Data Export/Import
--   **Export**: Provide functionality to query user's data across relevant tables (`watched_content`, `reviews`, `lists`, etc.) and format as CSV/JSON.
--   **(Phase 3+) Import**: Parse uploaded files (CSV/JSON) and create corresponding entries in user's tables.
--   **Account Deletion**: Provide mechanism to delete user from `auth.users` and cascade deletes through `users` table and related data.
--   **[Authentication Required]**
+
+- **Export**: Provide functionality to query user's data across relevant tables (`watched_content`, `reviews`, `lists`, etc.) and format as CSV/JSON.
+- **(Phase 3+) Import**: Parse uploaded files (CSV/JSON) and create corresponding entries in user's tables.
+- **Account Deletion**: Provide mechanism to delete user from `auth.users` and cascade deletes through `users` table and related data.
+- **[Authentication Required]**
 
 ## 6. Data Models (Finalized)
 
-*These SQL definitions represent the finalized database schema incorporating all refinements. Assumes necessary extensions like `uuid-ossp` are enabled in PostgreSQL.*
+_These SQL definitions represent the finalized database schema incorporating all refinements. Assumes necessary extensions like `uuid-ossp` are enabled in PostgreSQL._
 
 **Key Considerations for Implementation:**
 
--   The `users.id` column should act as a foreign key referencing `auth.users.id` from Supabase Auth. Triggers or application logic should ensure synchronization.
--   Implement Row Level Security (RLS) policies extensively on these tables to enforce data access rules based on user authentication (`auth.uid()`) and roles (`users.role`).
--   Indexes provided are crucial for performance; add more based on specific query patterns identified during development.
--   Consider using database functions or triggers for managing denormalized counts (`likes_count`, `comments_count`) or complex calculations if needed.
+- The `users.id` column should act as a foreign key referencing `auth.users.id` from Supabase Auth. Triggers or application logic should ensure synchronization.
+- Implement Row Level Security (RLS) policies extensively on these tables to enforce data access rules based on user authentication (`auth.uid()`) and roles (`users.role`).
+- Indexes provided are crucial for performance; add more based on specific query patterns identified during development.
+- Consider using database functions or triggers for managing denormalized counts (`likes_count`, `comments_count`) or complex calculations if needed.
 
 ---
 
@@ -671,177 +693,180 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 
 ## 7. API Endpoints (Consolidated)
 
-*This list defines the logical API interactions required. Simple CRUD may use Supabase client directly; complex logic may require explicit `/api/...` routes.*
-*`[Auth Required]` denotes user authentication needed.*
-*`[Admin/Mod Required]` denotes specific role needed.*
+_This list defines the logical API interactions required. Simple CRUD may use Supabase client directly; complex logic may require explicit `/api/...` routes._
+_`[Auth Required]` denotes user authentication needed._
+_`[Admin/Mod Required]` denotes specific role needed._
 
 ---
 
 ### Authentication
 
-*   `POST /api/auth/signup` - Register new user (Body: `email`, `password`, `displayName`)
-*   `POST /api/auth/login` - Log in user (Body: `email`, `password` or provider details)
-*   `POST /api/auth/logout` - Log out user `[Auth Required]`
-*   `POST /api/auth/reset-password` - Request password reset
-*   `POST /api/auth/update-password` - Update password
-*   `GET /api/auth/me` - Get current user session/profile `[Auth Required]`
-*   `POST /api/auth/refresh` - Refresh token (usually handled by client)
+- `POST /api/auth/signup` - Register new user (Body: `email`, `password`, `displayName`)
+- `POST /api/auth/login` - Log in user (Body: `email`, `password` or provider details)
+- `POST /api/auth/logout` - Log out user `[Auth Required]`
+- `POST /api/auth/reset-password` - Request password reset
+- `POST /api/auth/update-password` - Update password
+- `GET /api/auth/me` - Get current user session/profile `[Auth Required]`
+- `POST /api/auth/refresh` - Refresh token (usually handled by client)
 
 ---
 
 ### TMDB Data Proxy / Integration (Server-Side Logic)
 
-*(Internal functions/handlers, not usually direct `/api` routes)*
-*   `GET /tmdb/search` - Params: `query`, `page`, `filters`
-*   `GET /tmdb/discover/{media_type}` - Params: `sort_by`, `with_genres`, `year`, etc.
-*   `GET /tmdb/trending/{media_type}/{time_window}`
-*   `GET /tmdb/movie/{tmdbId}` - Params: `language`, `append_to_response`
-*   `GET /tmdb/tv/{tmdbId}` - Params: `language`, `append_to_response`
-*   `GET /tmdb/tv/{tmdbId}/season/{seasonNumber}`
-*   `GET /tmdb/tv/{tmdbId}/season/{seasonNumber}/episode/{episodeNumber}`
-*   `GET /tmdb/person/{personId}`
-*   `GET /tmdb/{media_type}/{tmdbId}/watch/providers`
-*   `GET /tmdb/genres/{media_type}/list`
+_(Internal functions/handlers, not usually direct `/api` routes)_
+
+- `GET /tmdb/search` - Params: `query`, `page`, `filters`
+- `GET /tmdb/discover/{media_type}` - Params: `sort_by`, `with_genres`, `year`, etc.
+- `GET /tmdb/trending/{media_type}/{time_window}`
+- `GET /tmdb/movie/{tmdbId}` - Params: `language`, `append_to_response`
+- `GET /tmdb/tv/{tmdbId}` - Params: `language`, `append_to_response`
+- `GET /tmdb/tv/{tmdbId}/season/{seasonNumber}`
+- `GET /tmdb/tv/{tmdbId}/season/{seasonNumber}/episode/{episodeNumber}`
+- `GET /tmdb/person/{personId}`
+- `GET /tmdb/{media_type}/{tmdbId}/watch/providers`
+- `GET /tmdb/genres/{media_type}/list`
 
 ---
 
 ### Users & Profiles
 
-*   `GET /api/users/{userIdOrDisplayName}` - Get public user profile
-*   `GET /api/users/me/profile` - Get current user's full profile `[Auth Required]`
-*   `PATCH /api/users/me/profile` - Update current user's profile `[Auth Required]` (Body: `displayName`, `bio`, `avatar_url`)
-*   `GET /api/users/me/preferences` - Get current user's preferences `[Auth Required]`
-*   `PATCH /api/users/me/preferences` - Update current user's preferences `[Auth Required]` (Body: preference fields)
-*   `GET /api/users/{userId}/activity` - Get user's public activity feed (Params: `page`, `filter`)
+- `GET /api/users/{userIdOrDisplayName}` - Get public user profile
+- `GET /api/users/me/profile` - Get current user's full profile `[Auth Required]`
+- `PATCH /api/users/me/profile` - Update current user's profile `[Auth Required]` (Body: `displayName`, `bio`, `avatar_url`)
+- `GET /api/users/me/preferences` - Get current user's preferences `[Auth Required]`
+- `PATCH /api/users/me/preferences` - Update current user's preferences `[Auth Required]` (Body: preference fields)
+- `GET /api/users/{userId}/activity` - Get user's public activity feed (Params: `page`, `filter`)
 
 ---
 
 ### Follows
 
-*   `GET /api/users/{userId}/followers` - Get followers list
-*   `GET /api/users/{userId}/following` - Get following list
-*   `POST /api/users/{userId}/follow` - Follow user `[Auth Required]`
-*   `DELETE /api/users/{userId}/follow` - Unfollow user `[Auth Required]`
+- `GET /api/users/{userId}/followers` - Get followers list
+- `GET /api/users/{userId}/following` - Get following list
+- `POST /api/users/{userId}/follow` - Follow user `[Auth Required]`
+- `DELETE /api/users/{userId}/follow` - Unfollow user `[Auth Required]`
 
 ---
 
 ### Watched Content & Tracking
 
-*   `GET /api/users/{userId}/watched` - Get watched list (Params: `page`, `sort_by`, `media_type`, filters)
-*   `POST /api/watched` - Log watched content `[Auth Required]` (Body: `tmdb_id`, `media_type`, `watched_date`, `user_rating`, etc.)
-*   `GET /api/watched/{watchedId}` - Get specific watched entry details `[Auth Required]` (RLS check)
-*   `PATCH /api/watched/{watchedId}` - Update watched entry `[Auth Required]` (RLS check)
-*   `DELETE /api/watched/{watchedId}` - Delete watched entry `[Auth Required]` (RLS check)
-*   `POST /api/watched/{watchedId}/watched-with` - Tag users watched with `[Auth Required]` (Body: `user_ids: [...]`)
-*   `DELETE /api/watched/{watchedId}/watched-with/{userId}` - Remove tagged user `[Auth Required]`
+- `GET /api/users/{userId}/watched` - Get watched list (Params: `page`, `sort_by`, `media_type`, filters)
+- `POST /api/watched` - Log watched content `[Auth Required]` (Body: `tmdb_id`, `media_type`, `watched_date`, `user_rating`, etc.)
+- `GET /api/watched/{watchedId}` - Get specific watched entry details `[Auth Required]` (RLS check)
+- `PATCH /api/watched/{watchedId}` - Update watched entry `[Auth Required]` (RLS check)
+- `DELETE /api/watched/{watchedId}` - Delete watched entry `[Auth Required]` (RLS check)
+- `POST /api/watched/{watchedId}/watched-with` - Tag users watched with `[Auth Required]` (Body: `user_ids: [...]`)
+- `DELETE /api/watched/{watchedId}/watched-with/{userId}` - Remove tagged user `[Auth Required]`
 
-*   **Episode Tracking:**
-    *   `GET /api/users/{userId}/episodes/{seriesId}` - Get tracked episodes (Params: `season_number`)
-    *   `POST /api/episodes/track` - Log watched episode(s) `[Auth Required]` (Body: `{ seriesId, seasonNumber, episodeNumber(s), ... }`)
-    *   `PATCH /api/episodes/track/{trackingId}` - Update tracked episode `[Auth Required]` (RLS check)
-    *   `DELETE /api/episodes/track/{trackingId}` - Untrack episode `[Auth Required]` (RLS check)
-    *   `POST /api/episodes/track-season` - Mark season watched `[Auth Required]` (Body: `{ seriesId, seasonNumber, ... }`)
+- **Episode Tracking:**
+  - `GET /api/users/{userId}/episodes/{seriesId}` - Get tracked episodes (Params: `season_number`)
+  - `POST /api/episodes/track` - Log watched episode(s) `[Auth Required]` (Body: `{ seriesId, seasonNumber, episodeNumber(s), ... }`)
+  - `PATCH /api/episodes/track/{trackingId}` - Update tracked episode `[Auth Required]` (RLS check)
+  - `DELETE /api/episodes/track/{trackingId}` - Untrack episode `[Auth Required]` (RLS check)
+  - `POST /api/episodes/track-season` - Mark season watched `[Auth Required]` (Body: `{ seriesId, seasonNumber, ... }`)
 
 ---
 
 ### Watchlist
 
-*   `GET /api/users/{userId}/watchlist` - Get watchlist (Params: `page`, `sort_by`)
-*   `POST /api/watchlist` - Add to watchlist `[Auth Required]` (Body: `tmdb_id`, `media_type`, `notes`, etc.)
-*   `DELETE /api/watchlist/{watchlistItemId}` - Remove from watchlist `[Auth Required]` (RLS check)
-*   `PATCH /api/watchlist/{watchlistItemId}` - Update watchlist item `[Auth Required]` (RLS check)
+- `GET /api/users/{userId}/watchlist` - Get watchlist (Params: `page`, `sort_by`)
+- `POST /api/watchlist` - Add to watchlist `[Auth Required]` (Body: `tmdb_id`, `media_type`, `notes`, etc.)
+- `DELETE /api/watchlist/{watchlistItemId}` - Remove from watchlist `[Auth Required]` (RLS check)
+- `PATCH /api/watchlist/{watchlistItemId}` - Update watchlist item `[Auth Required]` (RLS check)
 
 ---
 
 ### Custom Lists & Items
 
-*   `GET /api/users/{userId}/lists` - Get user's custom lists (Params: `page`)
-*   `GET /api/lists/public` - Get public custom lists (Params: `page`, `sort_by`)
-*   `POST /api/lists` - Create list `[Auth Required]` (Body: `name`, `description`, `visibility`)
-*   `GET /api/lists/{listId}` - Get list details/items (RLS/visibility check)
-*   `PATCH /api/lists/{listId}` - Update list details `[Auth Required]` (RLS check)
-*   `DELETE /api/lists/{listId}` - Delete list `[Auth Required]` (RLS check)
-*   `POST /api/lists/{listId}/items` - Add item `[Auth Required]` (RLS check) (Body: `tmdb_id`, `media_type`, `notes`)
-*   `DELETE /api/lists/{listId}/items/{listItemId}` - Remove item `[Auth Required]` (RLS check)
-*   `PATCH /api/lists/{listId}/items/reorder` - Reorder items `[Auth Required]` (RLS check) (Body: `ordered_item_ids: [...]`)
-*   `POST /api/lists/{listId}/like` - Like list `[Auth Required]`
-*   `DELETE /api/lists/{listId}/like` - Unlike list `[Auth Required]`
-*   `POST /api/lists/{listId}/clone` - Clone list `[Auth Required]`
-*   `POST /api/lists/{listId}/banner` - Upload banner image `[Auth Required]` (multipart/form-data)
-*   `DELETE /api/lists/{listId}/banner` - Remove banner image `[Auth Required]`
+- `GET /api/users/{userId}/lists` - Get user's custom lists (Params: `page`)
+- `GET /api/lists/public` - Get public custom lists (Params: `page`, `sort_by`)
+- `POST /api/lists` - Create list `[Auth Required]` (Body: `name`, `description`, `visibility`)
+- `GET /api/lists/{listId}` - Get list details/items (RLS/visibility check)
+- `PATCH /api/lists/{listId}` - Update list details `[Auth Required]` (RLS check)
+- `DELETE /api/lists/{listId}` - Delete list `[Auth Required]` (RLS check)
+- `POST /api/lists/{listId}/items` - Add item `[Auth Required]` (RLS check) (Body: `tmdb_id`, `media_type`, `notes`)
+- `DELETE /api/lists/{listId}/items/{listItemId}` - Remove item `[Auth Required]` (RLS check)
+- `PATCH /api/lists/{listId}/items/reorder` - Reorder items `[Auth Required]` (RLS check) (Body: `ordered_item_ids: [...]`)
+- `POST /api/lists/{listId}/like` - Like list `[Auth Required]`
+- `DELETE /api/lists/{listId}/like` - Unlike list `[Auth Required]`
+- `POST /api/lists/{listId}/clone` - Clone list `[Auth Required]`
+- `POST /api/lists/{listId}/banner` - Upload banner image `[Auth Required]` (multipart/form-data)
+- `DELETE /api/lists/{listId}/banner` - Remove banner image `[Auth Required]`
 
 ---
 
 ### Reviews & Interactions
 
-*   `GET /api/reviews` - Get reviews (Params: `tmdb_id`, `media_type`, `user_id`, `page`, `sort_by`)
-*   `POST /api/reviews` - Create review `[Auth Required]` (Body: `tmdb_id`, `media_type`, `content`, `rating`, etc.)
-*   `GET /api/reviews/{reviewId}` - Get specific review (Respects visibility)
-*   `PATCH /api/reviews/{reviewId}` - Update review `[Auth Required]` (RLS check)
-*   `DELETE /api/reviews/{reviewId}` - Delete review `[Auth Required]` (RLS check)
+- `GET /api/reviews` - Get reviews (Params: `tmdb_id`, `media_type`, `user_id`, `page`, `sort_by`)
+- `POST /api/reviews` - Create review `[Auth Required]` (Body: `tmdb_id`, `media_type`, `content`, `rating`, etc.)
+- `GET /api/reviews/{reviewId}` - Get specific review (Respects visibility)
+- `PATCH /api/reviews/{reviewId}` - Update review `[Auth Required]` (RLS check)
+- `DELETE /api/reviews/{reviewId}` - Delete review `[Auth Required]` (RLS check)
 
-*   **Interactions:**
-    *   `GET /api/reviews/{reviewId}/likes` - Get likers
-    *   `POST /api/reviews/{reviewId}/like` - Like review `[Auth Required]`
-    *   `DELETE /api/reviews/{reviewId}/like` - Unlike review `[Auth Required]`
-    *   `GET /api/reviews/{reviewId}/comments` - Get comments (Params: `page`)
-    *   `POST /api/reviews/{reviewId}/comments` - Add comment `[Auth Required]` (Body: `content`)
-    *   `DELETE /api/comments/{commentId}` - Delete comment `[Auth Required]` (RLS or Mod check)
-    *   `PATCH /api/comments/{commentId}` - Edit comment `[Auth Required]` (RLS check)
+- **Interactions:**
 
-*   **Review Responses (Prompts):**
-    *   `GET /api/reviews/{reviewId}/responses` - Get responses `[Auth Required]` (RLS check)
-    *   `POST /api/reviews/{reviewId}/responses` - Add/update responses `[Auth Required]` (RLS check) (Body: `[{ prompt: "...", response: "..." }, ...]`)
+  - `GET /api/reviews/{reviewId}/likes` - Get likers
+  - `POST /api/reviews/{reviewId}/like` - Like review `[Auth Required]`
+  - `DELETE /api/reviews/{reviewId}/like` - Unlike review `[Auth Required]`
+  - `GET /api/reviews/{reviewId}/comments` - Get comments (Params: `page`)
+  - `POST /api/reviews/{reviewId}/comments` - Add comment `[Auth Required]` (Body: `content`)
+  - `DELETE /api/comments/{commentId}` - Delete comment `[Auth Required]` (RLS or Mod check)
+  - `PATCH /api/comments/{commentId}` - Edit comment `[Auth Required]` (RLS check)
+
+- **Review Responses (Prompts):**
+  - `GET /api/reviews/{reviewId}/responses` - Get responses `[Auth Required]` (RLS check)
+  - `POST /api/reviews/{reviewId}/responses` - Add/update responses `[Auth Required]` (RLS check) (Body: `[{ prompt: "...", response: "..." }, ...]`)
 
 ---
 
 ### Recommendations
 
-*   `GET /api/recommendations/received` - Get received recommendations `[Auth Required]` (Params: `status`, `page`)
-*   `GET /api/recommendations/sent` - Get sent recommendations `[Auth Required]` (Params: `page`)
-*   `POST /api/recommendations` - Send recommendation `[Auth Required]` (Body: `to_user_id`, `tmdb_id`, `media_type`, `message`)
-*   `PATCH /api/recommendations/{recommendationId}` - Update status `[Auth Required]` (RLS check) (Body: `status`)
-*   `DELETE /api/recommendations/{recommendationId}` - Delete recommendation `[Auth Required]` (RLS check)
+- `GET /api/recommendations/received` - Get received recommendations `[Auth Required]` (Params: `status`, `page`)
+- `GET /api/recommendations/sent` - Get sent recommendations `[Auth Required]` (Params: `page`)
+- `POST /api/recommendations` - Send recommendation `[Auth Required]` (Body: `to_user_id`, `tmdb_id`, `media_type`, `message`)
+- `PATCH /api/recommendations/{recommendationId}` - Update status `[Auth Required]` (RLS check) (Body: `status`)
+- `DELETE /api/recommendations/{recommendationId}` - Delete recommendation `[Auth Required]` (RLS check)
 
 ---
 
 ### Notifications
 
-*   `GET /api/notifications` - Get notifications `[Auth Required]` (Params: `page`, `is_read`, `type`)
-*   `GET /api/notifications/count` - Get unread count `[Auth Required]`
-*   `PATCH /api/notifications/{notificationId}/read` - Mark as read `[Auth Required]`
-*   `POST /api/notifications/read-all` - Mark all as read `[Auth Required]`
+- `GET /api/notifications` - Get notifications `[Auth Required]` (Params: `page`, `is_read`, `type`)
+- `GET /api/notifications/count` - Get unread count `[Auth Required]`
+- `PATCH /api/notifications/{notificationId}/read` - Mark as read `[Auth Required]`
+- `POST /api/notifications/read-all` - Mark all as read `[Auth Required]`
 
 ---
 
 ### Reporting & Moderation
 
-*   `POST /api/reports/review` - Report a review `[Auth Required]` (Body: `review_id`, `reason`, `details`)
-*   `GET /api/moderation/reports` - Get reports list `[Admin/Mod Required]` (Params: `page`, `status`, `reason`)
-*   `GET /api/moderation/reports/{reportId}` - Get report details `[Admin/Mod Required]`
-*   `PATCH /api/moderation/reports/{reportId}` - Resolve report `[Admin/Mod Required]` (Body: `status`, `resolution_notes`)
+- `POST /api/reports/review` - Report a review `[Auth Required]` (Body: `review_id`, `reason`, `details`)
+- `GET /api/moderation/reports` - Get reports list `[Admin/Mod Required]` (Params: `page`, `status`, `reason`)
+- `GET /api/moderation/reports/{reportId}` - Get report details `[Admin/Mod Required]`
+- `PATCH /api/moderation/reports/{reportId}` - Resolve report `[Admin/Mod Required]` (Body: `status`, `resolution_notes`)
 
 ---
 
 ### Admin
 
-*   `GET /api/admin/users` - Get users list `[Admin Required]` (Params: `page`, `search`, `role`)
-*   `GET /api/admin/users/{userId}` - Get user details `[Admin Required]`
-*   `PATCH /api/admin/users/{userId}` - Update user role/status `[Admin Required]` (Body: `role`, `is_suspended`)
-*   `GET /api/admin/analytics` - Get site analytics `[Admin Required]` (Params: `metric`, `period`)
-*   `POST /api/admin/curated-content` - Manage featured content `[Admin Required]`
+- `GET /api/admin/users` - Get users list `[Admin Required]` (Params: `page`, `search`, `role`)
+- `GET /api/admin/users/{userId}` - Get user details `[Admin Required]`
+- `PATCH /api/admin/users/{userId}` - Update user role/status `[Admin Required]` (Body: `role`, `is_suspended`)
+- `GET /api/admin/analytics` - Get site analytics `[Admin Required]` (Params: `metric`, `period`)
+- `POST /api/admin/curated-content` - Manage featured content `[Admin Required]`
 
 ---
 
 ### Data Management
 
-*   `GET /api/data/export` - Initiate data export `[Auth Required]` (Params: `format`)
-*   `POST /api/data/import` - Initiate data import `[Auth Required]` (Body: `service` + File Data)
-*   `DELETE /api/users/me/account` - Delete own account `[Auth Required]` (Requires confirmation)
+- `GET /api/data/export` - Initiate data export `[Auth Required]` (Params: `format`)
+- `POST /api/data/import` - Initiate data import `[Auth Required]` (Body: `service` + File Data)
+- `DELETE /api/users/me/account` - Delete own account `[Auth Required]` (Requires confirmation)
 
 ## 8. Error Handling Strategy
 
 ### Standard Error Codes
+
 - **400 Bad Request**: Invalid input, validation errors (`VALIDATION_ERROR`).
 - **401 Unauthorized**: Authentication required or token invalid/expired (`AUTH_REQUIRED`, `AUTH_INVALID_TOKEN`).
 - **403 Forbidden**: User authenticated but lacks permission for the action (`PERMISSION_DENIED`).
@@ -852,21 +877,25 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 - **500 Internal Server Error**: Unexpected server-side error (`INTERNAL_ERROR`, `DATABASE_ERROR`, `TMDB_API_ERROR`).
 
 ### Error Response Format (for custom API routes)
+
 ```json
 {
   "status": "error",
   "error": {
     "code": "ERROR_CODE", // e.g., "VALIDATION_ERROR"
     "message": "A human-readable summary of the error.",
-    "details": { // Optional: Field-specific errors or additional context
+    "details": {
+      // Optional: Field-specific errors or additional context
       "field_name": "Specific error message for this field."
     }
   }
 }
 ```
-*Note: Supabase client errors might have their own structure, which should be handled and potentially normalized.*
+
+_Note: Supabase client errors might have their own structure, which should be handled and potentially normalized._
 
 ### Error Code Catalog (Examples)
+
 - `AUTH_INVALID_CREDENTIALS`: Login failed.
 - `AUTH_EMAIL_ALREADY_EXISTS`: Registration failed.
 - `VALIDATION_ERROR`: Input data failed validation rules.
@@ -877,6 +906,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 - `RESOURCE_CONFLICT`: E.g., trying to create a review that already exists for the user/item.
 
 ### Error Handling Implementation
+
 1.  **Input Validation**: Use libraries like Zod in Route Handlers and Server Actions to validate incoming data schemas.
 2.  **Server-Side Handling**: Catch errors in API routes/server components, log them, and return standardized error responses. Use try/catch blocks around Supabase calls and TMDB API calls.
 3.  **Client-Side Handling (TanStack Query)**: Utilize `onError` callbacks in TanStack Query hooks to handle failed requests, display user-friendly messages (e.g., using toast notifications), and manage UI state (e.g., revert optimistic updates).
@@ -887,22 +917,25 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ## 9. Security Considerations
 
 ### Authentication Security
+
 - **Token Handling**: Utilize Supabase's built-in JWT handling (short-lived access tokens, longer-lived refresh tokens stored securely, potentially in HttpOnly cookies). Enable Refresh Token Rotation.
 - **Password Policies**: Enforce minimum password complexity via Supabase Auth settings.
 - **Rate Limiting**: Implement rate limiting on authentication endpoints (login, signup, password reset).
 - **CSRF Protection**: Ensure framework-level CSRF protection if applicable (less critical with JWT header auth).
 
 ### Authorization Matrix
-*(Simplified - detailed RLS policies are key)*
-| Role      | Action                                         | Target        | Access Level      | Enforcement             |
+
+_(Simplified - detailed RLS policies are key)_
+| Role | Action | Target | Access Level | Enforcement |
 | :-------- | :--------------------------------------------- | :------------ | :---------------- | :---------------------- |
-| Public    | View Public Content/Lists/Reviews              | Public Data   | Read              | RLS (`visibility`)      |
-| User      | CRUD Own Data                                  | Own Data      | CRUD              | RLS (`auth.uid()`)      |
-| User      | Interact (Like, Follow, Comment)               | Other's Data  | Create/Delete     | RLS (`auth.uid()`)      |
-| Moderator | Read Reports, Update Review Status             | Reviews/Users | Read/Update       | RLS (role check)        |
-| Admin     | Manage Users, All Reports, Config              | All Data      | CRUD              | RLS (role check)        |
+| Public | View Public Content/Lists/Reviews | Public Data | Read | RLS (`visibility`) |
+| User | CRUD Own Data | Own Data | CRUD | RLS (`auth.uid()`) |
+| User | Interact (Like, Follow, Comment) | Other's Data | Create/Delete | RLS (`auth.uid()`) |
+| Moderator | Read Reports, Update Review Status | Reviews/Users | Read/Update | RLS (role check) |
+| Admin | Manage Users, All Reports, Config | All Data | CRUD | RLS (role check) |
 
 ### Data Protection
+
 - **Input Sanitization/Validation**: Sanitize user content server-side (e.g., `DOMPurify`) to prevent XSS. Validate schemas (Zod).
 - **SQL Injection Prevention**: Use Supabase client libraries (parameterized queries).
 - **Row Level Security (RLS)**: **Enable RLS on all tables** with user data. Define strict policies based on `auth.uid()` and roles.
@@ -913,6 +946,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - **Read**: Allow public read access for non-sensitive images like list banners
 
 ### Code Security
+
 - **Dependency Management**: Regularly audit dependencies (`npm audit`, Dependabot).
 - **Content Security Policy (CSP)**: Implement appropriate CSP headers via Next.js configuration.
 - **Secure Headers**: Configure other security headers (HSTS, X-Frame-Options, etc.).
@@ -920,14 +954,17 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ## 10. Responsive Design Strategy
 
 ### Mobile-First Approach
+
 - Design and develop components starting from the smallest viewport (approx. 375px width).
 - Ensure core functionality is easily accessible and usable on small touchscreens.
 - Progressively enhance layouts and features for larger screens.
 
 ### Responsive Breakpoints (Tailwind Defaults)
+
 - **sm**: 640px | **md**: 768px | **lg**: 1024px | **xl**: 1280px | **2xl**: 1536px
 
 ### Mobile-Specific UI/UX Considerations
+
 - **Navigation**: Consider bottom tab bar on mobile (`sm` and below), sidebar/top navbar on larger screens.
 - **Touch Targets**: Minimum tap target size of 44x44px.
 - **Layouts**: Single-column feeds/forms on mobile, multi-column grids on tablets/desktops.
@@ -935,12 +972,14 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 - **Gestures**: Consider swipes for carousels, etc.
 
 ### Component Adaptation Examples
+
 - **MediaGrid**: 1-2 columns (mobile), 3-4 (tablet), 5+ (desktop).
 - **DetailsPage**: Stacked (mobile), multi-column (desktop).
 - **Forms**: Full-width inputs stacked (mobile), multi-column/inline labels (desktop).
 - **Custom Lists with Banners**: Full-width banner at top on mobile, potentially letterbox/widescreen format on larger devices.
 
 ### Testing Requirements
+
 - Test across major breakpoints on emulators and real devices.
 - Target browsers: Latest Chrome, Firefox, Safari (Desktop & Mobile iOS).
 - Verify touch interactions and performance.
@@ -948,34 +987,36 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ## 11. Accessibility Features
 
 ### WCAG 2.1 AA Compliance Standard
+
 - Strive to meet all Level A and AA success criteria.
 
 ### Implementation Details
+
 - **Semantic HTML**: Use correct HTML5 elements.
   - Use proper heading hierarchy (h1-h6).
   - Use buttons for interactive elements, anchors for navigation.
   - Use section, article, nav, main, aside appropriately.
   - Use figure/figcaption for media with descriptions.
-- **Keyboard Navigation**: 
+- **Keyboard Navigation**:
   - All interactive elements focusable/operable.
   - Logical focus order matches visual order.
   - Visible focus indicators with high contrast.
   - `Skip Navigation` links for bypassing repeated content.
   - Custom focus management for modals and popups.
-- **Screen Reader Support**: 
+- **Screen Reader Support**:
   - Descriptive `alt` text for images; empty alt for decorative images.
   - ARIA attributes where HTML semantics are insufficient.
   - Dynamic content announcements for important UI changes.
   - Proper form labeling and error association.
   - Use aria-live regions for critical updates.
   - Text alternatives for non-text content (charts, graphs).
-- **Visual Accessibility**: 
+- **Visual Accessibility**:
   - Sufficient color contrast (4.5:1 normal, 3:1 large text).
   - Text resizable to 200% without loss of content/function.
   - No reliance on color alone for conveying information.
   - Clear text on backgrounds (avoid text on busy images).
   - Zoom compatibility (no horizontal scrolling at 400% zoom).
-- **Motion Sensitivity**: 
+- **Motion Sensitivity**:
   - Respect `prefers-reduced-motion` media query.
   - Provide controls to pause/stop animations and carousels.
   - No flashing content that could trigger seizures.
@@ -986,19 +1027,20 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Sufficient time to complete forms with options to extend.
 
 ### Accessibility Testing
-- **Automated Tools**: 
+
+- **Automated Tools**:
   - `axe-core` integration in development workflow.
   - Lighthouse accessibility audits in CI pipeline.
   - WAVE or similar for periodic full-site checks.
-- **Manual Keyboard Testing**: 
+- **Manual Keyboard Testing**:
   - Navigate entire application without a mouse.
   - Verify all interactive elements are reachable and operable.
   - Test modal/dialog trapping and escape functionality.
-- **Screen Reader Testing**: 
+- **Screen Reader Testing**:
   - Test critical flows with at least one screen reader (NVDA, VoiceOver).
   - Verify proper announcement of dynamic content changes.
   - Check for duplicate/redundant announcements.
-- **Color Contrast Checks**: 
+- **Color Contrast Checks**:
   - Browser developer tools contrast analyzers.
   - Dedicated color contrast checking plugins/tools.
   - Testing in various color modes (light/dark) and user themes.
@@ -1006,6 +1048,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ## 12. Performance Optimization
 
 ### Performance Targets (Core Web Vitals & Load Times)
+
 - **FCP (First Contentful Paint)**: < 1.8s
 - **LCP (Largest Contentful Paint)**: < 2.5s
 - **INP (Interaction to Next Paint)**: < 200ms
@@ -1016,6 +1059,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Optimization Strategies
 
 #### Next.js Features
+
 - **Server Components**: Use extensively to reduce client-side JavaScript.
 - **`next/dynamic`**: Implement code splitting for large components.
 - **`next/font`**: Utilize for optimized font loading.
@@ -1024,7 +1068,8 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 - **Static Regeneration**: Use ISR where appropriate for TMDB data.
 
 #### Efficient Data Fetching
-- **TanStack Query**: 
+
+- **TanStack Query**:
   - Implement caching, deduping, and background refresh.
   - Use `keepPreviousData` for smoother pagination.
   - Set appropriate stale times based on data freshness needs.
@@ -1038,8 +1083,9 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Consider Redis for frequently accessed data (future enhancement).
 
 #### Bundle Size Reduction
+
 - **Bundle Analysis**: Implement `@next/bundle-analyzer` for monitoring.
-- **Dependencies**: 
+- **Dependencies**:
   - Minimize external dependencies.
   - Prefer smaller alternatives when available.
   - Use modular imports (e.g., `lodash-es`).
@@ -1048,69 +1094,74 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 - **Code Splitting**: Route-based plus dynamic imports for large features.
 
 #### Rendering Performance
-- **Memoization**: 
+
+- **Memoization**:
   - `React.memo` for expensive components.
   - `useMemo` for costly computations.
   - `useCallback` for frequently used callbacks.
-- **List Virtualization**: 
+- **List Virtualization**:
   - `TanStack Virtual` for long lists (e.g., episodes, activity feeds).
   - Implement for lists exceeding 50 items.
-- **Animation Performance**: 
+- **Animation Performance**:
   - Use CSS transforms/opacity for animations.
   - Avoid layout-triggering properties (width/height) in animations.
   - Throttle scroll event handlers.
 
 #### Network Optimization
-- **CDNs**: 
+
+- **CDNs**:
   - Vercel's Edge Network for static assets.
   - TMDB's image CDN for media.
-- **HTTP Caching**: 
+- **HTTP Caching**:
   - Appropriate cache headers for static assets.
   - Immutable content with long cache times.
-- **Prefetching**: 
+- **Prefetching**:
   - Prefetch likely-to-be-visited routes.
   - Preconnect to third-party domains (TMDB).
-- **Compression**: 
+- **Compression**:
   - Enable Brotli/Gzip for all textual responses.
   - Optimize image formats (WebP/AVIF support).
 
 #### Image Optimization
-- **Responsive Images**: 
+
+- **Responsive Images**:
   - Serve appropriately sized images based on viewport.
   - Use Next.js Image component with sizes attribute.
-- **Format Selection**: 
+- **Format Selection**:
   - WebP/AVIF with PNG/JPEG fallbacks.
   - Choose formats based on image content type.
-- **User Uploads**: 
+- **User Uploads**:
   - Process uploaded images server-side to optimize (list banners).
   - Resize to reasonable dimensions (max 1920px width).
   - Compress to reasonable file sizes (< 500KB for banners).
-- **Lazy Loading**: 
+- **Lazy Loading**:
   - Implement for below-the-fold images.
   - Use placeholder strategies for important images.
 
 ### Monitoring and Improvement
-- **Audits**: 
+
+- **Audits**:
   - Regular Lighthouse audits (Performance, Accessibility, Best Practices, SEO).
   - WebPageTest for deeper analysis and real-world conditions.
-- **RUM (Real User Monitoring)**: 
+- **RUM (Real User Monitoring)**:
   - Implement Vercel Analytics or similar.
   - Collect Core Web Vitals from actual users.
   - Track by device type, connection speed, geography.
-- **Performance Budgets**: 
+- **Performance Budgets**:
   - Monitor in CI/CD pipeline.
   - Set bundle size limits and page load time thresholds.
   - Block deployments that exceed budgets significantly.
-- **Continuous Optimization**: 
+- **Continuous Optimization**:
   - Regular performance review cycle.
   - Set up alerts for performance regressions.
   - Document optimization techniques for team knowledge sharing.
 
 ## 13. Timeline and Phases
 
-*(Estimates based on features for a small to medium team)*
+_(Estimates based on features for a small to medium team)_
 
 ### Phase 1: Foundation & Core Content (4 weeks)
+
 - **Week 1**: Project setup, repository structure, CI/CD pipeline
   - Initialize Next.js project with TypeScript
   - Set up Supabase project and base schema
@@ -1128,6 +1179,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - "Where to watch" providers
 
 ### Phase 2: Personal Tracking & Lists (4 weeks)
+
 - **Week 5-6**: Core user features
   - Profile management
   - Watched content tracking
@@ -1141,6 +1193,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Privacy/visibility settings
 
 ### Phase 3: Social Features & Engagement (4 weeks)
+
 - **Week 9-10**: Review system
   - Review creation/editing interface
   - Detailed ratings and reactions
@@ -1154,6 +1207,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Content sharing functionality
 
 ### Phase 4: Advanced Tracking & Personalization (3 weeks)
+
 - **Week 13**: TV Show episode tracking
   - Episode-level marking/rating
   - Season progress visualization
@@ -1169,6 +1223,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - User preferences refinement
 
 ### Phase 5: Moderation, Admin & Polish (3 weeks)
+
 - **Week 16**: Moderation system
   - Content reporting flow
   - Moderator review queue
@@ -1183,6 +1238,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Cross-browser/device testing
 
 ### Phase 6: Launch & Iteration (Ongoing)
+
 - **Pre-Launch**: Final QA and preparation
   - Comprehensive testing
   - Documentation completion
@@ -1201,6 +1257,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Test Types
 
 #### Unit Testing
+
 - **Framework**: Jest, React Testing Library
 - **Coverage Target**: >80% for critical logic (services, utilities, hooks)
 - **Focus Areas**:
@@ -1215,6 +1272,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Mock external dependencies
 
 #### Integration Testing
+
 - **Framework**: Jest, React Testing Library, MSW (Mock Service Worker)
 - **Coverage Target**: Key user flows and component interactions
 - **Focus Areas**:
@@ -1229,6 +1287,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Verify state changes and UI updates
 
 #### End-to-End (E2E) Testing
+
 - **Framework**: Cypress
 - **Coverage Target**: Critical user journeys
 - **Focus Areas**:
@@ -1244,6 +1303,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Test against staging environment
 
 #### Performance Testing
+
 - **Tools**: Lighthouse, WebPageTest, Bundle Analyzer
 - **Metrics to Test**:
   - Core Web Vitals (LCP, CLS, INP)
@@ -1256,6 +1316,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Performance budgets enforcement
 
 #### Accessibility Testing
+
 - **Tools**: Axe-core, manual testing
 - **Standards**: WCAG 2.1 AA
 - **Focus Areas**:
@@ -1270,6 +1331,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Regular accessibility audits
 
 #### Visual Regression Testing
+
 - **Tools**: Percy or similar
 - **Coverage**: Critical UI components and pages
 - **Implementation**:
@@ -1280,6 +1342,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Testing Environment & Process
 
 #### Development Environment
+
 - **Local Testing**:
   - Unit & integration tests run on pre-commit
   - Hot module reloading for rapid feedback
@@ -1291,6 +1354,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Supabase Local Development
 
 #### CI (Pull Request) Environment
+
 - **Automated Tests**:
   - Linting (ESLint, Prettier)
   - Type checking (TypeScript)
@@ -1307,6 +1371,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Ephemeral Supabase instance for PR testing
 
 #### Staging Environment
+
 - **Test Types**:
   - Full E2E test suite
   - Performance testing
@@ -1322,6 +1387,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Feature flags for beta testing
 
 #### Production Environment
+
 - **Test Types**:
   - Post-deployment smoke tests
   - Performance monitoring
@@ -1337,6 +1403,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Availability monitoring
 
 ### Testing Best Practices
+
 - **Test Pyramid**: More unit tests, fewer E2E tests
 - **Deterministic Tests**: Avoid flaky tests with proper setup/teardown
 - **Test Isolation**: Tests shouldn't depend on each other
@@ -1349,6 +1416,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Environments
 
 #### Development Environment
+
 - **Purpose**: Individual developer work
 - **Configuration**:
   - Local Next.js development server
@@ -1358,6 +1426,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 - **Access**: Restricted to development team
 
 #### Staging Environment
+
 - **Purpose**: Integration testing, QA, demos
 - **Configuration**:
   - Production-like setup on Vercel
@@ -1368,6 +1437,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 - **Deployment Frequency**: On merge to development branch (multiple times per day)
 
 #### Production Environment
+
 - **Purpose**: Live user-facing application
 - **Configuration**:
   - Vercel production deployment
@@ -1380,6 +1450,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### CI/CD Pipeline (GitHub Actions)
 
 #### On Pull Request
+
 - **Steps**:
   1. Checkout code
   2. Install dependencies
@@ -1395,6 +1466,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Coverage report
 
 #### On Merge to Development (Staging)
+
 - **Steps**:
   1. Checkout code
   2. Install dependencies
@@ -1408,6 +1480,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Notifications to team
 
 #### On Release (Production)
+
 - **Steps**:
   1. Create release branch
   2. Run final verification tests
@@ -1424,6 +1497,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Infrastructure
 
 #### Frontend Hosting (Vercel)
+
 - **Configuration**:
   - Edge Network deployment
   - Automatic HTTPS
@@ -1437,6 +1511,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Integrated error tracking
 
 #### Backend Services (Supabase)
+
 - **Database**:
   - PostgreSQL database with RLS
   - Connection pooling for multiple connections
@@ -1459,6 +1534,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - TMDB API integrations
 
 #### File Storage
+
 - **Supabase Storage**:
   - Separate buckets for different content types:
     - `avatars` - User profile images
@@ -1468,6 +1544,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - CDN distribution
 
 #### Monitoring and Observability
+
 - **Error Tracking**: Sentry
   - Source maps for readable stack traces
   - Error grouping and prioritization
@@ -1487,6 +1564,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Maintenance
 
 #### Dependency Management
+
 - **Regular Updates**:
   - Dependabot configuration
   - Weekly dependency review
@@ -1496,6 +1574,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Major version upgrades planned and tested
 
 #### Database Management
+
 - **Backups**:
   - Automated daily backups (Supabase)
   - Manual backups before major migrations
@@ -1510,6 +1589,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Growth metrics and capacity planning
 
 #### Security Audits
+
 - **Regular Reviews**:
   - Quarterly security assessments
   - Dependency vulnerability scans
@@ -1520,6 +1600,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Focus on authentication and data protection
 
 #### Documentation Maintenance
+
 - **Keep Updated**:
   - API documentation
   - Environment setup guides
@@ -1531,12 +1612,14 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Language Support
 
 #### Initial Launch
+
 - **Primary Language**: English (en-US)
 - **Interface**: All UI elements in English
 - **Content**: User-generated content primarily English
 - **TMDB Data**: Retrieved in English by default
 
 #### Framework and Tools
+
 - **Library**: `next-intl` for translations
 - **File Structure**:
   - Locale files in `/locales/{locale}.json`
@@ -1547,6 +1630,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Context-aware pluralization support
 
 #### Future Expansion
+
 - **Priority Languages** (Phase 2+):
   - Spanish (es)
   - French (fr)
@@ -1561,6 +1645,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Localization Strategy
 
 #### Text Translation
+
 - **UI Elements**:
   - Store all user-facing strings in translation keys
   - Format: `{ "key": "translated text" }`
@@ -1571,6 +1656,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Email templates
 
 #### Date and Time Formatting
+
 - **User Preference**:
   - Store user locale preference
   - Default to browser/system locale
@@ -1583,12 +1669,14 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - 12-hour vs. 24-hour time format
 
 #### Number Formatting
+
 - **Currency**: Format using locale-appropriate symbols and separators
 - **Ratings**: Consider cultural differences in rating scales
 - **Large Numbers**: Format with appropriate thousand separators
 - **Implementation**: Use `Intl.NumberFormat` API
 
 #### TMDB Integration
+
 - **Content Language**:
   - Request TMDB data using `language` parameter
   - Match to user's chosen language preference
@@ -1600,6 +1688,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Region-Specific Features
 
 #### Watch Providers
+
 - **Region Detection**:
   - Default based on IP geolocation
   - User override via preferences
@@ -1609,6 +1698,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Clear indication of selected region
 
 #### Release Dates
+
 - **Regional Differences**:
   - Display regional release dates from TMDB
   - Highlight user's region release date
@@ -1618,6 +1708,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Format dates according to locale
 
 #### Content Ratings
+
 - **Rating Systems**:
   - Display regional rating system (MPAA, BBFC, FSK, etc.)
   - Show rating explanation when available
@@ -1628,6 +1719,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Technical Implementation
 
 #### URL Structure
+
 - **Options**:
   - Locale prefix: `/en-US/movies/123`
   - Subdomain: `en-us.cinetrack.com`
@@ -1638,6 +1730,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Persistent language selection
 
 #### Performance Considerations
+
 - **Bundle Size**:
   - Lazy-load non-active locale files
   - Only include active locale in initial bundle
@@ -1649,6 +1742,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Fallback to SSR for less common languages
 
 #### SEO Strategy
+
 - **Hreflang Tags**:
   - Signal language alternatives to search engines
   - Implement in page head for each translated page
@@ -1657,10 +1751,12 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Appropriate lang attributes on HTML
 
 #### Testing and Quality Assurance
+
 - **Automation**:
   - Test rendering in each supported locale
   - Verify translations don't break layouts
 - **Manual Testing**:
+
   - Native speaker reviews
   - Context-appropriate translations
   - Cultural sensitivity checks
@@ -1670,6 +1766,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Potential Future Features
 
 #### Native Mobile Apps
+
 - **Platform**: React Native/Expo for code sharing with web
 - **Feature Parity**: Core tracking, social, and discovery features
 - **Native Features**:
@@ -1680,6 +1777,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 - **Timeline**: Consider after web platform stabilization (12+ months)
 
 #### Advanced Social Features
+
 - **Groups/Communities**:
   - User-created groups around genres, directors, etc.
   - Group watchlists and recommendations
@@ -1694,6 +1792,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - OAuth integration with streaming services
 
 #### ML Recommendations
+
 - **Advanced Algorithms**:
   - Collaborative filtering based on user similarity
   - Content-based recommendations using detailed metadata
@@ -1708,6 +1807,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Transparency in algorithm function
 
 #### Import Integrations
+
 - **Supported Services**:
   - Letterboxd, IMDb, Trakt.tv
   - Streaming service history where APIs allow
@@ -1719,6 +1819,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Preservation of original timestamps and ratings
 
 #### Gamification
+
 - **Badges and Achievements**:
   - Watching milestones (100 movies watched)
   - Genre exploration (horror aficionado)
@@ -1734,6 +1835,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Time-limited events (summer blockbusters)
 
 #### Premium Tier
+
 - **Potential Features**:
   - Advanced statistics and insights
   - Priority access to new features
@@ -1746,6 +1848,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Payment processing (Stripe integration)
 
 #### Public API
+
 - **Developer Access**:
   - OAuth authentication
   - Rate-limited endpoints
@@ -1761,6 +1864,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Developer portal and documentation
 
 #### Advanced List Customization
+
 - **Themes and Layouts**:
   - Custom background colors/patterns
   - Multiple layout options (grid, list, showcase)
@@ -1777,6 +1881,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Scalability Considerations
 
 #### Database Optimization
+
 - **Indexing Strategy**:
   - Review and optimize indexes based on query patterns
   - Consider partial indexes for common filters
@@ -1791,6 +1896,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Connection pooling optimization
 
 #### API Rate Limiting
+
 - **Implementation**:
   - Token bucket algorithm for fine-grained control
   - Different limits based on endpoint importance
@@ -1805,6 +1911,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Adjust limits based on usage data
 
 #### Caching Strategy
+
 - **CDN**:
   - Cache static assets with appropriate TTLs
   - Consider caching API responses for public data
@@ -1819,6 +1926,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Persistent caching for offline capability
 
 #### Edge Functions for Performance
+
 - **Use Cases**:
   - Personalization logic closer to users
   - Regional content adaptation
@@ -1829,6 +1937,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Balance between edge and central processing
 
 #### Storage Scaling
+
 - **Content Growth Planning**:
   - Monitor storage utilization trends
   - Implement size limits for user uploads
@@ -1843,6 +1952,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Restore testing procedures
 
 #### Load Testing and Capacity Planning
+
 - **Methodology**:
   - Simulate realistic user behavior
   - Identify bottlenecks before they affect users
@@ -1861,6 +1971,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Developer Documentation
 
 #### README
+
 - **Setup Instructions**:
   - Prerequisites installation
   - Environment configuration
@@ -1878,6 +1989,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Integration points
 
 #### Architecture Overview
+
 - **System Design**:
   - High-level architecture diagram
   - Component interactions
@@ -1895,6 +2007,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Scaling strategy
 
 #### API Documentation
+
 - **Internal Routes**:
   - Complete endpoint catalog
   - Request/response formats
@@ -1912,6 +2025,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Security considerations
 
 #### Component Library
+
 - **Tool**: Storybook or similar documentation
 - **Content**:
   - Visual component catalog
@@ -1925,6 +2039,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Component guidelines
 
 #### Database Schema
+
 - **Migration Files**:
   - Well-commented SQL scripts
   - Version history
@@ -1940,6 +2055,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Enumeration values
 
 #### Contribution Guide
+
 - **Style Guide**:
   - Coding standards
   - Formatting rules
@@ -1958,6 +2074,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### User Documentation
 
 #### Help Center / FAQ
+
 - **Content Structure**:
   - Getting started guides
   - Feature explanations
@@ -1974,6 +2091,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Feedback mechanism
 
 #### Onboarding Tour
+
 - **Implementation**:
   - Progressive feature introduction
   - Interactive tooltips
@@ -1993,6 +2111,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
 ### Maintenance Documentation
 
 #### Deployment Guide
+
 - **Environment Setup**:
   - Required credentials
   - Environment variables
@@ -2010,6 +2129,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - SSL certificate renewal
 
 #### Troubleshooting Guide
+
 - **Common Issues**:
   - Authentication problems
   - API integration errors
@@ -2027,6 +2147,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Incident response workflow
 
 #### Backup/Recovery Procedures
+
 - **Supabase Strategy**:
   - Backup schedule and retention
   - Point-in-time recovery process
@@ -2039,6 +2160,7 @@ CREATE INDEX idx_tmdb_cache_expiry ON tmdb_cache(expires_at);
   - Recovery verification
 
 #### Monitoring and Alerting
+
 - **Service Health**:
   - Uptime monitoring configuration
   - Performance thresholds

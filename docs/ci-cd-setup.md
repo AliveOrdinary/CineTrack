@@ -13,12 +13,14 @@ This document describes the CI/CD pipeline setup for CineTrack, including automa
 The CI pipeline runs on every pull request and push to `main` and `develop` branches. It includes:
 
 #### Jobs:
+
 - **Lint and Type Check**: ESLint, TypeScript type checking, Prettier formatting
 - **Test**: Unit tests with coverage reporting
 - **Build**: Application build verification
 - **Security Scan**: npm audit and Trivy vulnerability scanning
 
 #### Triggers:
+
 - Pull requests to `main` or `develop`
 - Direct pushes to `main` or `develop`
 
@@ -29,11 +31,13 @@ The CI pipeline runs on every pull request and push to `main` and `develop` bran
 Automated deployment to staging and production environments:
 
 #### Staging Deployment:
+
 - **Trigger**: Push to `develop` branch
 - **Environment**: Staging Supabase project
 - **URL**: Staging Vercel deployment
 
 #### Production Deployment:
+
 - **Trigger**: Push to `main` branch
 - **Environment**: Production Supabase project
 - **URL**: Production Vercel deployment
@@ -41,11 +45,13 @@ Automated deployment to staging and production environments:
 
 ### 3. Dependency Management
 
-**Files:** 
+**Files:**
+
 - `.github/workflows/dependency-update.yml`
 - `.github/dependabot.yml`
 
 Automated dependency updates:
+
 - **Schedule**: Weekly on Mondays at 9 AM UTC
 - **Scope**: npm packages and GitHub Actions
 - **Process**: Creates PRs with updated dependencies
@@ -55,6 +61,7 @@ Automated dependency updates:
 Configure these secrets in your GitHub repository settings:
 
 ### Environment Variables
+
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
@@ -67,6 +74,7 @@ STAGING_SENTRY_DSN=your_staging_sentry_dsn
 ```
 
 ### Deployment Secrets
+
 ```
 VERCEL_TOKEN=your_vercel_token
 VERCEL_ORG_ID=your_vercel_org_id
@@ -107,17 +115,20 @@ npm run ci:all             # Run all CI checks
 ## Configuration Files
 
 ### ESLint (`.eslintrc.json`)
+
 - Extends Next.js and TypeScript configurations
 - Custom rules for code quality
 - Supports both browser and Node.js environments
 
 ### Jest (`jest.config.js`, `jest.setup.js`)
+
 - Configured for Next.js with TypeScript
 - React Testing Library integration
 - Coverage thresholds set to 70%
 - Mocks for Next.js router and navigation
 
 ### Prettier (`.prettierrc`, `.prettierignore`)
+
 - Consistent code formatting
 - Single quotes, semicolons, 100 character line width
 - Excludes build files and dependencies
@@ -125,10 +136,12 @@ npm run ci:all             # Run all CI checks
 ## Branch Strategy
 
 ### Main Branches
+
 - **`main`**: Production-ready code, deploys to production
 - **`develop`**: Integration branch, deploys to staging
 
 ### Feature Workflow
+
 1. Create feature branch from `develop`
 2. Make changes and commit
 3. Push branch and create PR to `develop`
@@ -140,18 +153,21 @@ npm run ci:all             # Run all CI checks
 ## Environment Setup
 
 ### GitHub Repository Setup
+
 1. Enable GitHub Actions in repository settings
 2. Configure branch protection rules for `main` and `develop`
 3. Add required secrets in repository settings
 4. Set up environments for staging and production
 
 ### Vercel Setup
+
 1. Connect GitHub repository to Vercel
 2. Configure environment variables for each environment
 3. Set up custom domains if needed
 4. Configure build and deployment settings
 
 ### Supabase Setup
+
 1. Create separate projects for staging and production
 2. Configure database schemas and RLS policies
 3. Set up environment variables
@@ -160,16 +176,19 @@ npm run ci:all             # Run all CI checks
 ## Monitoring and Alerts
 
 ### Coverage Reports
+
 - Uploaded to Codecov automatically
 - Visible in PR comments
 - Tracks coverage trends over time
 
 ### Security Scanning
+
 - npm audit for known vulnerabilities
 - Trivy for container and filesystem scanning
 - Results uploaded to GitHub Security tab
 
 ### Deployment Notifications
+
 - PR comments with staging URLs
 - GitHub releases for production deployments
 - Slack/Discord integration (optional)
@@ -179,21 +198,25 @@ npm run ci:all             # Run all CI checks
 ### Common Issues
 
 #### Build Failures
+
 - Check environment variables are set correctly
 - Verify all dependencies are installed
 - Review TypeScript errors in build logs
 
 #### Test Failures
+
 - Run tests locally first: `npm run test`
 - Check for missing mocks or setup issues
 - Review test coverage requirements
 
 #### Deployment Issues
+
 - Verify Vercel token and project settings
 - Check environment-specific variables
 - Review deployment logs in Vercel dashboard
 
 #### Dependency Updates
+
 - Review breaking changes in updated packages
 - Update code to match new API changes
 - Test thoroughly before merging
@@ -201,18 +224,21 @@ npm run ci:all             # Run all CI checks
 ## Best Practices
 
 ### Code Quality
+
 - Write tests for new features
 - Maintain high test coverage (>70%)
 - Follow ESLint and Prettier rules
 - Use TypeScript strictly
 
 ### Security
+
 - Keep dependencies updated
 - Review security scan results
 - Use environment variables for secrets
 - Enable branch protection rules
 
 ### Performance
+
 - Monitor build times
 - Optimize bundle size
 - Use Next.js performance features
@@ -221,6 +247,7 @@ npm run ci:all             # Run all CI checks
 ## Future Enhancements
 
 ### Planned Improvements
+
 - E2E testing with Cypress (TASK-033)
 - Performance monitoring integration
 - Advanced security scanning
@@ -228,7 +255,8 @@ npm run ci:all             # Run all CI checks
 - Automated rollback capabilities
 
 ### Integration Opportunities
+
 - Slack/Discord notifications
 - Jira/Linear issue tracking
 - Advanced monitoring (DataDog, New Relic)
-- Code quality gates (SonarQube) 
+- Code quality gates (SonarQube)

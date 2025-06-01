@@ -1,30 +1,36 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { createClient } from "@/lib/supabase/client"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Eye, EyeOff, Flag } from "lucide-react"
-import { addToWatchlist, updateWatchlistEntry, type WatchlistEntry } from "@/lib/supabase/client"
-import { toast } from "sonner"
+import { useState, useEffect } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Eye, EyeOff, Flag } from 'lucide-react';
+import { addToWatchlist, updateWatchlistEntry, type WatchlistEntry } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 
 interface WatchlistFormProps {
-  tmdbId: number
-  mediaType: 'movie' | 'tv'
-  title: string
-  existingEntry?: WatchlistEntry
-  onSuccess?: () => void
-  onCancel?: () => void
+  tmdbId: number;
+  mediaType: 'movie' | 'tv';
+  title: string;
+  existingEntry?: WatchlistEntry;
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
 const priorityOptions = [
-  { value: 0, label: "No Priority", icon: null },
-  { value: 1, label: "Low Priority", icon: "🔵" },
-  { value: 2, label: "Medium Priority", icon: "🟡" },
-  { value: 3, label: "High Priority", icon: "🔴" },
-]
+  { value: 0, label: 'No Priority', icon: null },
+  { value: 1, label: 'Low Priority', icon: '🔵' },
+  { value: 2, label: 'Medium Priority', icon: '🟡' },
+  { value: 3, label: 'High Priority', icon: '🔴' },
+];
 
 export function WatchlistForm({
   tmdbId,
@@ -32,36 +38,36 @@ export function WatchlistForm({
   title,
   existingEntry,
   onSuccess,
-  onCancel
+  onCancel,
 }: WatchlistFormProps) {
-  const [user, setUser] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  
+  const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   // Get user on component mount
   useEffect(() => {
-    const supabase = createClient()
+    const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user)
-    })
-  }, [])
-  
+      setUser(user);
+    });
+  }, []);
+
   // Form state
-  const [priority, setPriority] = useState(existingEntry?.priority || 0)
-  const [notes, setNotes] = useState(existingEntry?.notes || "")
+  const [priority, setPriority] = useState(existingEntry?.priority || 0);
+  const [notes, setNotes] = useState(existingEntry?.notes || '');
   const [visibility, setVisibility] = useState<'public' | 'followers' | 'private'>(
     existingEntry?.visibility || 'public'
-  )
-  
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!user) {
-      toast.error("You must be logged in to add to watchlist")
-      return
+      toast.error('You must be logged in to add to watchlist');
+      return;
     }
-    
-    setIsLoading(true)
-    
+
+    setIsLoading(true);
+
     try {
       const entryData = {
         user_id: user.id,
@@ -70,35 +76,35 @@ export function WatchlistForm({
         priority,
         notes: notes.trim() || undefined,
         visibility,
-      }
-      
+      };
+
       if (existingEntry) {
-        await updateWatchlistEntry(existingEntry.id!, entryData)
-        toast.success("Watchlist entry updated!")
+        await updateWatchlistEntry(existingEntry.id!, entryData);
+        toast.success('Watchlist entry updated!');
       } else {
-        await addToWatchlist(entryData)
-        toast.success(`${title} added to watchlist!`)
+        await addToWatchlist(entryData);
+        toast.success(`${title} added to watchlist!`);
       }
-      
-      onSuccess?.()
+
+      onSuccess?.();
     } catch (error) {
-      console.error("Error saving watchlist entry:", error)
-      toast.error("Failed to save watchlist entry. Please try again.")
+      console.error('Error saving watchlist entry:', error);
+      toast.error('Failed to save watchlist entry. Please try again.');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
-  
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="priority">Priority</Label>
-        <Select value={priority.toString()} onValueChange={(value) => setPriority(parseInt(value))}>
+        <Select value={priority.toString()} onValueChange={value => setPriority(parseInt(value))}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {priorityOptions.map((option) => (
+            {priorityOptions.map(option => (
               <SelectItem key={option.value} value={option.value.toString()}>
                 <div className="flex items-center gap-2">
                   {option.icon && <span>{option.icon}</span>}
@@ -109,21 +115,24 @@ export function WatchlistForm({
           </SelectContent>
         </Select>
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="notes">Notes (optional)</Label>
         <Textarea
           id="notes"
           value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          onChange={e => setNotes(e.target.value)}
           placeholder="Why do you want to watch this? Any specific thoughts?"
           rows={3}
         />
       </div>
-      
+
       <div className="space-y-2">
         <Label htmlFor="visibility">Who can see this?</Label>
-        <Select value={visibility} onValueChange={(value: 'public' | 'followers' | 'private') => setVisibility(value)}>
+        <Select
+          value={visibility}
+          onValueChange={(value: 'public' | 'followers' | 'private') => setVisibility(value)}
+        >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -149,10 +158,10 @@ export function WatchlistForm({
           </SelectContent>
         </Select>
       </div>
-      
+
       <div className="flex gap-3">
         <Button type="submit" disabled={isLoading} className="flex-1">
-          {isLoading ? "Saving..." : existingEntry ? "Update Entry" : "Add to Watchlist"}
+          {isLoading ? 'Saving...' : existingEntry ? 'Update Entry' : 'Add to Watchlist'}
         </Button>
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
@@ -161,5 +170,5 @@ export function WatchlistForm({
         )}
       </div>
     </form>
-  )
-} 
+  );
+}

@@ -23,9 +23,9 @@ export default function ResetPasswordForm() {
 
     try {
       // Ensure window.location.origin is available (client-side)
-      const redirectTo = `${window.location.origin}/auth/update-password`; 
+      const redirectTo = `${window.location.origin}/auth/update-password`;
       // Note: The /auth/update-password page needs to be created to handle the actual password update.
-      
+
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo,
       });
@@ -34,7 +34,9 @@ export default function ResetPasswordForm() {
         throw resetError;
       }
 
-      setMessage('If an account exists for this email, a password reset link has been sent. Please check your inbox.');
+      setMessage(
+        'If an account exists for this email, a password reset link has been sent. Please check your inbox.'
+      );
       setIsSubmitted(true);
     } catch (err: any) {
       console.error('Password reset error:', err);
@@ -45,13 +47,16 @@ export default function ResetPasswordForm() {
     }
   };
 
-  if (isSubmitted && !error) { // Only show success message if no error and submitted
+  if (isSubmitted && !error) {
+    // Only show success message if no error and submitted
     return (
       <div className="w-full max-w-sm space-y-6 text-center">
         <h2 className="text-2xl font-semibold">Check your email</h2>
         <p className="text-sm text-muted-foreground">{message}</p>
         <Link href="/login" legacyBehavior={false} className="inline-block w-full">
-          <Button variant="outline" className="w-full">Back to Login</Button>
+          <Button variant="outline" className="w-full">
+            Back to Login
+          </Button>
         </Link>
       </div>
     );
@@ -67,24 +72,26 @@ export default function ResetPasswordForm() {
           placeholder="m@example.com"
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           disabled={loading}
         />
       </div>
-      {error && (
-        <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
       {/* Display message here as well if needed, e.g. for non-submitted success before redirect or specific info messages */}
       {/* {!isSubmitted && message && <p className="text-sm text-green-500 dark:text-green-400">{message}</p>} */}
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? 'Sending...' : 'Send Password Reset Email'}
       </Button>
-       <div className="mt-4 text-center text-sm">
+      <div className="mt-4 text-center text-sm">
         Remember your password?{' '}
-        <Link href="/login" legacyBehavior={false} className="font-medium text-primary underline-offset-4 hover:underline">
+        <Link
+          href="/login"
+          legacyBehavior={false}
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
           Log in
         </Link>
       </div>
     </form>
   );
-} 
+}

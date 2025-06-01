@@ -1,4 +1,4 @@
-export type NotificationType = 
+export type NotificationType =
   | 'follow'
   | 'review_like'
   | 'review_comment'
@@ -42,4 +42,4 @@ export interface NotificationStats {
   total: number;
   unread: number;
   by_type: Record<NotificationType, number>;
-} 
+}

@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 
 // Mock Next.js router
 jest.mock('next/router', () => ({
@@ -20,9 +20,9 @@ jest.mock('next/router', () => ({
         emit: jest.fn(),
       },
       isFallback: false,
-    }
+    };
   },
-}))
+}));
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
@@ -34,21 +34,21 @@ jest.mock('next/navigation', () => ({
       back: jest.fn(),
       forward: jest.fn(),
       refresh: jest.fn(),
-    }
+    };
   },
   useSearchParams() {
-    return new URLSearchParams()
+    return new URLSearchParams();
   },
   usePathname() {
-    return '/'
+    return '/';
   },
-}))
+}));
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key'
-process.env.NEXT_PUBLIC_TMDB_API_KEY = 'test-tmdb-key'
-process.env.NEXT_PUBLIC_TMDB_API_BASE_URL = 'https://api.themoviedb.org/3'
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+process.env.NEXT_PUBLIC_TMDB_API_KEY = 'test-tmdb-key';
+process.env.NEXT_PUBLIC_TMDB_API_BASE_URL = 'https://api.themoviedb.org/3';
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
@@ -56,7 +56,7 @@ global.IntersectionObserver = class IntersectionObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-}
+};
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
@@ -64,4 +64,4 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-} 
+};

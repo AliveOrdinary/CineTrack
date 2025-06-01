@@ -38,9 +38,7 @@ export function ThemeSettings({ preferences }: ThemeSettingsProps) {
     <div className="space-y-6">
       <div>
         <Label className="text-base font-medium">Theme</Label>
-        <p className="text-sm text-muted-foreground mb-4">
-          Choose how CineTrack looks to you
-        </p>
+        <p className="text-sm text-muted-foreground mb-4">Choose how CineTrack looks to you</p>
         <RadioGroup
           value={preferences.theme}
           onValueChange={handleThemeChange}
@@ -49,10 +47,7 @@ export function ThemeSettings({ preferences }: ThemeSettingsProps) {
           {Object.entries(THEME_LABELS).map(([value, label]) => (
             <div key={value} className="flex items-center space-x-3">
               <RadioGroupItem value={value} id={`theme-${value}`} />
-              <Label 
-                htmlFor={`theme-${value}`} 
-                className="flex items-center gap-2 cursor-pointer"
-              >
+              <Label htmlFor={`theme-${value}`} className="flex items-center gap-2 cursor-pointer">
                 {getThemeIcon(value)}
                 {label}
               </Label>
@@ -62,4 +57,4 @@ export function ThemeSettings({ preferences }: ThemeSettingsProps) {
       </div>
     </div>
   );
-} 
+}

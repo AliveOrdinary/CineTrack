@@ -51,14 +51,18 @@ export default function LoginForm() {
             placeholder="m@example.com"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             disabled={loading}
           />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-            <Link href="/reset-password" legacyBehavior={false} className="text-sm font-medium text-primary underline-offset-4 hover:underline">
+            <Link
+              href="/reset-password"
+              legacyBehavior={false}
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
               Forgot password?
             </Link>
           </div>
@@ -67,19 +71,21 @@ export default function LoginForm() {
             type="password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             disabled={loading}
           />
         </div>
-        {error && (
-          <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </Button>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{' '}
-          <Link href="/signup" legacyBehavior={false} className="font-medium text-primary underline-offset-4 hover:underline">
+          <Link
+            href="/signup"
+            legacyBehavior={false}
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
             Sign up
           </Link>
         </div>
@@ -87,4 +93,4 @@ export default function LoginForm() {
       <SocialLogins />
     </div>
   );
-} 
+}

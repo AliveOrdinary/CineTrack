@@ -1,182 +1,176 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
-import { MessageSquare, Reply, Edit, Trash2, Send } from "lucide-react"
-import { 
-  getReviewComments, 
-  createReviewComment, 
-  updateReviewComment, 
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
+import { MessageSquare, Reply, Edit, Trash2, Send } from 'lucide-react';
+import {
+  getReviewComments,
+  createReviewComment,
+  updateReviewComment,
   deleteReviewComment,
-  type ReviewCommentWithUser 
-} from "@/lib/supabase/client"
-import { createClient } from "@/lib/supabase/client"
-import { toast } from "sonner"
-import { formatDistanceToNow } from "date-fns"
-import { cn } from "@/lib/utils"
+  type ReviewCommentWithUser,
+} from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
+import { toast } from 'sonner';
+import { formatDistanceToNow } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface ReviewCommentsProps {
-  reviewId: string
-  initialCommentsCount: number
-  className?: string
+  reviewId: string;
+  initialCommentsCount: number;
+  className?: string;
 }
 
 interface CommentFormProps {
-  reviewId: string
-  parentCommentId?: string
-  onCommentAdded: () => void
-  onCancel?: () => void
-  placeholder?: string
+  reviewId: string;
+  parentCommentId?: string;
+  onCommentAdded: () => void;
+  onCancel?: () => void;
+  placeholder?: string;
 }
 
-function CommentForm({ 
-  reviewId, 
-  parentCommentId, 
-  onCommentAdded, 
+function CommentForm({
+  reviewId,
+  parentCommentId,
+  onCommentAdded,
   onCancel,
-  placeholder = "Write a comment..."
+  placeholder = 'Write a comment...',
 }: CommentFormProps) {
-  const [content, setContent] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [content, setContent] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!content.trim()) {
-      toast.error("Please write a comment")
-      return
+      toast.error('Please write a comment');
+      return;
     }
 
-    setIsSubmitting(true)
-    
+    setIsSubmitting(true);
+
     try {
       await createReviewComment({
         review_id: reviewId,
         parent_comment_id: parentCommentId,
-        content: content.trim()
-      })
-      
-      setContent("")
-      onCommentAdded()
-      toast.success("Comment posted!")
+        content: content.trim(),
+      });
+
+      setContent('');
+      onCommentAdded();
+      toast.success('Comment posted!');
     } catch (error) {
-      console.error('Error posting comment:', error)
-      toast.error("Failed to post comment")
+      console.error('Error posting comment:', error);
+      toast.error('Failed to post comment');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <Textarea
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={e => setContent(e.target.value)}
         placeholder={placeholder}
         rows={3}
         maxLength={1000}
         className="resize-none"
       />
       <div className="flex justify-between items-center">
-        <span className="text-xs text-muted-foreground">
-          {content.length}/1000 characters
-        </span>
+        <span className="text-xs text-muted-foreground">{content.length}/1000 characters</span>
         <div className="flex gap-2">
           {onCancel && (
             <Button type="button" variant="outline" size="sm" onClick={onCancel}>
               Cancel
             </Button>
           )}
-          <Button 
-            type="submit" 
-            size="sm" 
-            disabled={isSubmitting || !content.trim()}
-          >
+          <Button type="submit" size="sm" disabled={isSubmitting || !content.trim()}>
             <Send className="h-3 w-3 mr-1" />
-            {isSubmitting ? "Posting..." : "Post"}
+            {isSubmitting ? 'Posting...' : 'Post'}
           </Button>
         </div>
       </div>
     </form>
-  )
+  );
 }
 
 interface CommentItemProps {
-  comment: ReviewCommentWithUser
-  onCommentUpdated: () => void
-  isReply?: boolean
+  comment: ReviewCommentWithUser;
+  onCommentUpdated: () => void;
+  isReply?: boolean;
 }
 
 function CommentItem({ comment, onCommentUpdated, isReply = false }: CommentItemProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [isReplying, setIsReplying] = useState(false)
-  const [editContent, setEditContent] = useState(comment.content)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [isEditing, setIsEditing] = useState(false);
+  const [isReplying, setIsReplying] = useState(false);
+  const [editContent, setEditContent] = useState(comment.content);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
-    getCurrentUser()
-  }, [])
+    getCurrentUser();
+  }, []);
 
   const getCurrentUser = async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    setCurrentUser(user)
-  }
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    setCurrentUser(user);
+  };
 
   const handleEdit = async () => {
     if (!editContent.trim()) {
-      toast.error("Comment cannot be empty")
-      return
+      toast.error('Comment cannot be empty');
+      return;
     }
 
-    setIsSubmitting(true)
-    
+    setIsSubmitting(true);
+
     try {
-      await updateReviewComment(comment.id!, editContent.trim())
-      setIsEditing(false)
-      onCommentUpdated()
-      toast.success("Comment updated!")
+      await updateReviewComment(comment.id!, editContent.trim());
+      setIsEditing(false);
+      onCommentUpdated();
+      toast.success('Comment updated!');
     } catch (error) {
-      console.error('Error updating comment:', error)
-      toast.error("Failed to update comment")
+      console.error('Error updating comment:', error);
+      toast.error('Failed to update comment');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this comment?")) {
-      return
+    if (!confirm('Are you sure you want to delete this comment?')) {
+      return;
     }
 
     try {
-      await deleteReviewComment(comment.id!)
-      onCommentUpdated()
-      toast.success("Comment deleted!")
+      await deleteReviewComment(comment.id!);
+      onCommentUpdated();
+      toast.success('Comment deleted!');
     } catch (error) {
-      console.error('Error deleting comment:', error)
-      toast.error("Failed to delete comment")
+      console.error('Error deleting comment:', error);
+      toast.error('Failed to delete comment');
     }
-  }
+  };
 
-  const isOwner = currentUser?.id === comment.user_id
+  const isOwner = currentUser?.id === comment.user_id;
 
   return (
-    <div className={cn("space-y-3", isReply && "ml-8 border-l-2 border-muted pl-4")}>
+    <div className={cn('space-y-3', isReply && 'ml-8 border-l-2 border-muted pl-4')}>
       <Card>
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <Avatar className="h-8 w-8">
               <AvatarImage src={comment.users?.avatar_url} />
-              <AvatarFallback>
-                {comment.users?.display_name?.charAt(0) || 'U'}
-              </AvatarFallback>
+              <AvatarFallback>{comment.users?.display_name?.charAt(0) || 'U'}</AvatarFallback>
             </Avatar>
-            
+
             <div className="flex-1 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -185,10 +179,10 @@ function CommentItem({ comment, onCommentUpdated, isReply = false }: CommentItem
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(comment.created_at!), { addSuffix: true })}
-                    {comment.is_edited && " (edited)"}
+                    {comment.is_edited && ' (edited)'}
                   </span>
                 </div>
-                
+
                 {isOwner && (
                   <div className="flex gap-1">
                     <Button
@@ -210,12 +204,12 @@ function CommentItem({ comment, onCommentUpdated, isReply = false }: CommentItem
                   </div>
                 )}
               </div>
-              
+
               {isEditing ? (
                 <div className="space-y-2">
                   <Textarea
                     value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
+                    onChange={e => setEditContent(e.target.value)}
                     rows={2}
                     maxLength={1000}
                     className="resize-none"
@@ -226,14 +220,14 @@ function CommentItem({ comment, onCommentUpdated, isReply = false }: CommentItem
                       onClick={handleEdit}
                       disabled={isSubmitting || !editContent.trim()}
                     >
-                      {isSubmitting ? "Saving..." : "Save"}
+                      {isSubmitting ? 'Saving...' : 'Save'}
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        setIsEditing(false)
-                        setEditContent(comment.content)
+                        setIsEditing(false);
+                        setEditContent(comment.content);
                       }}
                     >
                       Cancel
@@ -243,7 +237,7 @@ function CommentItem({ comment, onCommentUpdated, isReply = false }: CommentItem
               ) : (
                 <>
                   <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
-                  
+
                   {!isReply && currentUser && (
                     <Button
                       variant="ghost"
@@ -261,26 +255,26 @@ function CommentItem({ comment, onCommentUpdated, isReply = false }: CommentItem
           </div>
         </CardContent>
       </Card>
-      
+
       {isReplying && (
         <div className="ml-11">
           <CommentForm
             reviewId={comment.review_id}
             parentCommentId={comment.id}
             onCommentAdded={() => {
-              setIsReplying(false)
-              onCommentUpdated()
+              setIsReplying(false);
+              onCommentUpdated();
             }}
             onCancel={() => setIsReplying(false)}
             placeholder="Write a reply..."
           />
         </div>
       )}
-      
+
       {/* Render replies */}
       {comment.replies && comment.replies.length > 0 && (
         <div className="space-y-3">
-          {comment.replies.map((reply) => (
+          {comment.replies.map(reply => (
             <CommentItem
               key={reply.id}
               comment={reply}
@@ -291,79 +285,77 @@ function CommentItem({ comment, onCommentUpdated, isReply = false }: CommentItem
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export function ReviewComments({ 
-  reviewId, 
-  initialCommentsCount, 
-  className 
-}: ReviewCommentsProps) {
-  const [comments, setComments] = useState<ReviewCommentWithUser[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [showComments, setShowComments] = useState(false)
-  const [showCommentForm, setShowCommentForm] = useState(false)
-  const [commentsCount, setCommentsCount] = useState(initialCommentsCount)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+export function ReviewComments({ reviewId, initialCommentsCount, className }: ReviewCommentsProps) {
+  const [comments, setComments] = useState<ReviewCommentWithUser[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [showCommentForm, setShowCommentForm] = useState(false);
+  const [commentsCount, setCommentsCount] = useState(initialCommentsCount);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    checkAuth()
-  }, [])
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     if (showComments && comments.length === 0) {
-      loadComments()
+      loadComments();
     }
-  }, [showComments])
+  }, [showComments]);
 
   const checkAuth = async () => {
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    setIsAuthenticated(!!user)
-  }
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    setIsAuthenticated(!!user);
+  };
 
   const loadComments = async () => {
-    setIsLoading(true)
-    
+    setIsLoading(true);
+
     try {
-      const commentsData = await getReviewComments(reviewId)
-      setComments(commentsData)
-      setCommentsCount(commentsData.reduce((total, comment) => 
-        total + 1 + (comment.replies?.length || 0), 0
-      ))
+      const commentsData = await getReviewComments(reviewId);
+      setComments(commentsData);
+      setCommentsCount(
+        commentsData.reduce((total, comment) => total + 1 + (comment.replies?.length || 0), 0)
+      );
     } catch (error) {
-      console.error('Error loading comments:', error)
-      toast.error("Failed to load comments")
+      console.error('Error loading comments:', error);
+      toast.error('Failed to load comments');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCommentUpdate = () => {
-    loadComments()
-  }
+    loadComments();
+  };
 
   const handleToggleComments = () => {
-    setShowComments(!showComments)
+    setShowComments(!showComments);
     if (!showComments) {
-      setShowCommentForm(false)
+      setShowCommentForm(false);
     }
-  }
+  };
 
   const handleToggleCommentForm = () => {
     if (!isAuthenticated) {
-      toast.error("Please log in to comment")
-      return
+      toast.error('Please log in to comment');
+      return;
     }
-    
-    setShowCommentForm(!showCommentForm)
+
+    setShowCommentForm(!showCommentForm);
     if (!showComments) {
-      setShowComments(true)
+      setShowComments(true);
     }
-  }
+  };
 
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn('space-y-4', className)}>
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -372,9 +364,11 @@ export function ReviewComments({
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
         >
           <MessageSquare className="h-4 w-4" />
-          <span>{commentsCount} {commentsCount === 1 ? 'comment' : 'comments'}</span>
+          <span>
+            {commentsCount} {commentsCount === 1 ? 'comment' : 'comments'}
+          </span>
         </Button>
-        
+
         {isAuthenticated && (
           <Button
             variant="ghost"
@@ -386,18 +380,18 @@ export function ReviewComments({
           </Button>
         )}
       </div>
-      
+
       {showCommentForm && (
         <CommentForm
           reviewId={reviewId}
           onCommentAdded={() => {
-            setShowCommentForm(false)
-            handleCommentUpdate()
+            setShowCommentForm(false);
+            handleCommentUpdate();
           }}
           onCancel={() => setShowCommentForm(false)}
         />
       )}
-      
+
       {showComments && (
         <div className="space-y-4">
           {isLoading ? (
@@ -418,7 +412,7 @@ export function ReviewComments({
             </div>
           ) : comments.length > 0 ? (
             <div className="space-y-4">
-              {comments.map((comment) => (
+              {comments.map(comment => (
                 <CommentItem
                   key={comment.id}
                   comment={comment}
@@ -435,5 +429,5 @@ export function ReviewComments({
         </div>
       )}
     </div>
-  )
-} 
+  );
+}

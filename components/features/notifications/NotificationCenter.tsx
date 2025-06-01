@@ -6,7 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useNotifications } from '@/hooks/use-notifications';
 import { NotificationItem } from './NotificationItem';
 import { NotificationType } from '@/lib/types/notifications';
@@ -33,7 +39,7 @@ export function NotificationCenter() {
     markAllAsRead,
     deleteNotification,
     deleteAllNotifications,
-    refresh
+    refresh,
   } = useNotifications();
 
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
@@ -65,7 +71,9 @@ export function NotificationCenter() {
   };
 
   const handleDeleteAll = async () => {
-    if (!confirm('Are you sure you want to delete all notifications? This action cannot be undone.')) {
+    if (
+      !confirm('Are you sure you want to delete all notifications? This action cannot be undone.')
+    ) {
       return;
     }
 
@@ -113,20 +121,15 @@ export function NotificationCenter() {
               </Badge>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2">
             {unreadCount > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleMarkAllAsRead}
-                className="text-xs"
-              >
+              <Button variant="outline" size="sm" onClick={handleMarkAllAsRead} className="text-xs">
                 <CheckCheck className="h-4 w-4 mr-1" />
                 Mark All Read
               </Button>
             )}
-            
+
             {notifications.length > 0 && (
               <Button
                 variant="outline"
@@ -145,18 +148,17 @@ export function NotificationCenter() {
       <CardContent className="space-y-4">
         {/* Filters */}
         <div className="flex items-center gap-4">
-          <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'all' | 'unread')}>
+          <Tabs value={activeTab} onValueChange={value => setActiveTab(value as 'all' | 'unread')}>
             <TabsList>
-              <TabsTrigger value="all">
-                All ({stats?.total || 0})
-              </TabsTrigger>
-              <TabsTrigger value="unread">
-                Unread ({unreadCount})
-              </TabsTrigger>
+              <TabsTrigger value="all">All ({stats?.total || 0})</TabsTrigger>
+              <TabsTrigger value="unread">Unread ({unreadCount})</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <Select value={typeFilter} onValueChange={(value) => setTypeFilter(value as NotificationType | 'all')}>
+          <Select
+            value={typeFilter}
+            onValueChange={value => setTypeFilter(value as NotificationType | 'all')}
+          >
             <SelectTrigger className="w-48">
               <Filter className="h-4 w-4 mr-2" />
               <SelectValue placeholder="Filter by type" />
@@ -179,15 +181,14 @@ export function NotificationCenter() {
               <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg font-medium mb-2">No notifications</p>
               <p className="text-sm">
-                {activeTab === 'unread' 
+                {activeTab === 'unread'
                   ? "You're all caught up! No unread notifications."
-                  : "You don't have any notifications yet."
-                }
+                  : "You don't have any notifications yet."}
               </p>
             </div>
           ) : (
             <>
-              {filteredNotifications.map((notification) => (
+              {filteredNotifications.map(notification => (
                 <NotificationItem
                   key={notification.id}
                   notification={notification}
@@ -199,11 +200,7 @@ export function NotificationCenter() {
               {/* Load More Button */}
               {filteredNotifications.length >= 20 && (
                 <div className="flex justify-center pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={handleLoadMore}
-                    disabled={isLoadingMore}
-                  >
+                  <Button variant="outline" onClick={handleLoadMore} disabled={isLoadingMore}>
                     {isLoadingMore ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -221,4 +218,4 @@ export function NotificationCenter() {
       </CardContent>
     </Card>
   );
-} 
+}

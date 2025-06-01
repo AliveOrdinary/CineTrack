@@ -49,12 +49,9 @@ export class DatabaseBackupManager {
       // Since we can't easily query the plan status programmatically,
       // we'll assume it's available if we can connect to the database
       const supabase = createClient(this.supabaseUrl, this.supabaseKey);
-      
+
       // Test basic connectivity
-      const { data, error } = await supabase
-        .from('users')
-        .select('id')
-        .limit(1);
+      const { data, error } = await supabase.from('users').select('id').limit(1);
 
       if (error && error.code !== 'PGRST116') {
         console.warn('Could not verify PITR status:', error.message);
@@ -78,10 +75,11 @@ export class DatabaseBackupManager {
     // - Free: 7 days
     // - Pro: 7 days (can be extended)
     // - Team/Enterprise: Configurable
-    
+
     return {
       days: 7, // Default for most Supabase plans
-      description: 'Supabase provides 7-day backup retention by default. Pro plans can extend this period.'
+      description:
+        'Supabase provides 7-day backup retention by default. Pro plans can extend this period.',
     };
   }
 
@@ -94,21 +92,21 @@ export class DatabaseBackupManager {
       // Simulate checking backup status
       // In production, this would integrate with Supabase's backup API
       const now = new Date();
-      const lastBackupTime = new Date(now.getTime() - (Math.random() * 24 * 60 * 60 * 1000)); // Random time in last 24h
-      
+      const lastBackupTime = new Date(now.getTime() - Math.random() * 24 * 60 * 60 * 1000); // Random time in last 24h
+
       return {
         timestamp: lastBackupTime.toISOString(),
         status: 'success',
         type: 'automatic',
         size: Math.floor(Math.random() * 1000000000), // Random size in bytes
-        duration: Math.floor(Math.random() * 300) + 30 // 30-330 seconds
+        duration: Math.floor(Math.random() * 300) + 30, // 30-330 seconds
       };
     } catch (error) {
       return {
         timestamp: new Date().toISOString(),
         status: 'failed',
         type: 'automatic',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -120,7 +118,7 @@ export class DatabaseBackupManager {
     const pitrEnabled = await this.checkPointInTimeRecovery();
     const retentionPolicy = this.getBackupRetentionPolicy();
     const lastBackup = await this.getLastBackupStatus();
-    
+
     const recommendations: string[] = [];
     let healthScore = 100;
 
@@ -137,14 +135,16 @@ export class DatabaseBackupManager {
 
     const lastBackupAge = Date.now() - new Date(lastBackup.timestamp).getTime();
     const hoursOld = lastBackupAge / (1000 * 60 * 60);
-    
+
     if (hoursOld > 25) {
       recommendations.push('Last backup is over 24 hours old - check backup schedule');
       healthScore -= 20;
     }
 
     if (retentionPolicy.days < 14) {
-      recommendations.push('Consider extending backup retention period for better recovery options');
+      recommendations.push(
+        'Consider extending backup retention period for better recovery options'
+      );
       healthScore -= 10;
     }
 
@@ -160,23 +160,24 @@ export class DatabaseBackupManager {
       backupRetentionDays: retentionPolicy.days,
       pointInTimeRecoveryEnabled: pitrEnabled,
       recommendations,
-      healthScore: Math.max(0, healthScore)
+      healthScore: Math.max(0, healthScore),
     };
   }
 
   /**
    * Test database connectivity for backup validation
    */
-  async testDatabaseConnectivity(): Promise<{ success: boolean; latency?: number; error?: string }> {
+  async testDatabaseConnectivity(): Promise<{
+    success: boolean;
+    latency?: number;
+    error?: string;
+  }> {
     const startTime = Date.now();
-    
+
     try {
       const supabase = createClient(this.supabaseUrl, this.supabaseKey);
-      
-      const { data, error } = await supabase
-        .from('users')
-        .select('id')
-        .limit(1);
+
+      const { data, error } = await supabase.from('users').select('id').limit(1);
 
       const latency = Date.now() - startTime;
 
@@ -184,19 +185,19 @@ export class DatabaseBackupManager {
         return {
           success: false,
           latency,
-          error: error.message
+          error: error.message,
         };
       }
 
       return {
         success: true,
-        latency
+        latency,
       };
     } catch (error) {
       return {
         success: false,
         latency: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -204,7 +205,11 @@ export class DatabaseBackupManager {
   /**
    * Validate critical tables exist (backup integrity check)
    */
-  async validateCriticalTables(): Promise<{ valid: boolean; missingTables: string[]; error?: string }> {
+  async validateCriticalTables(): Promise<{
+    valid: boolean;
+    missingTables: string[];
+    error?: string;
+  }> {
     const criticalTables = [
       'users',
       'watched_content',
@@ -212,7 +217,7 @@ export class DatabaseBackupManager {
       'custom_lists',
       'watchlist',
       'follows',
-      'notifications'
+      'notifications',
     ];
 
     try {
@@ -220,10 +225,7 @@ export class DatabaseBackupManager {
       const missingTables: string[] = [];
 
       for (const table of criticalTables) {
-        const { data, error } = await supabase
-          .from(table)
-          .select('*')
-          .limit(1);
+        const { data, error } = await supabase.from(table).select('*').limit(1);
 
         if (error && error.code === 'PGRST116') {
           // Table doesn't exist
@@ -233,13 +235,13 @@ export class DatabaseBackupManager {
 
       return {
         valid: missingTables.length === 0,
-        missingTables
+        missingTables,
       };
     } catch (error) {
       return {
         valid: false,
         missingTables: [],
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -261,20 +263,21 @@ export const BackupMonitor = {
 
     if (report.lastBackup) {
       const backup = report.lastBackup;
-      const statusIcon = backup.status === 'success' ? '✅' : backup.status === 'failed' ? '❌' : '⏳';
+      const statusIcon =
+        backup.status === 'success' ? '✅' : backup.status === 'failed' ? '❌' : '⏳';
       output += `Last Backup: ${statusIcon}\n`;
       output += `  Status: ${backup.status.toUpperCase()}\n`;
       output += `  Time: ${new Date(backup.timestamp).toLocaleString()}\n`;
       output += `  Type: ${backup.type}\n`;
-      
+
       if (backup.size) {
         output += `  Size: ${(backup.size / 1024 / 1024).toFixed(2)} MB\n`;
       }
-      
+
       if (backup.duration) {
         output += `  Duration: ${backup.duration}s\n`;
       }
-      
+
       if (backup.error) {
         output += `  Error: ${backup.error}\n`;
       }
@@ -313,7 +316,7 @@ export const BackupMonitor = {
         console.error('Failed to generate backup report:', error);
       }
     }
-  }
+  },
 };
 
 /**
@@ -336,7 +339,7 @@ export const RecoveryProcedures = {
       '7. Update environment variables with new database URL',
       '8. Run database migrations if needed',
       '9. Verify data integrity after restoration',
-      '10. Update DNS/deployment configuration if necessary'
+      '10. Update DNS/deployment configuration if necessary',
     ];
   },
 
@@ -347,7 +350,7 @@ export const RecoveryProcedures = {
     return [
       { role: 'Database Administrator', contact: 'dba@cinetrack.com' },
       { role: 'DevOps Engineer', contact: 'devops@cinetrack.com' },
-      { role: 'Supabase Support', contact: 'https://supabase.com/support' }
+      { role: 'Supabase Support', contact: 'https://supabase.com/support' },
     ];
   },
 
@@ -365,7 +368,7 @@ export const RecoveryProcedures = {
       '□ Test application functionality post-recovery',
       '□ Validate user authentication after restore',
       '□ Check data consistency across related tables',
-      '□ Verify file storage links and uploads'
+      '□ Verify file storage links and uploads',
     ];
-  }
-}; 
+  },
+};

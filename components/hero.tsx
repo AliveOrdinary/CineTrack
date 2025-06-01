@@ -9,10 +9,10 @@ export default function Hero() {
           Your Ultimate Movie & TV Show Tracker
         </h2>
       </div>
-      
+
       <p className="text-lg lg:text-xl text-muted-foreground max-w-2xl">
-        Discover, track, and review your favorite movies and TV shows. 
-        Build watchlists, share reviews, and connect with fellow film enthusiasts.
+        Discover, track, and review your favorite movies and TV shows. Build watchlists, share
+        reviews, and connect with fellow film enthusiasts.
       </p>
 
       <div className="flex flex-wrap gap-4 justify-center">
@@ -29,7 +29,7 @@ export default function Hero() {
           Share your reviews
         </div>
       </div>
-      
+
       <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />
     </div>
   );

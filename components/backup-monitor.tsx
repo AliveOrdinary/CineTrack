@@ -93,7 +93,7 @@ export function BackupMonitorComponent() {
           Refresh
         </button>
       </div>
-      
+
       <div className="space-y-2 text-xs">
         <div className="flex items-center justify-between">
           <span>Health Score:</span>
@@ -101,28 +101,27 @@ export function BackupMonitorComponent() {
             {getHealthIcon(report.healthScore)} {report.healthScore}/100
           </span>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <span>PITR:</span>
           <span>{report.pointInTimeRecoveryEnabled ? '✅' : '❌'}</span>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <span>Retention:</span>
           <span>{report.backupRetentionDays} days</span>
         </div>
-        
+
         {report.lastBackup && (
           <div className="flex items-center justify-between">
             <span>Last Backup:</span>
             <span>
-              {report.lastBackup.status === 'success' ? '✅' : '❌'} 
-              {' '}
+              {report.lastBackup.status === 'success' ? '✅' : '❌'}{' '}
               {new Date(report.lastBackup.timestamp).toLocaleDateString()}
             </span>
           </div>
         )}
-        
+
         {report.recommendations.length > 0 && (
           <div className="mt-2 pt-2 border-t">
             <p className="font-medium mb-1">Recommendations:</p>
@@ -143,4 +142,4 @@ export function BackupMonitorComponent() {
       </div>
     </div>
   );
-} 
+}

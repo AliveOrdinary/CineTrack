@@ -15,11 +15,11 @@ export function SecurityLogger() {
       const timer = setTimeout(() => {
         logSecurityStatus();
       }, 1000);
-      
+
       return () => clearTimeout(timer);
     }
   }, []);
 
   // This component doesn't render anything
   return null;
-} 
+}

@@ -1,22 +1,34 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { createClient, getCustomListWithItems, addItemToList, checkItemInList, type CustomListWithItems } from "@/lib/supabase/client"
-import { searchMulti } from "@/lib/tmdb/client"
-import { TmdbMedia } from "@/lib/tmdb/types"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { ArrowLeft, Search, Plus, Check, Film, Tv, User, Star, Loader2 } from "lucide-react"
-import { toast } from "sonner"
-import { useDebounce } from "@/hooks/use-debounce"
-import Link from "next/link"
-import Image from "next/image"
-import { notFound } from "next/navigation"
+import { useState, useEffect } from 'react';
+import {
+  createClient,
+  getCustomListWithItems,
+  addItemToList,
+  checkItemInList,
+  type CustomListWithItems,
+} from '@/lib/supabase/client';
+import { searchMulti } from '@/lib/tmdb/client';
+import { TmdbMedia } from '@/lib/tmdb/types';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { ArrowLeft, Search, Plus, Check, Film, Tv, User, Star, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useDebounce } from '@/hooks/use-debounce';
+import Link from 'next/link';
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
 
 interface AddItemsContentProps {
   listId: string;
@@ -28,146 +40,160 @@ interface SearchResultWithStatus extends TmdbMedia {
 }
 
 export function AddItemsContent({ listId }: AddItemsContentProps) {
-  const [list, setList] = useState<CustomListWithItems | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isOwner, setIsOwner] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<SearchResultWithStatus[]>([])
-  const [isSearching, setIsSearching] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<SearchResultWithStatus | null>(null)
-  const [notes, setNotes] = useState('')
+  const [list, setList] = useState<CustomListWithItems | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isOwner, setIsOwner] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResultWithStatus[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<SearchResultWithStatus | null>(null);
+  const [notes, setNotes] = useState('');
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 500)
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useEffect(() => {
-    loadListData()
-  }, [listId])
+    loadListData();
+  }, [listId]);
 
   useEffect(() => {
     if (debouncedSearchQuery.trim()) {
-      performSearch(debouncedSearchQuery)
+      performSearch(debouncedSearchQuery);
     } else {
-      setSearchResults([])
+      setSearchResults([]);
     }
-  }, [debouncedSearchQuery])
+  }, [debouncedSearchQuery]);
 
   const loadListData = async () => {
     try {
-      setIsLoading(true)
-      
+      setIsLoading(true);
+
       // Check if user is authenticated
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        toast.error("Please log in to add items to lists")
-        return
+        toast.error('Please log in to add items to lists');
+        return;
       }
 
       // Get list data
-      const listData = await getCustomListWithItems(listId)
-      setList(listData)
-      
+      const listData = await getCustomListWithItems(listId);
+      setList(listData);
+
       // Check if current user is the owner
-      setIsOwner(user.id === listData.user_id)
-      
+      setIsOwner(user.id === listData.user_id);
+
       if (user.id !== listData.user_id) {
-        toast.error("You can only add items to your own lists")
-        return
+        toast.error('You can only add items to your own lists');
+        return;
       }
     } catch (error) {
-      console.error('Error loading list:', error)
+      console.error('Error loading list:', error);
       if (error instanceof Error && error.message.includes('not found')) {
-        notFound()
+        notFound();
       }
-      toast.error("Failed to load list")
+      toast.error('Failed to load list');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const performSearch = async (query: string) => {
     try {
-      setIsSearching(true)
-      const response = await searchMulti(query)
-      
+      setIsSearching(true);
+      const response = await searchMulti(query);
+
       // Filter to only movies and TV shows
-      const filteredResults = response.results.filter((item: TmdbMedia) => 
-        item.media_type === 'movie' || item.media_type === 'tv'
-      )
+      const filteredResults = response.results.filter(
+        (item: TmdbMedia) => item.media_type === 'movie' || item.media_type === 'tv'
+      );
 
       // Check which items are already in the list
       const resultsWithStatus = await Promise.all(
         filteredResults.map(async (item: TmdbMedia) => {
-          const isInList = await checkItemInList(listId, item.id, item.media_type as 'movie' | 'tv')
+          const isInList = await checkItemInList(
+            listId,
+            item.id,
+            item.media_type as 'movie' | 'tv'
+          );
           return {
             ...item,
-            isInList
-          }
+            isInList,
+          };
         })
-      )
+      );
 
-      setSearchResults(resultsWithStatus)
+      setSearchResults(resultsWithStatus);
     } catch (error) {
-      console.error('Error searching:', error)
-      toast.error("Failed to search content")
+      console.error('Error searching:', error);
+      toast.error('Failed to search content');
     } finally {
-      setIsSearching(false)
+      setIsSearching(false);
     }
-  }
+  };
 
   const handleAddItem = async (item: SearchResultWithStatus, itemNotes?: string) => {
     try {
       // Update UI immediately
-      setSearchResults(prev => prev.map(result => 
-        result.id === item.id ? { ...result, isAdding: true } : result
-      ))
+      setSearchResults(prev =>
+        prev.map(result => (result.id === item.id ? { ...result, isAdding: true } : result))
+      );
 
       await addItemToList({
         list_id: listId,
         tmdb_id: item.id,
         media_type: item.media_type as 'movie' | 'tv',
-        notes: itemNotes || undefined
-      })
+        notes: itemNotes || undefined,
+      });
 
       // Update the item status
-      setSearchResults(prev => prev.map(result => 
-        result.id === item.id 
-          ? { ...result, isInList: true, isAdding: false }
-          : result
-      ))
+      setSearchResults(prev =>
+        prev.map(result =>
+          result.id === item.id ? { ...result, isInList: true, isAdding: false } : result
+        )
+      );
 
-      toast.success(`Added "${item.title || item.name}" to list`)
-      setSelectedItem(null)
-      setNotes('')
+      toast.success(`Added "${item.title || item.name}" to list`);
+      setSelectedItem(null);
+      setNotes('');
     } catch (error) {
-      console.error('Error adding item:', error)
-      toast.error("Failed to add item to list")
-      
+      console.error('Error adding item:', error);
+      toast.error('Failed to add item to list');
+
       // Revert UI state
-      setSearchResults(prev => prev.map(result => 
-        result.id === item.id ? { ...result, isAdding: false } : result
-      ))
+      setSearchResults(prev =>
+        prev.map(result => (result.id === item.id ? { ...result, isAdding: false } : result))
+      );
     }
-  }
+  };
 
   const getMediaTypeIcon = (mediaType: string) => {
     switch (mediaType) {
-      case 'movie': return <Film className="h-4 w-4" />
-      case 'tv': return <Tv className="h-4 w-4" />
-      case 'person': return <User className="h-4 w-4" />
-      default: return <Film className="h-4 w-4" />
+      case 'movie':
+        return <Film className="h-4 w-4" />;
+      case 'tv':
+        return <Tv className="h-4 w-4" />;
+      case 'person':
+        return <User className="h-4 w-4" />;
+      default:
+        return <Film className="h-4 w-4" />;
     }
-  }
+  };
 
   const getMediaTypeColor = (mediaType: string) => {
     switch (mediaType) {
-      case 'movie': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-      case 'tv': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-      case 'person': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+      case 'movie':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      case 'tv':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'person':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -180,17 +206,17 @@ export function AddItemsContent({ listId }: AddItemsContentProps) {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (!list || !isOwner) {
     return (
       <div className="text-center py-12">
         <p className="text-muted-foreground">
-          {!list ? "List not found." : "You can only add items to your own lists."}
+          {!list ? 'List not found.' : 'You can only add items to your own lists.'}
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -219,7 +245,7 @@ export function AddItemsContent({ listId }: AddItemsContentProps) {
         <Input
           placeholder="Search for movies and TV shows..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           className="pl-10"
         />
         {isSearching && (
@@ -233,14 +259,14 @@ export function AddItemsContent({ listId }: AddItemsContentProps) {
           <h2 className="text-lg font-semibold">
             Search Results {searchResults.length > 0 && `(${searchResults.length})`}
           </h2>
-          
+
           {searchResults.length === 0 && !isSearching ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground">No results found for "{searchQuery}"</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {searchResults.map((item) => (
+              {searchResults.map(item => (
                 <Card key={`${item.media_type}-${item.id}`} className="overflow-hidden">
                   <div className="relative aspect-[2/3]">
                     {item.poster_path ? (
@@ -257,20 +283,20 @@ export function AddItemsContent({ listId }: AddItemsContentProps) {
                       </div>
                     )}
                   </div>
-                  
+
                   <CardContent className="p-4">
                     <div className="space-y-3">
                       <div className="space-y-2">
                         <h3 className="font-medium text-sm line-clamp-2">
                           {item.title || item.name}
                         </h3>
-                        
+
                         <div className="flex items-center justify-between">
                           <Badge variant="secondary" className={getMediaTypeColor(item.media_type)}>
                             {getMediaTypeIcon(item.media_type)}
                             <span className="ml-1 capitalize">{item.media_type}</span>
                           </Badge>
-                          
+
                           {item.vote_average && item.vote_average > 0 && (
                             <div className="flex items-center gap-1">
                               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
@@ -280,14 +306,14 @@ export function AddItemsContent({ listId }: AddItemsContentProps) {
                             </div>
                           )}
                         </div>
-                        
+
                         {(item.release_date || item.first_air_date) && (
                           <p className="text-xs text-muted-foreground">
                             {new Date(item.release_date || item.first_air_date!).getFullYear()}
                           </p>
                         )}
                       </div>
-                      
+
                       {item.isInList ? (
                         <Button variant="outline" size="sm" className="w-full" disabled>
                           <Check className="h-4 w-4 mr-2" />
@@ -308,7 +334,7 @@ export function AddItemsContent({ listId }: AddItemsContentProps) {
                             )}
                             Add
                           </Button>
-                          
+
                           <Dialog>
                             <DialogTrigger asChild>
                               <Button
@@ -338,29 +364,32 @@ export function AddItemsContent({ listId }: AddItemsContentProps) {
                                   )}
                                   <div>
                                     <h3 className="font-medium">{item.title || item.name}</h3>
-                                    <Badge variant="secondary" className={getMediaTypeColor(item.media_type)}>
+                                    <Badge
+                                      variant="secondary"
+                                      className={getMediaTypeColor(item.media_type)}
+                                    >
                                       {getMediaTypeIcon(item.media_type)}
                                       <span className="ml-1 capitalize">{item.media_type}</span>
                                     </Badge>
                                   </div>
                                 </div>
-                                
+
                                 <div>
                                   <Label htmlFor="notes">Notes (Optional)</Label>
                                   <Textarea
                                     id="notes"
                                     value={notes}
-                                    onChange={(e) => setNotes(e.target.value)}
+                                    onChange={e => setNotes(e.target.value)}
                                     placeholder="Add your thoughts about this item..."
                                     rows={3}
                                   />
                                 </div>
-                                
+
                                 <div className="flex justify-end gap-2">
                                   <Button variant="outline" onClick={() => setSelectedItem(null)}>
                                     Cancel
                                   </Button>
-                                  <Button 
+                                  <Button
                                     onClick={() => handleAddItem(item, notes)}
                                     disabled={item.isAdding}
                                   >
@@ -397,5 +426,5 @@ export function AddItemsContent({ listId }: AddItemsContentProps) {
         </div>
       )}
     </div>
-  )
-} 
+  );
+}

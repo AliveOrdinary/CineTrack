@@ -121,8 +121,8 @@ export interface TmdbCrewMember {
 
 export interface TmdbCombinedCreditsResponse {
   id: number; // Person ID
-  cast: (TmdbMovieDetails | TmdbTvDetails & { character: string })[];
-  crew: (TmdbMovieDetails | TmdbTvDetails & { job: string, department: string })[];
+  cast: (TmdbMovieDetails | (TmdbTvDetails & { character: string }))[];
+  crew: (TmdbMovieDetails | (TmdbTvDetails & { job: string; department: string }))[];
 }
 
 export interface TmdbMovieCreditsResponse {
@@ -209,4 +209,4 @@ export interface TmdbEpisodeDetails extends TmdbEpisode {
       vote_count: number;
     }>;
   };
-} 
+}

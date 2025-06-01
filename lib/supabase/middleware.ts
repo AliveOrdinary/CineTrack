@@ -61,4 +61,4 @@ export async function updateSession(request: NextRequest) {
   await supabase.auth.getUser(); // Or supabase.auth.getSession()
 
   return response;
-} 
+}

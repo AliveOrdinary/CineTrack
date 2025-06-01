@@ -12,26 +12,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import {
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Clock,
   Filter,
   BarChart3,
   Users,
-  Flag
+  Flag,
 } from 'lucide-react';
-import { 
-  getAllReports, 
-  getReportStats
-} from '@/lib/supabase/reports';
-import { 
-  ReportStatus, 
-  ReportedContentType, 
+import { getAllReports, getReportStats } from '@/lib/supabase/reports';
+import {
+  ReportStatus,
+  ReportedContentType,
   REPORT_STATUS_LABELS,
   REPORT_REASON_LABELS,
-  type ReportWithReporter
+  type ReportWithReporter,
 } from '@/types/reports';
 import { ModerationQueue } from './ModerationQueue';
 import { ModerationStats } from './ModerationStats';
@@ -72,21 +69,31 @@ export function ModerationDashboard() {
 
   const getStatusIcon = (status: ReportStatus) => {
     switch (status) {
-      case 'pending': return <Clock className="h-4 w-4" />;
-      case 'reviewed': return <AlertTriangle className="h-4 w-4" />;
-      case 'resolved': return <CheckCircle className="h-4 w-4" />;
-      case 'dismissed': return <XCircle className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
+      case 'pending':
+        return <Clock className="h-4 w-4" />;
+      case 'reviewed':
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'resolved':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'dismissed':
+        return <XCircle className="h-4 w-4" />;
+      default:
+        return <Clock className="h-4 w-4" />;
     }
   };
 
   const getStatusColor = (status: ReportStatus) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'reviewed': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'resolved': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'dismissed': return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'reviewed':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      case 'resolved':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'dismissed':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
     }
   };
 
@@ -138,7 +145,9 @@ export function ModerationDashboard() {
                   <label className="text-sm font-medium">Content Type</label>
                   <Select
                     value={contentTypeFilter}
-                    onValueChange={(value: ReportedContentType | 'all') => setContentTypeFilter(value)}
+                    onValueChange={(value: ReportedContentType | 'all') =>
+                      setContentTypeFilter(value)
+                    }
                   >
                     <SelectTrigger className="w-[180px]">
                       <SelectValue />
@@ -154,11 +163,7 @@ export function ModerationDashboard() {
                 </div>
 
                 <div className="flex items-end">
-                  <Button 
-                    variant="outline" 
-                    onClick={loadReports}
-                    disabled={isLoading}
-                  >
+                  <Button variant="outline" onClick={loadReports} disabled={isLoading}>
                     Refresh
                   </Button>
                 </div>
@@ -191,4 +196,4 @@ export function ModerationDashboard() {
       )}
     </div>
   );
-} 
+}

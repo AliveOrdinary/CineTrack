@@ -20,24 +20,24 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  CheckCircle, 
-  XCircle, 
+import {
+  CheckCircle,
+  XCircle,
   AlertTriangle,
   Clock,
   User,
   MessageSquare,
   List,
   Flag,
-  Calendar
+  Calendar,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { 
+import {
   type ReportWithReporter,
   ResolutionAction,
   REPORT_REASON_LABELS,
   REPORT_STATUS_LABELS,
-  RESOLUTION_ACTION_LABELS
+  RESOLUTION_ACTION_LABELS,
 } from '@/types/reports';
 import { updateReport } from '@/lib/supabase/reports';
 import { toast } from 'sonner';
@@ -53,7 +53,7 @@ export function ReportDetailsModal({
   report,
   isOpen,
   onClose,
-  onReportUpdated
+  onReportUpdated,
 }: ReportDetailsModalProps) {
   const [isResolving, setIsResolving] = useState(false);
   const [resolutionAction, setResolutionAction] = useState<ResolutionAction>('no_action');
@@ -61,42 +61,63 @@ export function ReportDetailsModal({
 
   const getContentTypeIcon = (contentType: string) => {
     switch (contentType) {
-      case 'review': return <MessageSquare className="h-4 w-4" />;
-      case 'list': return <List className="h-4 w-4" />;
-      case 'user': return <User className="h-4 w-4" />;
-      case 'comment': return <MessageSquare className="h-4 w-4" />;
-      default: return <Flag className="h-4 w-4" />;
+      case 'review':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'list':
+        return <List className="h-4 w-4" />;
+      case 'user':
+        return <User className="h-4 w-4" />;
+      case 'comment':
+        return <MessageSquare className="h-4 w-4" />;
+      default:
+        return <Flag className="h-4 w-4" />;
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'pending': return <Clock className="h-4 w-4" />;
-      case 'reviewed': return <AlertTriangle className="h-4 w-4" />;
-      case 'resolved': return <CheckCircle className="h-4 w-4" />;
-      case 'dismissed': return <XCircle className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
+      case 'pending':
+        return <Clock className="h-4 w-4" />;
+      case 'reviewed':
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'resolved':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'dismissed':
+        return <XCircle className="h-4 w-4" />;
+      default:
+        return <Clock className="h-4 w-4" />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'reviewed': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      case 'resolved': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'dismissed': return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'reviewed':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      case 'resolved':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'dismissed':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
     }
   };
 
   const getReasonColor = (reason: string) => {
     switch (reason) {
-      case 'spam': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
-      case 'harassment': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      case 'hate_speech': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      case 'inappropriate_content': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-      case 'violence': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      case 'spam':
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+      case 'harassment':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+      case 'hate_speech':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+      case 'inappropriate_content':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
+      case 'violence':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
     }
   };
 
@@ -108,7 +129,7 @@ export function ReportDetailsModal({
         status: 'resolved',
         resolution_action: resolutionAction,
         moderator_notes: moderatorNotes.trim() || undefined,
-        resolved_at: new Date().toISOString()
+        resolved_at: new Date().toISOString(),
       });
 
       toast.success('Report resolved successfully');
@@ -128,7 +149,7 @@ export function ReportDetailsModal({
 
       await updateReport(report.id, {
         status: 'dismissed',
-        moderator_notes: moderatorNotes.trim() || undefined
+        moderator_notes: moderatorNotes.trim() || undefined,
       });
 
       toast.success('Report dismissed successfully');
@@ -148,7 +169,7 @@ export function ReportDetailsModal({
 
       await updateReport(report.id, {
         status: 'reviewed',
-        moderator_notes: moderatorNotes.trim() || undefined
+        moderator_notes: moderatorNotes.trim() || undefined,
       });
 
       toast.success('Report marked as under review');
@@ -170,9 +191,7 @@ export function ReportDetailsModal({
             <Flag className="h-5 w-5" />
             Report Details
           </DialogTitle>
-          <DialogDescription>
-            Review and take action on this content report
-          </DialogDescription>
+          <DialogDescription>Review and take action on this content report</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -246,14 +265,12 @@ export function ReportDetailsModal({
                   <Avatar>
                     <AvatarImage src={report.reporter.avatar_url} />
                     <AvatarFallback>
-                      {report.reporter.username.charAt(0).toUpperCase()}
+                      {report.reporter.display_name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h4 className="font-medium">Reporter</h4>
-                    <p className="text-sm text-muted-foreground">
-                      {report.reporter.username}
-                    </p>
+                    <p className="text-sm text-muted-foreground">{report.reporter.display_name}</p>
                   </div>
                 </div>
 
@@ -261,13 +278,13 @@ export function ReportDetailsModal({
                   <Avatar>
                     <AvatarImage src={report.reported_user.avatar_url} />
                     <AvatarFallback>
-                      {report.reported_user.username.charAt(0).toUpperCase()}
+                      {report.reported_user.display_name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h4 className="font-medium">Reported User</h4>
                     <p className="text-sm text-muted-foreground">
-                      {report.reported_user.username}
+                      {report.reported_user.display_name}
                     </p>
                   </div>
                 </div>
@@ -287,13 +304,13 @@ export function ReportDetailsModal({
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={report.moderator.avatar_url} />
                       <AvatarFallback>
-                        {report.moderator.username.charAt(0).toUpperCase()}
+                        {report.moderator.display_name.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <h4 className="font-medium">Moderator</h4>
                       <p className="text-sm text-muted-foreground">
-                        {report.moderator.username}
+                        {report.moderator.display_name}
                       </p>
                     </div>
                   </div>
@@ -328,9 +345,7 @@ export function ReportDetailsModal({
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Resolution Action
-                  </label>
+                  <label className="text-sm font-medium mb-2 block">Resolution Action</label>
                   <Select
                     value={resolutionAction}
                     onValueChange={(value: ResolutionAction) => setResolutionAction(value)}
@@ -349,13 +364,11 @@ export function ReportDetailsModal({
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Moderator Notes
-                  </label>
+                  <label className="text-sm font-medium mb-2 block">Moderator Notes</label>
                   <Textarea
                     placeholder="Add notes about your decision..."
                     value={moderatorNotes}
-                    onChange={(e) => setModeratorNotes(e.target.value)}
+                    onChange={e => setModeratorNotes(e.target.value)}
                     className="min-h-[100px]"
                   />
                 </div>
@@ -370,20 +383,12 @@ export function ReportDetailsModal({
                     {isResolving ? 'Resolving...' : 'Resolve'}
                   </Button>
 
-                  <Button
-                    onClick={handleDismiss}
-                    disabled={isResolving}
-                    variant="outline"
-                  >
+                  <Button onClick={handleDismiss} disabled={isResolving} variant="outline">
                     <XCircle className="h-4 w-4 mr-2" />
                     {isResolving ? 'Dismissing...' : 'Dismiss'}
                   </Button>
 
-                  <Button
-                    onClick={handleMarkUnderReview}
-                    disabled={isResolving}
-                    variant="outline"
-                  >
+                  <Button onClick={handleMarkUnderReview} disabled={isResolving} variant="outline">
                     <AlertTriangle className="h-4 w-4 mr-2" />
                     {isResolving ? 'Updating...' : 'Mark Under Review'}
                   </Button>
@@ -395,4 +400,4 @@ export function ReportDetailsModal({
       </DialogContent>
     </Dialog>
   );
-} 
+}

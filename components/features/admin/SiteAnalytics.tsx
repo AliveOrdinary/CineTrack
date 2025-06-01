@@ -3,16 +3,16 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Eye, 
-  MessageSquare, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Eye,
+  MessageSquare,
   Heart,
   List,
   Calendar,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -68,19 +68,40 @@ export function SiteAnalytics() {
         reviewsThisWeekResult,
         reviewsLastWeekResult,
         listsThisWeekResult,
-        listsLastWeekResult
+        listsLastWeekResult,
       ] = await Promise.all([
         supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('reviews').select('id', { count: 'exact', head: true }),
         supabase.from('lists').select('id', { count: 'exact', head: true }),
         supabase.from('watched_content').select('id', { count: 'exact', head: true }),
         supabase.from('follows').select('id', { count: 'exact', head: true }),
-        supabase.from('users').select('id', { count: 'exact', head: true }).gte('created_at', oneWeekAgo.toISOString()),
-        supabase.from('users').select('id', { count: 'exact', head: true }).gte('created_at', twoWeeksAgo.toISOString()).lt('created_at', oneWeekAgo.toISOString()),
-        supabase.from('reviews').select('id', { count: 'exact', head: true }).gte('created_at', oneWeekAgo.toISOString()),
-        supabase.from('reviews').select('id', { count: 'exact', head: true }).gte('created_at', twoWeeksAgo.toISOString()).lt('created_at', oneWeekAgo.toISOString()),
-        supabase.from('lists').select('id', { count: 'exact', head: true }).gte('created_at', oneWeekAgo.toISOString()),
-        supabase.from('lists').select('id', { count: 'exact', head: true }).gte('created_at', twoWeeksAgo.toISOString()).lt('created_at', oneWeekAgo.toISOString())
+        supabase
+          .from('users')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', oneWeekAgo.toISOString()),
+        supabase
+          .from('users')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', twoWeeksAgo.toISOString())
+          .lt('created_at', oneWeekAgo.toISOString()),
+        supabase
+          .from('reviews')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', oneWeekAgo.toISOString()),
+        supabase
+          .from('reviews')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', twoWeeksAgo.toISOString())
+          .lt('created_at', oneWeekAgo.toISOString()),
+        supabase
+          .from('lists')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', oneWeekAgo.toISOString()),
+        supabase
+          .from('lists')
+          .select('id', { count: 'exact', head: true })
+          .gte('created_at', twoWeeksAgo.toISOString())
+          .lt('created_at', oneWeekAgo.toISOString()),
       ]);
 
       setAnalytics({
@@ -94,7 +115,7 @@ export function SiteAnalytics() {
         reviewsThisWeek: reviewsThisWeekResult.count || 0,
         reviewsLastWeek: reviewsLastWeekResult.count || 0,
         listsThisWeek: listsThisWeekResult.count || 0,
-        listsLastWeek: listsLastWeekResult.count || 0
+        listsLastWeek: listsLastWeekResult.count || 0,
       });
     } catch (error) {
       console.error('Error loading analytics:', error);
@@ -159,22 +180,22 @@ export function SiteAnalytics() {
       current: analytics.usersThisWeek,
       previous: analytics.usersLastWeek,
       icon: Users,
-      color: 'text-blue-600'
+      color: 'text-blue-600',
     },
     {
       label: 'New Reviews',
       current: analytics.reviewsThisWeek,
       previous: analytics.reviewsLastWeek,
       icon: MessageSquare,
-      color: 'text-green-600'
+      color: 'text-green-600',
     },
     {
       label: 'New Lists',
       current: analytics.listsThisWeek,
       previous: analytics.listsLastWeek,
       icon: List,
-      color: 'text-purple-600'
-    }
+      color: 'text-purple-600',
+    },
   ];
 
   return (
@@ -188,9 +209,7 @@ export function SiteAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.totalUsers.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Registered accounts
-            </p>
+            <p className="text-xs text-muted-foreground">Registered accounts</p>
           </CardContent>
         </Card>
 
@@ -201,9 +220,7 @@ export function SiteAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.totalReviews.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              User reviews
-            </p>
+            <p className="text-xs text-muted-foreground">User reviews</p>
           </CardContent>
         </Card>
 
@@ -214,9 +231,7 @@ export function SiteAnalytics() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.totalLists.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              User-created lists
-            </p>
+            <p className="text-xs text-muted-foreground">User-created lists</p>
           </CardContent>
         </Card>
 
@@ -226,10 +241,10 @@ export function SiteAnalytics() {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics.totalWatchedEntries.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Tracking entries
-            </p>
+            <div className="text-2xl font-bold">
+              {analytics.totalWatchedEntries.toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground">Tracking entries</p>
           </CardContent>
         </Card>
       </div>
@@ -238,18 +253,19 @@ export function SiteAnalytics() {
       <Card>
         <CardHeader>
           <CardTitle>Weekly Trends</CardTitle>
-          <CardDescription>
-            Comparing this week vs last week
-          </CardDescription>
+          <CardDescription>Comparing this week vs last week</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             {trendData.map((trend, index) => {
               const trendPercentage = calculateTrend(trend.current, trend.previous);
               const Icon = trend.icon;
-              
+
               return (
-                <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-full bg-muted`}>
                       <Icon className={`h-4 w-4 ${trend.color}`} />
@@ -266,9 +282,7 @@ export function SiteAnalytics() {
                         {Math.abs(trendPercentage).toFixed(1)}%
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      vs last week
-                    </p>
+                    <p className="text-xs text-muted-foreground">vs last week</p>
                   </div>
                 </div>
               );
@@ -282,9 +296,7 @@ export function SiteAnalytics() {
         <Card>
           <CardHeader>
             <CardTitle>Social Engagement</CardTitle>
-            <CardDescription>
-              User interaction metrics
-            </CardDescription>
+            <CardDescription>User interaction metrics</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -295,13 +307,17 @@ export function SiteAnalytics() {
               <div className="flex items-center justify-between">
                 <span className="text-sm">Avg Reviews per User</span>
                 <span className="font-medium">
-                  {analytics.totalUsers > 0 ? (analytics.totalReviews / analytics.totalUsers).toFixed(1) : '0'}
+                  {analytics.totalUsers > 0
+                    ? (analytics.totalReviews / analytics.totalUsers).toFixed(1)
+                    : '0'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Avg Lists per User</span>
                 <span className="font-medium">
-                  {analytics.totalUsers > 0 ? (analytics.totalLists / analytics.totalUsers).toFixed(1) : '0'}
+                  {analytics.totalUsers > 0
+                    ? (analytics.totalLists / analytics.totalUsers).toFixed(1)
+                    : '0'}
                 </span>
               </div>
             </div>
@@ -311,28 +327,34 @@ export function SiteAnalytics() {
         <Card>
           <CardHeader>
             <CardTitle>Content Activity</CardTitle>
-            <CardDescription>
-              Platform content metrics
-            </CardDescription>
+            <CardDescription>Platform content metrics</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Avg Watched per User</span>
                 <span className="font-medium">
-                  {analytics.totalUsers > 0 ? (analytics.totalWatchedEntries / analytics.totalUsers).toFixed(1) : '0'}
+                  {analytics.totalUsers > 0
+                    ? (analytics.totalWatchedEntries / analytics.totalUsers).toFixed(1)
+                    : '0'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">Content Engagement Rate</span>
                 <span className="font-medium">
-                  {analytics.totalWatchedEntries > 0 ? ((analytics.totalReviews / analytics.totalWatchedEntries) * 100).toFixed(1) : '0'}%
+                  {analytics.totalWatchedEntries > 0
+                    ? ((analytics.totalReviews / analytics.totalWatchedEntries) * 100).toFixed(1)
+                    : '0'}
+                  %
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm">List Creation Rate</span>
                 <span className="font-medium">
-                  {analytics.totalUsers > 0 ? ((analytics.totalLists / analytics.totalUsers) * 100).toFixed(1) : '0'}%
+                  {analytics.totalUsers > 0
+                    ? ((analytics.totalLists / analytics.totalUsers) * 100).toFixed(1)
+                    : '0'}
+                  %
                 </span>
               </div>
             </div>
@@ -341,4 +363,4 @@ export function SiteAnalytics() {
       </div>
     </div>
   );
-} 
+}

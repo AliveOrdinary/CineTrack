@@ -1,16 +1,30 @@
-import { Suspense } from "react";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import { getMovieDetails, getMovieCredits, getMovieVideos, getSimilarMovies, getMovieWatchProviders } from "@/lib/tmdb/client";
-import { TmdbMovieDetails, TmdbCastMember, TmdbCrewMember, TmdbVideo, TmdbGenre, TmdbWatchProvider, TmdbMovieCreditsResponse } from "@/lib/tmdb/types";
-import MediaGrid from "@/components/features/content/MediaGrid";
-import MediaSection from "@/components/features/content/MediaSection";
-import MediaSectionSkeleton from "@/components/features/content/MediaSectionSkeleton";
-import { WatchedContentButton } from "@/components/features/tracking/WatchedContentButton";
-import { WatchlistButton } from "@/components/features/tracking/WatchlistButton";
-import { AddToListButton } from "@/components/features/lists/AddToListButton";
-import { ReviewButton } from "@/components/features/reviews/ReviewButton";
-import { ReviewsSection } from "@/components/features/reviews/ReviewsSection";
+import { Suspense } from 'react';
+import { notFound } from 'next/navigation';
+import Image from 'next/image';
+import {
+  getMovieDetails,
+  getMovieCredits,
+  getMovieVideos,
+  getSimilarMovies,
+  getMovieWatchProviders,
+} from '@/lib/tmdb/client';
+import {
+  TmdbMovieDetails,
+  TmdbCastMember,
+  TmdbCrewMember,
+  TmdbVideo,
+  TmdbGenre,
+  TmdbMovieCreditsResponse,
+} from '@/lib/tmdb/types';
+import MediaGrid from '@/components/features/content/MediaGrid';
+import MediaSection from '@/components/features/content/MediaSection';
+import MediaSectionSkeleton from '@/components/features/content/MediaSectionSkeleton';
+import { WatchProviders } from '@/components/features/content/WatchProviders';
+import { WatchedContentButton } from '@/components/features/tracking/WatchedContentButton';
+import { WatchlistButton } from '@/components/features/tracking/WatchlistButton';
+import { AddToListButton } from '@/components/features/lists/AddToListButton';
+import { ReviewButton } from '@/components/features/reviews/ReviewButton';
+import { ReviewsSection } from '@/components/features/reviews/ReviewsSection';
 
 interface MoviePageProps {
   params: Promise<{
@@ -21,7 +35,7 @@ interface MoviePageProps {
 async function MovieDetails({ id }: { id: string }) {
   try {
     const movie = await getMovieDetails(parseInt(id));
-    
+
     if (!movie) {
       notFound();
     }
@@ -30,7 +44,7 @@ async function MovieDetails({ id }: { id: string }) {
       getMovieCredits(parseInt(id)),
       getMovieVideos(parseInt(id)),
       getSimilarMovies(parseInt(id)),
-      getMovieWatchProviders(parseInt(id))
+      getMovieWatchProviders(parseInt(id)),
     ]);
 
     const movieCredits = credits.status === 'fulfilled' ? credits.value : null;
@@ -39,15 +53,16 @@ async function MovieDetails({ id }: { id: string }) {
     const providersValue = providers.status === 'fulfilled' ? providers.value : null;
 
     // Find main trailer
-    const trailer = movieVideos?.results?.find(
-      (video: TmdbVideo) => video.type === 'Trailer' && video.site === 'YouTube'
-    ) || movieVideos?.results?.[0];
+    const trailer =
+      movieVideos?.results?.find(
+        (video: TmdbVideo) => video.type === 'Trailer' && video.site === 'YouTube'
+      ) || movieVideos?.results?.[0];
 
-    const backdropUrl = movie.backdrop_path 
+    const backdropUrl = movie.backdrop_path
       ? `https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`
       : null;
 
-    const posterUrl = movie.poster_path 
+    const posterUrl = movie.poster_path
       ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
       : null;
 
@@ -56,13 +71,7 @@ async function MovieDetails({ id }: { id: string }) {
         {/* Hero Section with Backdrop */}
         {backdropUrl && (
           <div className="relative h-[50vh] w-full">
-            <Image
-              src={backdropUrl}
-              alt={movie.title}
-              fill
-              className="object-cover"
-              priority
-            />
+            <Image src={backdropUrl} alt={movie.title} fill className="object-cover" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
           </div>
         )}
@@ -82,32 +91,16 @@ async function MovieDetails({ id }: { id: string }) {
                   />
                 </div>
               )}
-              
+
               {/* Action Buttons */}
               <div className="space-y-3">
-                <WatchedContentButton
-                  tmdbId={parseInt(id)}
-                  mediaType="movie"
-                  title={movie.title}
-                />
-                
-                <WatchlistButton
-                  tmdbId={parseInt(id)}
-                  mediaType="movie"
-                  title={movie.title}
-                />
-                
-                <AddToListButton
-                  tmdbId={parseInt(id)}
-                  mediaType="movie"
-                  title={movie.title}
-                />
-                
-                <ReviewButton
-                  tmdbId={parseInt(id)}
-                  mediaType="movie"
-                  title={movie.title}
-                />
+                <WatchedContentButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
+
+                <WatchlistButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
+
+                <AddToListButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
+
+                <ReviewButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
               </div>
             </div>
 
@@ -120,7 +113,7 @@ async function MovieDetails({ id }: { id: string }) {
                     {new Date(movie.release_date).getFullYear()}
                   </p>
                 )}
-                
+
                 <div className="flex flex-wrap gap-4 mb-6">
                   {movie.vote_average && movie.vote_average > 0 && (
                     <div className="flex items-center gap-1">
@@ -139,7 +132,7 @@ async function MovieDetails({ id }: { id: string }) {
                 {movie.genres && movie.genres.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-6">
                     {movie.genres.map((genre: TmdbGenre) => (
-                      <span 
+                      <span
                         key={genre.id}
                         className="px-3 py-1 bg-accent text-accent-foreground rounded-full text-sm"
                       >
@@ -203,8 +196,14 @@ async function MovieDetails({ id }: { id: string }) {
                   <h2 className="text-2xl font-semibold mb-4">Key Crew</h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {movieCredits.crew
-                      .filter((member: TmdbCrewMember) => 
-                        ['Director', 'Producer', 'Executive Producer', 'Writer', 'Screenplay'].includes(member.job)
+                      .filter((member: TmdbCrewMember) =>
+                        [
+                          'Director',
+                          'Producer',
+                          'Executive Producer',
+                          'Writer',
+                          'Screenplay',
+                        ].includes(member.job)
                       )
                       .slice(0, 8)
                       .map((member: TmdbCrewMember) => (
@@ -218,32 +217,13 @@ async function MovieDetails({ id }: { id: string }) {
               )}
 
               {/* Where to Watch */}
-              {providersValue?.results?.US && (
+              {providersValue && (
                 <div>
-                  <h2 className="text-2xl font-semibold mb-4">Where to Watch</h2>
-                  <div className="space-y-4">
-                    {providersValue.results.US.flatrate && (
-                      <div>
-                        <h3 className="font-medium mb-2">Stream</h3>
-                        <div className="flex flex-wrap gap-2">
-                          {providersValue.results.US.flatrate.map((provider: TmdbWatchProvider, index: number) => (
-                            <div key={index} className="flex items-center gap-2 bg-accent px-3 py-2 rounded-md">
-                              {provider.logo_path && (
-                                <Image
-                                  src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`}
-                                  alt={provider.provider_name}
-                                  width={20}
-                                  height={20}
-                                  className="rounded"
-                                />
-                              )}
-                              <span className="text-sm">{provider.provider_name}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  <WatchProviders
+                    providers={providersValue}
+                    title={movie.title}
+                    mediaType="movie"
+                  />
                 </div>
               )}
             </div>
@@ -253,31 +233,26 @@ async function MovieDetails({ id }: { id: string }) {
           {similarMovies?.results && similarMovies.results.length > 0 && (
             <div className="mt-12">
               <Suspense fallback={<MediaSectionSkeleton />}>
-                <MediaSection 
-                  title="More Like This" 
-                  items={similarMovies.results} 
-                />
+                <MediaSection title="More Like This" items={similarMovies.results} />
               </Suspense>
             </div>
           )}
 
           {/* Reviews Section */}
           <div className="mt-12">
-            <Suspense fallback={
-              <div className="space-y-4">
-                <div className="h-8 bg-muted rounded w-1/4 animate-pulse" />
+            <Suspense
+              fallback={
                 <div className="space-y-4">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="h-32 bg-muted rounded animate-pulse" />
-                  ))}
+                  <div className="h-8 bg-muted rounded w-1/4 animate-pulse" />
+                  <div className="space-y-4">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="h-32 bg-muted rounded animate-pulse" />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            }>
-              <ReviewsSection
-                tmdbId={parseInt(id)}
-                mediaType="movie"
-                title={movie.title}
-              />
+              }
+            >
+              <ReviewsSection tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
             </Suspense>
           </div>
         </div>
@@ -298,21 +273,23 @@ export default async function MoviePage({ params }: MoviePageProps) {
   }
 
   return (
-    <Suspense fallback={
-      <div className="w-full max-w-7xl mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-muted rounded w-1/3 mb-4" />
-          <div className="h-6 bg-muted rounded w-1/4 mb-6" />
-          <div className="h-32 bg-muted rounded mb-6" />
-          <div className="grid grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="h-32 bg-muted rounded" />
-            ))}
+    <Suspense
+      fallback={
+        <div className="w-full max-w-7xl mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-muted rounded w-1/3 mb-4" />
+            <div className="h-6 bg-muted rounded w-1/4 mb-6" />
+            <div className="h-32 bg-muted rounded mb-6" />
+            <div className="grid grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-32 bg-muted rounded" />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <MovieDetails id={id} />
     </Suspense>
   );
-} 
+}

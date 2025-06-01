@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
+import { avatarEvents } from '@/lib/utils/avatar-events';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,15 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  User, 
-  Settings, 
-  LogOut, 
-  Heart, 
-  List, 
-  Activity,
-  UserCircle
-} from 'lucide-react';
+import { User, Settings, LogOut, Heart, List, Activity, UserCircle } from 'lucide-react';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 interface UserProfile {
@@ -46,7 +39,7 @@ export default function UserAvatar() {
       } else {
         const currentUser = data.session?.user ?? null;
         setUser(currentUser);
-        
+
         // Fetch user profile if user exists
         if (currentUser) {
           await fetchUserProfile(currentUser.id);
@@ -60,22 +53,37 @@ export default function UserAvatar() {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      
+
       if (currentUser) {
         await fetchUserProfile(currentUser.id);
       } else {
         setProfile(null);
       }
-      
+
       if (event === 'SIGNED_OUT') {
         router.push('/');
       }
     });
 
+    // Listen for avatar changes
+    const unsubscribeAvatarEvents = avatarEvents.subscribe((userId, newAvatarUrl) => {
+      if (user && userId === user.id) {
+        setProfile(prev =>
+          prev
+            ? {
+                ...prev,
+                avatar_url: newAvatarUrl,
+              }
+            : null
+        );
+      }
+    });
+
     return () => {
       authListener.subscription.unsubscribe();
+      unsubscribeAvatarEvents();
     };
-  }, [router]);
+  }, [router, user?.id]);
 
   const fetchUserProfile = async (userId: string) => {
     try {
@@ -146,35 +154,29 @@ export default function UserAvatar() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           className="relative h-8 w-8 rounded-full p-0"
           aria-label={`User menu for ${getDisplayName()}`}
         >
-          <Avatar className="h-8 w-8">
-            <AvatarImage 
-              src={profile?.avatar_url || undefined} 
-              alt={`${getDisplayName()}'s avatar`} 
+          <Avatar className="h-8 w-8" key={profile?.avatar_url || 'no-avatar'}>
+            <AvatarImage
+              src={profile?.avatar_url || undefined}
+              alt={`${getDisplayName()}'s avatar`}
             />
-            <AvatarFallback className="text-xs">
-              {getInitials()}
-            </AvatarFallback>
+            <AvatarFallback className="text-xs">{getInitials()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {getDisplayName()}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
+            <p className="text-sm font-medium leading-none">{getDisplayName()}</p>
+            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
+
         {/* Profile & Account */}
         <DropdownMenuItem asChild>
           <Link href="/profile" className="flex items-center">
@@ -182,7 +184,7 @@ export default function UserAvatar() {
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        
+
         {/* Quick Access Items */}
         <DropdownMenuItem asChild>
           <Link href="/watchlist" className="flex items-center">
@@ -190,23 +192,23 @@ export default function UserAvatar() {
             <span>Watchlist</span>
           </Link>
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem asChild>
           <Link href="/lists" className="flex items-center">
             <List className="mr-2 h-4 w-4" />
             <span>My Lists</span>
           </Link>
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem asChild>
           <Link href="/feed" className="flex items-center">
             <Activity className="mr-2 h-4 w-4" />
             <span>Activity Feed</span>
           </Link>
         </DropdownMenuItem>
-        
+
         <DropdownMenuSeparator />
-        
+
         {/* Settings */}
         <DropdownMenuItem asChild>
           <Link href="/settings" className="flex items-center">
@@ -214,11 +216,11 @@ export default function UserAvatar() {
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        
+
         <DropdownMenuSeparator />
-        
+
         {/* Logout */}
-        <DropdownMenuItem 
+        <DropdownMenuItem
           onClick={handleLogout}
           className="flex items-center text-red-600 focus:text-red-600 dark:text-red-400 dark:focus:text-red-400"
         >
@@ -228,4 +230,4 @@ export default function UserAvatar() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}

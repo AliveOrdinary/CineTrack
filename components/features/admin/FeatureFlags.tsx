@@ -16,17 +16,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { 
-  Flag, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
+import {
+  Flag,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  EyeOff,
   Users,
   Percent,
   Calendar,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { toast } from 'sonner';
@@ -53,7 +53,7 @@ export function FeatureFlags() {
     description: '',
     enabled: false,
     rollout_percentage: 0,
-    environment: 'development' as const
+    environment: 'development' as const,
   });
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export function FeatureFlags() {
   const loadFeatureFlags = async () => {
     try {
       setLoading(true);
-      
+
       // For now, we'll use mock data since we don't have a feature_flags table
       // In a real implementation, you would create this table and use Supabase
       const mockFlags: FeatureFlag[] = [
@@ -76,7 +76,7 @@ export function FeatureFlags() {
           target_users: [],
           environment: 'production',
           created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         },
         {
           id: '2',
@@ -87,7 +87,7 @@ export function FeatureFlags() {
           target_users: ['beta-testers'],
           environment: 'staging',
           created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         },
         {
           id: '3',
@@ -98,7 +98,7 @@ export function FeatureFlags() {
           target_users: ['premium-users'],
           environment: 'production',
           created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         },
         {
           id: '4',
@@ -109,8 +109,8 @@ export function FeatureFlags() {
           target_users: [],
           environment: 'development',
           created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date().toISOString()
-        }
+          updated_at: new Date().toISOString(),
+        },
       ];
 
       setFlags(mockFlags);
@@ -125,12 +125,12 @@ export function FeatureFlags() {
   const toggleFlag = async (flagId: string, enabled: boolean) => {
     try {
       // In a real implementation, this would update the database
-      setFlags(prev => prev.map(flag => 
-        flag.id === flagId 
-          ? { ...flag, enabled, updated_at: new Date().toISOString() }
-          : flag
-      ));
-      
+      setFlags(prev =>
+        prev.map(flag =>
+          flag.id === flagId ? { ...flag, enabled, updated_at: new Date().toISOString() } : flag
+        )
+      );
+
       toast.success(`Feature flag ${enabled ? 'enabled' : 'disabled'}`);
     } catch (error) {
       console.error('Error toggling feature flag:', error);
@@ -140,12 +140,14 @@ export function FeatureFlags() {
 
   const updateRolloutPercentage = async (flagId: string, percentage: number) => {
     try {
-      setFlags(prev => prev.map(flag => 
-        flag.id === flagId 
-          ? { ...flag, rollout_percentage: percentage, updated_at: new Date().toISOString() }
-          : flag
-      ));
-      
+      setFlags(prev =>
+        prev.map(flag =>
+          flag.id === flagId
+            ? { ...flag, rollout_percentage: percentage, updated_at: new Date().toISOString() }
+            : flag
+        )
+      );
+
       toast.success('Rollout percentage updated');
     } catch (error) {
       console.error('Error updating rollout percentage:', error);
@@ -160,7 +162,7 @@ export function FeatureFlags() {
         ...newFlag,
         target_users: [],
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       setFlags(prev => [flag, ...prev]);
@@ -169,10 +171,10 @@ export function FeatureFlags() {
         description: '',
         enabled: false,
         rollout_percentage: 0,
-        environment: 'development'
+        environment: 'development',
       });
       setIsCreateDialogOpen(false);
-      
+
       toast.success('Feature flag created');
     } catch (error) {
       console.error('Error creating feature flag:', error);
@@ -251,37 +253,37 @@ export function FeatureFlags() {
                 Add a new feature flag to control feature rollouts
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <div>
                 <Label htmlFor="name">Flag Name</Label>
                 <Input
                   id="name"
                   value={newFlag.name}
-                  onChange={(e) => setNewFlag(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={e => setNewFlag(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="e.g., new_dashboard"
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="description">Description</Label>
                 <Input
                   id="description"
                   value={newFlag.description}
-                  onChange={(e) => setNewFlag(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={e => setNewFlag(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Brief description of the feature"
                 />
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Switch
                   id="enabled"
                   checked={newFlag.enabled}
-                  onCheckedChange={(enabled) => setNewFlag(prev => ({ ...prev, enabled }))}
+                  onCheckedChange={enabled => setNewFlag(prev => ({ ...prev, enabled }))}
                 />
                 <Label htmlFor="enabled">Enable immediately</Label>
               </div>
-              
+
               <div>
                 <Label htmlFor="rollout">Rollout Percentage</Label>
                 <Input
@@ -290,11 +292,16 @@ export function FeatureFlags() {
                   min="0"
                   max="100"
                   value={newFlag.rollout_percentage}
-                  onChange={(e) => setNewFlag(prev => ({ ...prev, rollout_percentage: parseInt(e.target.value) || 0 }))}
+                  onChange={e =>
+                    setNewFlag(prev => ({
+                      ...prev,
+                      rollout_percentage: parseInt(e.target.value) || 0,
+                    }))
+                  }
                 />
               </div>
             </div>
-            
+
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                 Cancel
@@ -309,7 +316,7 @@ export function FeatureFlags() {
 
       {/* Feature Flags List */}
       <div className="space-y-4">
-        {flags.map((flag) => (
+        {flags.map(flag => (
           <Card key={flag.id}>
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -318,7 +325,10 @@ export function FeatureFlags() {
                     <CardTitle className="text-base">{flag.name}</CardTitle>
                     {getEnvironmentBadge(flag.environment)}
                     {flag.enabled ? (
-                      <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                      >
                         <Eye className="h-3 w-3 mr-1" />
                         Enabled
                       </Badge>
@@ -334,16 +344,12 @@ export function FeatureFlags() {
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={flag.enabled}
-                    onCheckedChange={(enabled) => toggleFlag(flag.id, enabled)}
+                    onCheckedChange={enabled => toggleFlag(flag.id, enabled)}
                   />
                   <Button variant="ghost" size="sm">
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => deleteFlag(flag.id)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => deleteFlag(flag.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -362,7 +368,7 @@ export function FeatureFlags() {
                       min="0"
                       max="100"
                       value={flag.rollout_percentage}
-                      onChange={(e) => updateRolloutPercentage(flag.id, parseInt(e.target.value))}
+                      onChange={e => updateRolloutPercentage(flag.id, parseInt(e.target.value))}
                       className="flex-1"
                     />
                     <span className="text-xs text-muted-foreground w-8">
@@ -370,7 +376,7 @@ export function FeatureFlags() {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm">
                     <Users className="h-3 w-3 text-muted-foreground" />
@@ -388,7 +394,7 @@ export function FeatureFlags() {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-sm">
                     <Calendar className="h-3 w-3 text-muted-foreground" />
@@ -432,9 +438,9 @@ export function FeatureFlags() {
                 Feature Flag Management
               </h4>
               <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                Feature flags are currently managed in-memory for demonstration purposes. 
-                In production, implement a proper feature flag service with database persistence 
-                and real-time updates.
+                Feature flags are currently managed in-memory for demonstration purposes. In
+                production, implement a proper feature flag service with database persistence and
+                real-time updates.
               </p>
             </div>
           </div>
@@ -442,4 +448,4 @@ export function FeatureFlags() {
       </Card>
     </div>
   );
-} 
+}

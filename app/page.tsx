@@ -1,19 +1,20 @@
-import { Suspense } from "react";
-import Hero from "@/components/hero";
-import MediaSection from "@/components/features/content/MediaSection";
-import MediaSectionSkeleton from "@/components/features/content/MediaSectionSkeleton";
-import { ActivityFeedPreview } from "@/components/features/social/ActivityFeedPreview";
-import { getTrending, getNowPlayingMovies, getUpcomingMovies, discoverMedia } from "@/lib/tmdb/client";
+import { Suspense } from 'react';
+import Hero from '@/components/hero';
+import MediaSection from '@/components/features/content/MediaSection';
+import MediaSectionSkeleton from '@/components/features/content/MediaSectionSkeleton';
+import { ActivityFeedPreview } from '@/components/features/social/ActivityFeedPreview';
+import {
+  getTrending,
+  getNowPlayingMovies,
+  getUpcomingMovies,
+  discoverMedia,
+} from '@/lib/tmdb/client';
 
 async function TrendingSection() {
   try {
     const trending = await getTrending('all', 'week');
     return (
-      <MediaSection 
-        title="Trending This Week" 
-        items={trending.results} 
-        showMediaType={true}
-      />
+      <MediaSection title="Trending This Week" items={trending.results} showMediaType={true} />
     );
   } catch (error) {
     console.error('Failed to fetch trending content:', error);
@@ -28,12 +29,7 @@ async function TrendingSection() {
 async function NowPlayingSection() {
   try {
     const nowPlaying = await getNowPlayingMovies();
-    return (
-      <MediaSection 
-        title="Now Playing in Theaters" 
-        items={nowPlaying.results} 
-      />
-    );
+    return <MediaSection title="Now Playing in Theaters" items={nowPlaying.results} />;
   } catch (error) {
     console.error('Failed to fetch now playing movies:', error);
     return (
@@ -46,16 +42,11 @@ async function NowPlayingSection() {
 
 async function PopularTVSection() {
   try {
-    const popularTV = await discoverMedia('tv', { 
+    const popularTV = await discoverMedia('tv', {
       sort_by: 'popularity.desc',
-      page: 1 
+      page: 1,
     });
-    return (
-      <MediaSection 
-        title="Popular TV Shows" 
-        items={popularTV.results} 
-      />
-    );
+    return <MediaSection title="Popular TV Shows" items={popularTV.results} />;
   } catch (error) {
     console.error('Failed to fetch popular TV shows:', error);
     return (
@@ -69,12 +60,7 @@ async function PopularTVSection() {
 async function UpcomingSection() {
   try {
     const upcoming = await getUpcomingMovies();
-    return (
-      <MediaSection 
-        title="Coming Soon" 
-        items={upcoming.results} 
-      />
-    );
+    return <MediaSection title="Coming Soon" items={upcoming.results} />;
   } catch (error) {
     console.error('Failed to fetch upcoming movies:', error);
     return (
@@ -97,7 +83,7 @@ export default function HomePage() {
       <div className="w-full max-w-7xl mx-auto px-3 md:px-4 space-y-8 md:space-y-12 pb-8 md:pb-12">
         {/* Activity Feed Preview for authenticated users */}
         <ActivityFeedPreview />
-        
+
         <Suspense fallback={<MediaSectionSkeleton />}>
           <TrendingSection />
         </Suspense>

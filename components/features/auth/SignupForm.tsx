@@ -25,16 +25,16 @@ export default function SignupForm() {
     setMessage(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError('Passwords do not match.');
       return;
     }
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+      setError('Password must be at least 6 characters long.');
       return;
     }
     if (!displayName.trim()) {
-        setError("Display name is required.");
-        return;
+      setError('Display name is required.');
+      return;
     }
 
     setLoading(true);
@@ -53,8 +53,8 @@ export default function SignupForm() {
       if (signUpError) {
         throw signUpError;
       }
-      
-      if (data.user && data.session === null) { 
+
+      if (data.user && data.session === null) {
         setMessage('Signup successful! Please check your email to confirm your account.');
       } else if (data.user && data.session) {
         setMessage('Signup successful! You are now logged in.');
@@ -62,7 +62,6 @@ export default function SignupForm() {
       } else {
         setMessage('Signup successful! Please check your email.');
       }
-
     } catch (err: any) {
       console.error('Signup error:', err);
       setError(err.message || 'An error occurred during signup. Please try again.');
@@ -82,7 +81,7 @@ export default function SignupForm() {
             placeholder="Your Name"
             required
             value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            onChange={e => setDisplayName(e.target.value)}
             disabled={loading}
           />
         </div>
@@ -94,7 +93,7 @@ export default function SignupForm() {
             placeholder="m@example.com"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             disabled={loading}
           />
         </div>
@@ -105,7 +104,7 @@ export default function SignupForm() {
             type="password"
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             disabled={loading}
             minLength={6}
           />
@@ -117,23 +116,23 @@ export default function SignupForm() {
             type="password"
             required
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={e => setConfirmPassword(e.target.value)}
             disabled={loading}
             minLength={6}
           />
         </div>
-        {error && (
-          <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
-        )}
-        {message && (
-          <p className="text-sm text-green-500 dark:text-green-400">{message}</p>
-        )}
+        {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+        {message && <p className="text-sm text-green-500 dark:text-green-400">{message}</p>}
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? 'Signing up...' : 'Create Account'}
         </Button>
         <div className="mt-4 text-center text-sm">
           Already have an account?{' '}
-          <Link href="/login" legacyBehavior={false} className="font-medium text-primary underline-offset-4 hover:underline">
+          <Link
+            href="/login"
+            legacyBehavior={false}
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
             Log in
           </Link>
         </div>
@@ -141,4 +140,4 @@ export default function SignupForm() {
       <SocialLogins />
     </div>
   );
-} 
+}

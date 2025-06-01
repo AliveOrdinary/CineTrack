@@ -4,14 +4,14 @@
  */
 
 import { createClient } from '@/lib/supabase/client';
-import { 
-  Report, 
-  CreateReportData, 
-  UpdateReportData, 
-  ReportWithReporter, 
+import {
+  Report,
+  CreateReportData,
+  UpdateReportData,
+  ReportWithReporter,
   ReportStats,
   ReportStatus,
-  ReportedContentType 
+  ReportedContentType,
 } from '@/types/reports';
 
 const supabase = createClient();
@@ -20,8 +20,10 @@ const supabase = createClient();
  * Create a new report
  */
 export async function createReport(reportData: CreateReportData): Promise<Report> {
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
     throw new Error('User must be authenticated to create a report');
   }
@@ -30,7 +32,7 @@ export async function createReport(reportData: CreateReportData): Promise<Report
     .from('reports')
     .insert({
       reporter_id: user.id,
-      ...reportData
+      ...reportData,
     })
     .select()
     .single();
@@ -47,20 +49,24 @@ export async function createReport(reportData: CreateReportData): Promise<Report
  * Get reports created by the current user
  */
 export async function getUserReports(): Promise<ReportWithReporter[]> {
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
     throw new Error('User must be authenticated to view reports');
   }
 
   const { data, error } = await supabase
     .from('reports')
-    .select(`
+    .select(
+      `
       *,
-      reporter:users!reporter_id(id, username, avatar_url),
-      reported_user:users!reported_user_id(id, username, avatar_url),
-      moderator:users!moderator_id(id, username, avatar_url)
-    `)
+      reporter:users!reporter_id(id, display_name, avatar_url),
+      reported_user:users!reported_user_id(id, display_name, avatar_url),
+      moderator:users!moderator_id(id, display_name, avatar_url)
+    `
+    )
     .eq('reporter_id', user.id)
     .order('created_at', { ascending: false });
 
@@ -81,13 +87,11 @@ export async function getAllReports(
   limit: number = 50,
   offset: number = 0
 ): Promise<ReportWithReporter[]> {
-  let query = supabase
-    .from('reports')
-    .select(`
+  let query = supabase.from('reports').select(`
       *,
-      reporter:users!reporter_id(id, username, avatar_url),
-      reported_user:users!reported_user_id(id, username, avatar_url),
-      moderator:users!moderator_id(id, username, avatar_url)
+      reporter:users!reporter_id(id, display_name, avatar_url),
+      reported_user:users!reported_user_id(id, display_name, avatar_url),
+      moderator:users!moderator_id(id, display_name, avatar_url)
     `);
 
   if (status) {
@@ -116,12 +120,14 @@ export async function getAllReports(
 export async function getReport(reportId: string): Promise<ReportWithReporter | null> {
   const { data, error } = await supabase
     .from('reports')
-    .select(`
+    .select(
+      `
       *,
-      reporter:users!reporter_id(id, username, avatar_url),
-      reported_user:users!reported_user_id(id, username, avatar_url),
-      moderator:users!moderator_id(id, username, avatar_url)
-    `)
+      reporter:users!reporter_id(id, display_name, avatar_url),
+      reported_user:users!reported_user_id(id, display_name, avatar_url),
+      moderator:users!moderator_id(id, display_name, avatar_url)
+    `
+    )
     .eq('id', reportId)
     .single();
 
@@ -140,11 +146,13 @@ export async function getReport(reportId: string): Promise<ReportWithReporter | 
  * Update a report (for moderators)
  */
 export async function updateReport(
-  reportId: string, 
+  reportId: string,
   updateData: UpdateReportData
 ): Promise<Report> {
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
     throw new Error('User must be authenticated to update reports');
   }
@@ -153,9 +161,10 @@ export async function updateReport(
   const dataToUpdate = {
     ...updateData,
     moderator_id: user.id,
-    ...(updateData.status === 'resolved' && !updateData.resolved_at && {
-      resolved_at: new Date().toISOString()
-    })
+    ...(updateData.status === 'resolved' &&
+      !updateData.resolved_at && {
+        resolved_at: new Date().toISOString(),
+      }),
   };
 
   const { data, error } = await supabase
@@ -177,10 +186,7 @@ export async function updateReport(
  * Delete a report
  */
 export async function deleteReport(reportId: string): Promise<void> {
-  const { error } = await supabase
-    .from('reports')
-    .delete()
-    .eq('id', reportId);
+  const { error } = await supabase.from('reports').delete().eq('id', reportId);
 
   if (error) {
     console.error('Error deleting report:', error);
@@ -192,20 +198,21 @@ export async function deleteReport(reportId: string): Promise<void> {
  * Get report statistics
  */
 export async function getReportStats(): Promise<ReportStats> {
-  const { data, error } = await supabase
-    .rpc('get_report_stats');
+  const { data, error } = await supabase.rpc('get_report_stats');
 
   if (error) {
     console.error('Error fetching report stats:', error);
     throw new Error('Failed to fetch report statistics');
   }
 
-  return data[0] || {
-    total_reports: 0,
-    pending_reports: 0,
-    resolved_reports: 0,
-    dismissed_reports: 0
-  };
+  return (
+    data[0] || {
+      total_reports: 0,
+      pending_reports: 0,
+      resolved_reports: 0,
+      dismissed_reports: 0,
+    }
+  );
 }
 
 /**
@@ -215,8 +222,10 @@ export async function hasUserReportedContent(
   contentType: ReportedContentType,
   contentId: string
 ): Promise<boolean> {
-  const { data: { user } } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   if (!user) {
     return false;
   }
@@ -246,12 +255,14 @@ export async function getContentReports(
 ): Promise<ReportWithReporter[]> {
   const { data, error } = await supabase
     .from('reports')
-    .select(`
+    .select(
+      `
       *,
-      reporter:users!reporter_id(id, username, avatar_url),
-      reported_user:users!reported_user_id(id, username, avatar_url),
-      moderator:users!moderator_id(id, username, avatar_url)
-    `)
+      reporter:users!reporter_id(id, display_name, avatar_url),
+      reported_user:users!reported_user_id(id, display_name, avatar_url),
+      moderator:users!moderator_id(id, display_name, avatar_url)
+    `
+    )
     .eq('reported_content_type', contentType)
     .eq('reported_content_id', contentId)
     .order('created_at', { ascending: false });
@@ -262,4 +273,4 @@ export async function getContentReports(
   }
 
   return data || [];
-} 
+}

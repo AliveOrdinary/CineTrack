@@ -1,24 +1,23 @@
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserClient } from '@supabase/ssr';
 
 // Ensure you have a types/database.ts file generated from your Supabase schema
 // For now, we'll use a generic type.
-// import { Database } from '@/types/database' 
+// import { Database } from '@/types/database'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 if (!supabaseUrl) {
-  throw new Error("Missing environment variable NEXT_PUBLIC_SUPABASE_URL")
+  throw new Error('Missing environment variable NEXT_PUBLIC_SUPABASE_URL');
 }
 if (!supabaseAnonKey) {
-  throw new Error("Missing environment variable NEXT_PUBLIC_SUPABASE_ANON_KEY")
+  throw new Error('Missing environment variable NEXT_PUBLIC_SUPABASE_ANON_KEY');
 }
 
-export const createClient = () =>
-  createBrowserClient(supabaseUrl, supabaseAnonKey)
+export const createClient = () => createBrowserClient(supabaseUrl, supabaseAnonKey);
 
 // Replace `any` with `Database` once your types are generated
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
 // Watched Content Operations
 export interface WatchedContentEntry {
@@ -38,14 +37,12 @@ export interface WatchedContentEntry {
   updated_at?: string;
 }
 
-export async function addWatchedContent(entry: Omit<WatchedContentEntry, 'id' | 'created_at' | 'updated_at'>) {
+export async function addWatchedContent(
+  entry: Omit<WatchedContentEntry, 'id' | 'created_at' | 'updated_at'>
+) {
   const supabase = createClient();
-  
-  const { data, error } = await supabase
-    .from('watched_content')
-    .insert([entry])
-    .select()
-    .single();
+
+  const { data, error } = await supabase.from('watched_content').insert([entry]).select().single();
 
   if (error) throw error;
   return data;
@@ -53,7 +50,7 @@ export async function addWatchedContent(entry: Omit<WatchedContentEntry, 'id' | 
 
 export async function updateWatchedContent(id: string, updates: Partial<WatchedContentEntry>) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('watched_content')
     .update(updates)
@@ -67,7 +64,7 @@ export async function updateWatchedContent(id: string, updates: Partial<WatchedC
 
 export async function getWatchedContent(userId: string, tmdbId: number, mediaType: 'movie' | 'tv') {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('watched_content')
     .select('*')
@@ -82,7 +79,7 @@ export async function getWatchedContent(userId: string, tmdbId: number, mediaTyp
 
 export async function getUserWatchedContent(userId: string, limit?: number) {
   const supabase = createClient();
-  
+
   let query = supabase
     .from('watched_content')
     .select('*')
@@ -101,11 +98,8 @@ export async function getUserWatchedContent(userId: string, limit?: number) {
 
 export async function removeWatchedContent(id: string) {
   const supabase = createClient();
-  
-  const { error } = await supabase
-    .from('watched_content')
-    .delete()
-    .eq('id', id);
+
+  const { error } = await supabase.from('watched_content').delete().eq('id', id);
 
   if (error) throw error;
 }
@@ -124,7 +118,7 @@ export interface WatchlistEntry {
 
 export async function addToWatchlist(entry: Omit<WatchlistEntry, 'id' | 'added_date'>) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('watchlist_content')
     .insert([entry])
@@ -135,9 +129,13 @@ export async function addToWatchlist(entry: Omit<WatchlistEntry, 'id' | 'added_d
   return data;
 }
 
-export async function removeFromWatchlist(userId: string, tmdbId: number, mediaType: 'movie' | 'tv') {
+export async function removeFromWatchlist(
+  userId: string,
+  tmdbId: number,
+  mediaType: 'movie' | 'tv'
+) {
   const supabase = createClient();
-  
+
   const { error } = await supabase
     .from('watchlist_content')
     .delete()
@@ -150,7 +148,7 @@ export async function removeFromWatchlist(userId: string, tmdbId: number, mediaT
 
 export async function updateWatchlistEntry(id: string, updates: Partial<WatchlistEntry>) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('watchlist_content')
     .update(updates)
@@ -164,7 +162,7 @@ export async function updateWatchlistEntry(id: string, updates: Partial<Watchlis
 
 export async function getWatchlistEntry(userId: string, tmdbId: number, mediaType: 'movie' | 'tv') {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('watchlist_content')
     .select('*')
@@ -177,9 +175,13 @@ export async function getWatchlistEntry(userId: string, tmdbId: number, mediaTyp
   return data;
 }
 
-export async function getUserWatchlist(userId: string, sortBy: 'added_date' | 'priority' = 'added_date', ascending: boolean = false) {
+export async function getUserWatchlist(
+  userId: string,
+  sortBy: 'added_date' | 'priority' = 'added_date',
+  ascending: boolean = false
+) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('watchlist_content')
     .select('*')
@@ -192,7 +194,7 @@ export async function getUserWatchlist(userId: string, sortBy: 'added_date' | 'p
 
 export async function fixDependencies() {
   const supabase = createClient();
-  
+
   const { error } = await supabase
     .from('watchlist_content')
     .update({ dependencies: [] })
@@ -234,25 +236,23 @@ export interface ActivityItem {
 
 export async function getUserProfile(userId?: string) {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     userId = user.id;
   }
-  
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', userId)
-    .single();
+
+  const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
   if (error) {
     console.error('getUserProfile error details:', {
       message: error.message,
       details: error.details,
       hint: error.hint,
-      code: error.code
+      code: error.code,
     });
     throw new Error(`Failed to get user profile: ${error.message}`);
   }
@@ -261,15 +261,17 @@ export async function getUserProfile(userId?: string) {
 
 export async function updateUserProfile(updates: Partial<UserProfile>) {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
-  
+
   const { data, error } = await supabase
     .from('users')
     .update({
       ...updates,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq('id', user.id)
     .select()
@@ -281,9 +283,11 @@ export async function updateUserProfile(updates: Partial<UserProfile>) {
 
 export async function getUserStats(userId?: string): Promise<UserStats> {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     userId = user.id;
   }
@@ -344,9 +348,11 @@ export async function getUserStats(userId?: string): Promise<UserStats> {
 
 export async function getUserActivity(userId?: string, limit = 10): Promise<ActivityItem[]> {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     userId = user.id;
   }
@@ -379,7 +385,7 @@ export async function getUserActivity(userId?: string, limit = 10): Promise<Acti
         media_type: item.media_type,
         action: 'marked as watched',
         created_at: item.created_at,
-        details: { rating: item.rating, rewatch_count: item.rewatch_count }
+        details: { rating: item.rating, rewatch_count: item.rewatch_count },
       });
     });
   }
@@ -393,7 +399,7 @@ export async function getUserActivity(userId?: string, limit = 10): Promise<Acti
         media_type: item.media_type,
         action: 'added to watchlist',
         created_at: item.added_date,
-        details: { priority: item.priority }
+        details: { priority: item.priority },
       });
     });
   }
@@ -433,19 +439,15 @@ export interface CustomListWithItems extends CustomList {
 
 export async function createCustomList(list: Omit<CustomList, 'id' | 'created_at' | 'updated_at'>) {
   const supabase = createClient();
-  
-  const { data, error } = await supabase
-    .from('custom_lists')
-    .insert([list])
-    .select()
-    .single();
+
+  const { data, error } = await supabase.from('custom_lists').insert([list]).select().single();
 
   if (error) {
     console.error('createCustomList error details:', {
       message: error.message,
       details: error.details,
       hint: error.hint,
-      code: error.code
+      code: error.code,
     });
     throw new Error(`Failed to create custom list: ${error.message}`);
   }
@@ -454,12 +456,12 @@ export async function createCustomList(list: Omit<CustomList, 'id' | 'created_at
 
 export async function updateCustomList(id: string, updates: Partial<CustomList>) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('custom_lists')
     .update({
       ...updates,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq('id', id)
     .select()
@@ -471,30 +473,31 @@ export async function updateCustomList(id: string, updates: Partial<CustomList>)
 
 export async function deleteCustomList(id: string) {
   const supabase = createClient();
-  
-  const { error } = await supabase
-    .from('custom_lists')
-    .delete()
-    .eq('id', id);
+
+  const { error } = await supabase.from('custom_lists').delete().eq('id', id);
 
   if (error) throw error;
 }
 
 export async function getUserCustomLists(userId?: string): Promise<CustomListWithItems[]> {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     userId = user.id;
   }
-  
+
   const { data, error } = await supabase
     .from('custom_lists')
-    .select(`
+    .select(
+      `
       *,
       list_items(count)
-    `)
+    `
+    )
     .eq('user_id', userId)
     .order('updated_at', { ascending: false });
 
@@ -503,40 +506,42 @@ export async function getUserCustomLists(userId?: string): Promise<CustomListWit
       message: error.message,
       details: error.details,
       hint: error.hint,
-      code: error.code
+      code: error.code,
     });
     throw new Error(`Failed to get user custom lists: ${error.message}`);
   }
-  
+
   return data.map(list => ({
     ...list,
-    item_count: list.list_items?.[0]?.count || 0
+    item_count: list.list_items?.[0]?.count || 0,
   })) as CustomListWithItems[];
 }
 
 export async function getCustomListWithItems(listId: string): Promise<CustomListWithItems> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('custom_lists')
-    .select(`
+    .select(
+      `
       *,
       list_items(*)
-    `)
+    `
+    )
     .eq('id', listId)
     .single();
 
   if (error) throw error;
-  
+
   return {
     ...data,
-    items: data.list_items || []
+    items: data.list_items || [],
   } as CustomListWithItems;
 }
 
 export async function addItemToList(item: Omit<ListItem, 'id' | 'added_at'>) {
   const supabase = createClient();
-  
+
   // Get the next sort order
   const { data: lastItem } = await supabase
     .from('list_items')
@@ -547,13 +552,15 @@ export async function addItemToList(item: Omit<ListItem, 'id' | 'added_at'>) {
     .single();
 
   const nextSortOrder = (lastItem?.sort_order || 0) + 1;
-  
+
   const { data, error } = await supabase
     .from('list_items')
-    .insert([{
-      ...item,
-      sort_order: nextSortOrder
-    }])
+    .insert([
+      {
+        ...item,
+        sort_order: nextSortOrder,
+      },
+    ])
     .select()
     .single();
 
@@ -561,9 +568,13 @@ export async function addItemToList(item: Omit<ListItem, 'id' | 'added_at'>) {
   return data as ListItem;
 }
 
-export async function removeItemFromList(listId: string, tmdbId: number, mediaType: 'movie' | 'tv') {
+export async function removeItemFromList(
+  listId: string,
+  tmdbId: number,
+  mediaType: 'movie' | 'tv'
+) {
   const supabase = createClient();
-  
+
   const { error } = await supabase
     .from('list_items')
     .delete()
@@ -574,20 +585,19 @@ export async function removeItemFromList(listId: string, tmdbId: number, mediaTy
   if (error) throw error;
 }
 
-export async function updateListItemOrder(listId: string, itemUpdates: { id: string; sort_order: number }[]) {
+export async function updateListItemOrder(
+  listId: string,
+  itemUpdates: { id: string; sort_order: number }[]
+) {
   const supabase = createClient();
-  
+
   // Update items in batch
   const promises = itemUpdates.map(({ id, sort_order }) =>
-    supabase
-      .from('list_items')
-      .update({ sort_order })
-      .eq('id', id)
-      .eq('list_id', listId)
+    supabase.from('list_items').update({ sort_order }).eq('id', id).eq('list_id', listId)
   );
 
   const results = await Promise.all(promises);
-  
+
   // Check for errors
   for (const result of results) {
     if (result.error) throw result.error;
@@ -596,7 +606,7 @@ export async function updateListItemOrder(listId: string, itemUpdates: { id: str
 
 export async function updateListItem(id: string, updates: Partial<ListItem>) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('list_items')
     .update(updates)
@@ -608,9 +618,13 @@ export async function updateListItem(id: string, updates: Partial<ListItem>) {
   return data as ListItem;
 }
 
-export async function checkItemInList(listId: string, tmdbId: number, mediaType: 'movie' | 'tv'): Promise<boolean> {
+export async function checkItemInList(
+  listId: string,
+  tmdbId: number,
+  mediaType: 'movie' | 'tv'
+): Promise<boolean> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('list_items')
     .select('id')
@@ -649,14 +663,12 @@ export interface ReviewWithUser extends Review {
   };
 }
 
-export async function createReview(review: Omit<Review, 'id' | 'created_at' | 'updated_at' | 'likes_count' | 'comments_count'>) {
+export async function createReview(
+  review: Omit<Review, 'id' | 'created_at' | 'updated_at' | 'likes_count' | 'comments_count'>
+) {
   const supabase = createClient();
-  
-  const { data, error } = await supabase
-    .from('reviews')
-    .insert([review])
-    .select()
-    .single();
+
+  const { data, error } = await supabase.from('reviews').insert([review]).select().single();
 
   if (error) throw error;
   return data as Review;
@@ -664,12 +676,12 @@ export async function createReview(review: Omit<Review, 'id' | 'created_at' | 'u
 
 export async function updateReview(id: string, updates: Partial<Review>) {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('reviews')
     .update({
       ...updates,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq('id', id)
     .select()
@@ -681,18 +693,15 @@ export async function updateReview(id: string, updates: Partial<Review>) {
 
 export async function deleteReview(id: string) {
   const supabase = createClient();
-  
-  const { error } = await supabase
-    .from('reviews')
-    .delete()
-    .eq('id', id);
+
+  const { error } = await supabase.from('reviews').delete().eq('id', id);
 
   if (error) throw error;
 }
 
 export async function getUserReview(userId: string, tmdbId: number, mediaType: 'movie' | 'tv') {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('reviews')
     .select('*')
@@ -705,15 +714,21 @@ export async function getUserReview(userId: string, tmdbId: number, mediaType: '
   return data as Review | null;
 }
 
-export async function getContentReviews(tmdbId: number, mediaType: 'movie' | 'tv', limit = 10): Promise<ReviewWithUser[]> {
+export async function getContentReviews(
+  tmdbId: number,
+  mediaType: 'movie' | 'tv',
+  limit = 10
+): Promise<ReviewWithUser[]> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('reviews')
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .eq('tmdb_id', tmdbId)
     .eq('media_type', mediaType)
     .eq('visibility', 'public')
@@ -726,19 +741,23 @@ export async function getContentReviews(tmdbId: number, mediaType: 'movie' | 'tv
 
 export async function getUserReviews(userId?: string, limit = 10): Promise<ReviewWithUser[]> {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     userId = user.id;
   }
-  
+
   const { data, error } = await supabase
     .from('reviews')
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -750,35 +769,37 @@ export async function getUserReviews(userId?: string, limit = 10): Promise<Revie
 // Storage Operations for List Banners
 export async function uploadListBanner(listId: string, file: File): Promise<string> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   // Create unique filename with user ID folder structure
   const fileExt = file.name.split('.').pop();
   const fileName = `${user.id}/${listId}-${Date.now()}.${fileExt}`;
 
-  const { data, error } = await supabase.storage
-    .from('list-banners')
-    .upload(fileName, file, {
-      cacheControl: '3600',
-      upsert: true
-    });
+  const { data, error } = await supabase.storage.from('list-banners').upload(fileName, file, {
+    cacheControl: '3600',
+    upsert: true,
+  });
 
   if (error) throw error;
 
   // Get public URL
-  const { data: { publicUrl } } = supabase.storage
-    .from('list-banners')
-    .getPublicUrl(data.path);
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('list-banners').getPublicUrl(data.path);
 
   return publicUrl;
 }
 
 export async function deleteListBanner(bannerUrl: string): Promise<void> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   // Extract file path from URL
@@ -787,26 +808,24 @@ export async function deleteListBanner(bannerUrl: string): Promise<void> {
   const fileName = pathParts[pathParts.length - 1];
   const filePath = `${user.id}/${fileName}`;
 
-  const { error } = await supabase.storage
-    .from('list-banners')
-    .remove([filePath]);
+  const { error } = await supabase.storage.from('list-banners').remove([filePath]);
 
   if (error) throw error;
 }
 
 export async function getListBannerUrl(listId: string): Promise<string | null> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
 
   // List files in user's folder
-  const { data, error } = await supabase.storage
-    .from('list-banners')
-    .list(user.id, {
-      limit: 100,
-      search: listId
-    });
+  const { data, error } = await supabase.storage.from('list-banners').list(user.id, {
+    limit: 100,
+    search: listId,
+  });
 
   if (error || !data || data.length === 0) return null;
 
@@ -815,9 +834,9 @@ export async function getListBannerUrl(listId: string): Promise<string | null> {
   if (!bannerFile) return null;
 
   // Get public URL
-  const { data: { publicUrl } } = supabase.storage
-    .from('list-banners')
-    .getPublicUrl(`${user.id}/${bannerFile.name}`);
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('list-banners').getPublicUrl(`${user.id}/${bannerFile.name}`);
 
   return publicUrl;
 }
@@ -853,16 +872,20 @@ export interface ReviewCommentWithUser extends ReviewComment {
 // Like/Unlike functionality
 export async function likeReview(reviewId: string): Promise<ReviewLike> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { data, error } = await supabase
     .from('review_likes')
-    .insert([{
-      user_id: user.id,
-      review_id: reviewId
-    }])
+    .insert([
+      {
+        user_id: user.id,
+        review_id: reviewId,
+      },
+    ])
     .select()
     .single();
 
@@ -872,8 +895,10 @@ export async function likeReview(reviewId: string): Promise<ReviewLike> {
 
 export async function unlikeReview(reviewId: string): Promise<void> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { error } = await supabase
@@ -887,8 +912,10 @@ export async function unlikeReview(reviewId: string): Promise<void> {
 
 export async function checkUserLikedReview(reviewId: string): Promise<boolean> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return false;
 
   const { data, error } = await supabase
@@ -904,7 +931,7 @@ export async function checkUserLikedReview(reviewId: string): Promise<boolean> {
 
 export async function getReviewLikes(reviewId: string): Promise<ReviewLike[]> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('review_likes')
     .select('*')
@@ -916,32 +943,45 @@ export async function getReviewLikes(reviewId: string): Promise<ReviewLike[]> {
 }
 
 // Comment functionality
-export async function createReviewComment(comment: Omit<ReviewComment, 'id' | 'created_at' | 'updated_at' | 'is_edited' | 'user_id'>): Promise<ReviewCommentWithUser> {
+export async function createReviewComment(
+  comment: Omit<ReviewComment, 'id' | 'created_at' | 'updated_at' | 'is_edited' | 'user_id'>
+): Promise<ReviewCommentWithUser> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { data, error } = await supabase
     .from('review_comments')
-    .insert([{
-      ...comment,
-      user_id: user.id
-    }])
-    .select(`
+    .insert([
+      {
+        ...comment,
+        user_id: user.id,
+      },
+    ])
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .single();
 
   if (error) throw error;
   return data as ReviewCommentWithUser;
 }
 
-export async function updateReviewComment(commentId: string, content: string): Promise<ReviewCommentWithUser> {
+export async function updateReviewComment(
+  commentId: string,
+  content: string
+): Promise<ReviewCommentWithUser> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { data, error } = await supabase
@@ -949,10 +989,12 @@ export async function updateReviewComment(commentId: string, content: string): P
     .update({ content })
     .eq('id', commentId)
     .eq('user_id', user.id)
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .single();
 
   if (error) throw error;
@@ -961,8 +1003,10 @@ export async function updateReviewComment(commentId: string, content: string): P
 
 export async function deleteReviewComment(commentId: string): Promise<void> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { error } = await supabase
@@ -976,13 +1020,15 @@ export async function deleteReviewComment(commentId: string): Promise<void> {
 
 export async function getReviewComments(reviewId: string): Promise<ReviewCommentWithUser[]> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('review_comments')
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .eq('review_id', reviewId)
     .is('parent_comment_id', null)
     .order('created_at', { ascending: true });
@@ -991,7 +1037,7 @@ export async function getReviewComments(reviewId: string): Promise<ReviewComment
 
   // Get replies for each comment
   const commentsWithReplies = await Promise.all(
-    (data as ReviewCommentWithUser[]).map(async (comment) => {
+    (data as ReviewCommentWithUser[]).map(async comment => {
       const replies = await getCommentReplies(comment.id!);
       return { ...comment, replies };
     })
@@ -1002,13 +1048,15 @@ export async function getReviewComments(reviewId: string): Promise<ReviewComment
 
 export async function getCommentReplies(parentCommentId: string): Promise<ReviewCommentWithUser[]> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('review_comments')
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .eq('parent_comment_id', parentCommentId)
     .order('created_at', { ascending: true });
 
@@ -1038,8 +1086,10 @@ export interface UserWithFollowStatus {
 // Follow/Unfollow functionality
 export async function followUser(followingId: string): Promise<Follow> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   if (user.id === followingId) {
@@ -1048,10 +1098,12 @@ export async function followUser(followingId: string): Promise<Follow> {
 
   const { data, error } = await supabase
     .from('follows')
-    .insert([{
-      follower_id: user.id,
-      following_id: followingId
-    }])
+    .insert([
+      {
+        follower_id: user.id,
+        following_id: followingId,
+      },
+    ])
     .select()
     .single();
 
@@ -1061,8 +1113,10 @@ export async function followUser(followingId: string): Promise<Follow> {
 
 export async function unfollowUser(followingId: string): Promise<void> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { error } = await supabase
@@ -1074,10 +1128,14 @@ export async function unfollowUser(followingId: string): Promise<void> {
   if (error) throw error;
 }
 
-export async function checkUserFollowStatus(userId: string): Promise<{ isFollowing: boolean; isFollowedBy: boolean }> {
+export async function checkUserFollowStatus(
+  userId: string
+): Promise<{ isFollowing: boolean; isFollowedBy: boolean }> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { isFollowing: false, isFollowedBy: false };
 
   if (user.id === userId) {
@@ -1102,20 +1160,25 @@ export async function checkUserFollowStatus(userId: string): Promise<{ isFollowi
 
   return {
     isFollowing: !!followingData,
-    isFollowedBy: !!followerData
+    isFollowedBy: !!followerData,
   };
 }
 
-export async function getUserFollowers(userId: string, limit = 50): Promise<UserWithFollowStatus[]> {
+export async function getUserFollowers(
+  userId: string,
+  limit = 50
+): Promise<UserWithFollowStatus[]> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('follows')
-    .select(`
+    .select(
+      `
       follower_id,
       created_at,
       users!follows_follower_id_fkey(id, display_name, avatar_url, bio, created_at)
-    `)
+    `
+    )
     .eq('following_id', userId)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -1123,14 +1186,16 @@ export async function getUserFollowers(userId: string, limit = 50): Promise<User
   if (error) throw error;
 
   // Get current user's follow status for each follower
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const currentUserId = user?.id;
 
   const followersWithStatus = await Promise.all(
     data.map(async (follow: any) => {
       const follower = follow.users;
       let followStatus = { isFollowing: false, isFollowedBy: false };
-      
+
       if (currentUserId && currentUserId !== follower.id) {
         followStatus = await checkUserFollowStatus(follower.id);
       }
@@ -1138,7 +1203,7 @@ export async function getUserFollowers(userId: string, limit = 50): Promise<User
       return {
         ...follower,
         is_following: followStatus.isFollowing,
-        is_followed_by: followStatus.isFollowedBy
+        is_followed_by: followStatus.isFollowedBy,
       } as UserWithFollowStatus;
     })
   );
@@ -1146,16 +1211,21 @@ export async function getUserFollowers(userId: string, limit = 50): Promise<User
   return followersWithStatus;
 }
 
-export async function getUserFollowing(userId: string, limit = 50): Promise<UserWithFollowStatus[]> {
+export async function getUserFollowing(
+  userId: string,
+  limit = 50
+): Promise<UserWithFollowStatus[]> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('follows')
-    .select(`
+    .select(
+      `
       following_id,
       created_at,
       users!follows_following_id_fkey(id, display_name, avatar_url, bio, created_at)
-    `)
+    `
+    )
     .eq('follower_id', userId)
     .order('created_at', { ascending: false })
     .limit(limit);
@@ -1163,14 +1233,16 @@ export async function getUserFollowing(userId: string, limit = 50): Promise<User
   if (error) throw error;
 
   // Get current user's follow status for each following
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const currentUserId = user?.id;
 
   const followingWithStatus = await Promise.all(
     data.map(async (follow: any) => {
       const following = follow.users;
       let followStatus = { isFollowing: false, isFollowedBy: false };
-      
+
       if (currentUserId && currentUserId !== following.id) {
         followStatus = await checkUserFollowStatus(following.id);
       }
@@ -1178,7 +1250,7 @@ export async function getUserFollowing(userId: string, limit = 50): Promise<User
       return {
         ...following,
         is_following: followStatus.isFollowing,
-        is_followed_by: followStatus.isFollowedBy
+        is_followed_by: followStatus.isFollowedBy,
       } as UserWithFollowStatus;
     })
   );
@@ -1186,9 +1258,11 @@ export async function getUserFollowing(userId: string, limit = 50): Promise<User
   return followingWithStatus;
 }
 
-export async function getUserFollowCounts(userId: string): Promise<{ followersCount: number; followingCount: number }> {
+export async function getUserFollowCounts(
+  userId: string
+): Promise<{ followersCount: number; followingCount: number }> {
   const supabase = createClient();
-  
+
   // Get followers count
   const { count: followersCount } = await supabase
     .from('follows')
@@ -1203,15 +1277,17 @@ export async function getUserFollowCounts(userId: string): Promise<{ followersCo
 
   return {
     followersCount: followersCount || 0,
-    followingCount: followingCount || 0
+    followingCount: followingCount || 0,
   };
 }
 
 // Activity feed for followed users
 export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   // Get list of users the current user follows
@@ -1232,10 +1308,12 @@ export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> 
   // Get watched content from followed users
   const { data: watchedData } = await supabase
     .from('watched_content')
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .in('user_id', followingIds)
     .eq('visibility', 'public')
     .order('created_at', { ascending: false })
@@ -1250,11 +1328,11 @@ export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> 
         media_type: item.media_type,
         action: 'marked as watched',
         created_at: item.created_at,
-        details: { 
-          rating: item.user_rating, 
+        details: {
+          rating: item.user_rating,
           rewatch_count: item.rewatch_count,
-          user: item.users
-        }
+          user: item.users,
+        },
       });
     });
   }
@@ -1262,10 +1340,12 @@ export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> 
   // Get reviews from followed users
   const { data: reviewsData } = await supabase
     .from('reviews')
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .in('user_id', followingIds)
     .eq('visibility', 'public')
     .order('created_at', { ascending: false })
@@ -1280,11 +1360,11 @@ export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> 
         media_type: item.media_type,
         action: 'wrote a review',
         created_at: item.created_at,
-        details: { 
+        details: {
           rating: item.rating,
           is_spoiler: item.is_spoiler,
-          user: item.users
-        }
+          user: item.users,
+        },
       });
     });
   }
@@ -1292,10 +1372,12 @@ export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> 
   // Get watchlist additions from followed users
   const { data: watchlistData } = await supabase
     .from('watchlist_content')
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .in('user_id', followingIds)
     .eq('visibility', 'public')
     .order('added_date', { ascending: false })
@@ -1310,10 +1392,10 @@ export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> 
         media_type: item.media_type,
         action: 'added to watchlist',
         created_at: item.added_date,
-        details: { 
+        details: {
           priority: item.priority,
-          user: item.users
-        }
+          user: item.users,
+        },
       });
     });
   }
@@ -1321,10 +1403,12 @@ export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> 
   // Get custom list activities from followed users
   const { data: listsData } = await supabase
     .from('custom_lists')
-    .select(`
+    .select(
+      `
       *,
       users!inner(id, display_name, avatar_url)
-    `)
+    `
+    )
     .in('user_id', followingIds)
     .eq('visibility', 'public')
     .order('created_at', { ascending: false })
@@ -1337,12 +1421,12 @@ export async function getFollowingActivity(limit = 20): Promise<ActivityItem[]> 
         type: 'list',
         action: 'created a list',
         created_at: item.created_at,
-        details: { 
+        details: {
           user: item.users,
           list_name: item.name,
           list_description: item.description,
-          list_id: item.id
-        }
+          list_id: item.id,
+        },
       });
     });
   }
@@ -1360,8 +1444,10 @@ export async function getFilteredActivity(
   offset = 0
 ): Promise<{ activities: ActivityItem[]; hasMore: boolean }> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   // Get list of users the current user follows
@@ -1384,10 +1470,12 @@ export async function getFilteredActivity(
     promises.push(
       supabase
         .from('watched_content')
-        .select(`
+        .select(
+          `
           *,
           users!inner(id, display_name, avatar_url)
-        `)
+        `
+        )
         .in('user_id', followingIds)
         .eq('visibility', 'public')
         .order('created_at', { ascending: false })
@@ -1399,10 +1487,12 @@ export async function getFilteredActivity(
     promises.push(
       supabase
         .from('reviews')
-        .select(`
+        .select(
+          `
           *,
           users!inner(id, display_name, avatar_url)
-        `)
+        `
+        )
         .in('user_id', followingIds)
         .eq('visibility', 'public')
         .order('created_at', { ascending: false })
@@ -1414,10 +1504,12 @@ export async function getFilteredActivity(
     promises.push(
       supabase
         .from('watchlist_content')
-        .select(`
+        .select(
+          `
           *,
           users!inner(id, display_name, avatar_url)
-        `)
+        `
+        )
         .in('user_id', followingIds)
         .eq('visibility', 'public')
         .order('added_date', { ascending: false })
@@ -1429,10 +1521,12 @@ export async function getFilteredActivity(
     promises.push(
       supabase
         .from('custom_lists')
-        .select(`
+        .select(
+          `
           *,
           users!inner(id, display_name, avatar_url)
-        `)
+        `
+        )
         .in('user_id', followingIds)
         .eq('visibility', 'public')
         .order('created_at', { ascending: false })
@@ -1441,14 +1535,14 @@ export async function getFilteredActivity(
   }
 
   const results = await Promise.all(promises);
-  
+
   // Process results and create activity items
   results.forEach((result, index) => {
     if (result.data) {
       const activityType = activityTypes[index];
       result.data.forEach((item: any) => {
         let activity: ActivityItem;
-        
+
         switch (activityType) {
           case 'watched':
             activity = {
@@ -1458,11 +1552,11 @@ export async function getFilteredActivity(
               media_type: item.media_type,
               action: 'marked as watched',
               created_at: item.created_at,
-              details: { 
-                rating: item.user_rating, 
+              details: {
+                rating: item.user_rating,
                 rewatch_count: item.rewatch_count,
-                user: item.users
-              }
+                user: item.users,
+              },
             };
             break;
           case 'review':
@@ -1473,12 +1567,12 @@ export async function getFilteredActivity(
               media_type: item.media_type,
               action: 'wrote a review',
               created_at: item.created_at,
-              details: { 
+              details: {
                 rating: item.rating,
                 is_spoiler: item.is_spoiler,
                 user: item.users,
-                content: item.content
-              }
+                content: item.content,
+              },
             };
             break;
           case 'watchlist':
@@ -1489,10 +1583,10 @@ export async function getFilteredActivity(
               media_type: item.media_type,
               action: 'added to watchlist',
               created_at: item.added_date,
-              details: { 
+              details: {
                 priority: item.priority,
-                user: item.users
-              }
+                user: item.users,
+              },
             };
             break;
           case 'list':
@@ -1501,18 +1595,18 @@ export async function getFilteredActivity(
               type: 'list',
               action: 'created a list',
               created_at: item.created_at,
-              details: { 
+              details: {
                 user: item.users,
                 list_name: item.name,
                 list_description: item.description,
-                list_id: item.id
-              }
+                list_id: item.id,
+              },
             };
             break;
           default:
             return;
         }
-        
+
         activities.push(activity);
       });
     }
@@ -1532,7 +1626,7 @@ export async function getFilteredActivity(
 // Search users for following
 export async function searchUsers(query: string, limit = 20): Promise<UserWithFollowStatus[]> {
   const supabase = createClient();
-  
+
   if (!query.trim()) return [];
 
   const { data, error } = await supabase
@@ -1544,18 +1638,20 @@ export async function searchUsers(query: string, limit = 20): Promise<UserWithFo
   if (error) throw error;
 
   // Get current user's follow status for each user
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const currentUserId = user?.id;
 
   const usersWithStatus = await Promise.all(
-    data.map(async (searchUser) => {
+    data.map(async searchUser => {
       let followStatus = { isFollowing: false, isFollowedBy: false };
       let followCounts = { followersCount: 0, followingCount: 0 };
-      
+
       if (currentUserId && currentUserId !== searchUser.id) {
         followStatus = await checkUserFollowStatus(searchUser.id);
       }
-      
+
       followCounts = await getUserFollowCounts(searchUser.id);
 
       return {
@@ -1563,7 +1659,7 @@ export async function searchUsers(query: string, limit = 20): Promise<UserWithFo
         is_following: followStatus.isFollowing,
         is_followed_by: followStatus.isFollowedBy,
         followers_count: followCounts.followersCount,
-        following_count: followCounts.followingCount
+        following_count: followCounts.followingCount,
       } as UserWithFollowStatus;
     })
   );
@@ -1604,19 +1700,25 @@ export interface TvShowProgress {
 }
 
 // Mark episode as watched
-export async function markEpisodeWatched(episode: Omit<EpisodeTracking, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<EpisodeTracking> {
+export async function markEpisodeWatched(
+  episode: Omit<EpisodeTracking, 'id' | 'created_at' | 'updated_at' | 'user_id'>
+): Promise<EpisodeTracking> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { data, error } = await supabase
     .from('episode_tracking')
-    .upsert([{
-      ...episode,
-      user_id: user.id,
-      watched_date: episode.watched_date || new Date().toISOString()
-    }])
+    .upsert([
+      {
+        ...episode,
+        user_id: user.id,
+        watched_date: episode.watched_date || new Date().toISOString(),
+      },
+    ])
     .select()
     .single();
 
@@ -1625,10 +1727,16 @@ export async function markEpisodeWatched(episode: Omit<EpisodeTracking, 'id' | '
 }
 
 // Unmark episode as watched
-export async function unmarkEpisodeWatched(tmdbTvId: number, seasonNumber: number, episodeNumber: number): Promise<void> {
+export async function unmarkEpisodeWatched(
+  tmdbTvId: number,
+  seasonNumber: number,
+  episodeNumber: number
+): Promise<void> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { error } = await supabase
@@ -1643,9 +1751,12 @@ export async function unmarkEpisodeWatched(tmdbTvId: number, seasonNumber: numbe
 }
 
 // Update episode tracking
-export async function updateEpisodeTracking(id: string, updates: Partial<EpisodeTracking>): Promise<EpisodeTracking> {
+export async function updateEpisodeTracking(
+  id: string,
+  updates: Partial<EpisodeTracking>
+): Promise<EpisodeTracking> {
   const supabase = createClient();
-  
+
   const { data, error } = await supabase
     .from('episode_tracking')
     .update(updates)
@@ -1658,11 +1769,16 @@ export async function updateEpisodeTracking(id: string, updates: Partial<Episode
 }
 
 // Get watched episodes for a TV show
-export async function getWatchedEpisodes(tmdbTvId: number, userId?: string): Promise<EpisodeTracking[]> {
+export async function getWatchedEpisodes(
+  tmdbTvId: number,
+  userId?: string
+): Promise<EpisodeTracking[]> {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     userId = user.id;
   }
@@ -1680,11 +1796,17 @@ export async function getWatchedEpisodes(tmdbTvId: number, userId?: string): Pro
 }
 
 // Get watched episodes for a specific season
-export async function getWatchedEpisodesForSeason(tmdbTvId: number, seasonNumber: number, userId?: string): Promise<EpisodeTracking[]> {
+export async function getWatchedEpisodesForSeason(
+  tmdbTvId: number,
+  seasonNumber: number,
+  userId?: string
+): Promise<EpisodeTracking[]> {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     userId = user.id;
   }
@@ -1702,11 +1824,18 @@ export async function getWatchedEpisodesForSeason(tmdbTvId: number, seasonNumber
 }
 
 // Check if episode is watched
-export async function isEpisodeWatched(tmdbTvId: number, seasonNumber: number, episodeNumber: number, userId?: string): Promise<boolean> {
+export async function isEpisodeWatched(
+  tmdbTvId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  userId?: string
+): Promise<boolean> {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return false;
     userId = user.id;
   }
@@ -1725,49 +1854,60 @@ export async function isEpisodeWatched(tmdbTvId: number, seasonNumber: number, e
 }
 
 // Get TV show progress
-export async function getTvShowProgress(tmdbTvId: number, totalSeasons: number, episodesPerSeason: Record<number, number>, userId?: string): Promise<TvShowProgress> {
+export async function getTvShowProgress(
+  tmdbTvId: number,
+  totalSeasons: number,
+  episodesPerSeason: Record<number, number>,
+  userId?: string
+): Promise<TvShowProgress> {
   const supabase = createClient();
-  
+
   if (!userId) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
     userId = user.id;
   }
 
   const watchedEpisodes = await getWatchedEpisodes(tmdbTvId, userId);
-  
+
   // Calculate season progress
   const seasons: SeasonProgress[] = [];
   let totalEpisodes = 0;
-  
+
   for (let seasonNum = 1; seasonNum <= totalSeasons; seasonNum++) {
     const seasonEpisodeCount = episodesPerSeason[seasonNum] || 0;
     const watchedInSeason = watchedEpisodes.filter(ep => ep.season_number === seasonNum).length;
-    
+
     seasons.push({
       season_number: seasonNum,
       total_episodes: seasonEpisodeCount,
       watched_episodes: watchedInSeason,
-      percentage: seasonEpisodeCount > 0 ? (watchedInSeason / seasonEpisodeCount) * 100 : 0
+      percentage: seasonEpisodeCount > 0 ? (watchedInSeason / seasonEpisodeCount) * 100 : 0,
     });
-    
+
     totalEpisodes += seasonEpisodeCount;
   }
 
   // Find next episode to watch
   let nextEpisode: { season_number: number; episode_number: number } | undefined;
-  
+
   for (const season of seasons) {
     if (season.watched_episodes < season.total_episodes) {
-      const watchedInSeason = watchedEpisodes.filter(ep => ep.season_number === season.season_number);
-      const watchedEpisodeNumbers = watchedInSeason.map(ep => ep.episode_number).sort((a, b) => a - b);
-      
+      const watchedInSeason = watchedEpisodes.filter(
+        ep => ep.season_number === season.season_number
+      );
+      const watchedEpisodeNumbers = watchedInSeason
+        .map(ep => ep.episode_number)
+        .sort((a, b) => a - b);
+
       // Find first unwatched episode in this season
       for (let episodeNum = 1; episodeNum <= season.total_episodes; episodeNum++) {
         if (!watchedEpisodeNumbers.includes(episodeNum)) {
           nextEpisode = {
             season_number: season.season_number,
-            episode_number: episodeNum
+            episode_number: episodeNum,
           };
           break;
         }
@@ -1781,33 +1921,36 @@ export async function getTvShowProgress(tmdbTvId: number, totalSeasons: number, 
     total_episodes: totalEpisodes,
     watched_episodes: watchedEpisodes.length,
     seasons,
-    next_episode: nextEpisode
+    next_episode: nextEpisode,
   };
 }
 
 // Bulk mark episodes as watched (for entire season)
-export async function markSeasonWatched(tmdbTvId: number, seasonNumber: number, episodeCount: number): Promise<EpisodeTracking[]> {
+export async function markSeasonWatched(
+  tmdbTvId: number,
+  seasonNumber: number,
+  episodeCount: number
+): Promise<EpisodeTracking[]> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const episodes: Omit<EpisodeTracking, 'id' | 'created_at' | 'updated_at'>[] = [];
-  
+
   for (let episodeNum = 1; episodeNum <= episodeCount; episodeNum++) {
     episodes.push({
       user_id: user.id,
       tmdb_tv_id: tmdbTvId,
       season_number: seasonNumber,
       episode_number: episodeNum,
-      watched_date: new Date().toISOString()
+      watched_date: new Date().toISOString(),
     });
   }
 
-  const { data, error } = await supabase
-    .from('episode_tracking')
-    .upsert(episodes)
-    .select();
+  const { data, error } = await supabase.from('episode_tracking').upsert(episodes).select();
 
   if (error) throw error;
   return data as EpisodeTracking[];
@@ -1816,8 +1959,10 @@ export async function markSeasonWatched(tmdbTvId: number, seasonNumber: number, 
 // Bulk unmark episodes as watched (for entire season)
 export async function unmarkSeasonWatched(tmdbTvId: number, seasonNumber: number): Promise<void> {
   const supabase = createClient();
-  
-  const { data: { user } } = await supabase.auth.getUser();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
 
   const { error } = await supabase
@@ -1828,4 +1973,4 @@ export async function unmarkSeasonWatched(tmdbTvId: number, seasonNumber: number
     .eq('season_number', seasonNumber);
 
   if (error) throw error;
-} 
+}

@@ -15,8 +15,8 @@ export default function NotificationsPage() {
           Stay up to date with activity on your content and from people you follow.
         </p>
       </div>
-      
+
       <NotificationCenter />
     </div>
   );
-} 
+}

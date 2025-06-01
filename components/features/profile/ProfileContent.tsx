@@ -1,22 +1,39 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { createClient, getUserProfile, getUserStats, getUserActivity, updateUserProfile, getUserFollowCounts, type UserProfile, type UserStats, type ActivityItem } from "@/lib/supabase/client"
-import { getMovieDetails, getTvShowDetails } from "@/lib/tmdb/client"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Edit, Film, Tv, Star, Bookmark, List, Calendar, Eye, EyeOff, Users } from "lucide-react"
-import { toast } from "sonner"
-import { formatDistanceToNow } from "date-fns"
-import Link from "next/link"
-import { FollowButton } from "../social/FollowButton"
+import { useState, useEffect } from 'react';
+import {
+  createClient,
+  getUserProfile,
+  getUserStats,
+  getUserActivity,
+  updateUserProfile,
+  getUserFollowCounts,
+  type UserProfile,
+  type UserStats,
+  type ActivityItem,
+} from '@/lib/supabase/client';
+import { getMovieDetails, getTvShowDetails } from '@/lib/tmdb/client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarUpload } from '@/components/ui/avatar-upload';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Edit, Film, Tv, Star, Bookmark, List, Calendar, Eye, EyeOff, Users } from 'lucide-react';
+import { toast } from 'sonner';
+import { formatDistanceToNow } from 'date-fns';
+import Link from 'next/link';
+import { FollowButton } from '../social/FollowButton';
 
 interface ActivityItemWithDetails extends ActivityItem {
   title?: string;
@@ -28,102 +45,150 @@ interface ProfileContentProps {
 }
 
 export function ProfileContent({ userId }: ProfileContentProps) {
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [stats, setStats] = useState<UserStats | null>(null)
-  const [activity, setActivity] = useState<ActivityItemWithDetails[]>([])
-  const [followCounts, setFollowCounts] = useState({ followersCount: 0, followingCount: 0 })
-  const [isLoading, setIsLoading] = useState(true)
-  const [isEditOpen, setIsEditOpen] = useState(false)
-  const [isOwnProfile, setIsOwnProfile] = useState(false)
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [activity, setActivity] = useState<ActivityItemWithDetails[]>([]);
+  const [followCounts, setFollowCounts] = useState({ followersCount: 0, followingCount: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [editForm, setEditForm] = useState({
     display_name: '',
-    bio: ''
-  })
+    bio: '',
+  });
 
   useEffect(() => {
-    loadProfileData()
-  }, [userId])
+    loadProfileData();
+  }, [userId]);
 
   const loadProfileData = async () => {
     try {
-      setIsLoading(true)
-      
+      setIsLoading(true);
+
       // Check if user is authenticated
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        toast.error("Please log in to view profiles")
-        return
+        toast.error('Please log in to view profiles');
+        return;
       }
 
       // Determine if this is the user's own profile
-      const targetUserId = userId || user.id
-      const isOwn = targetUserId === user.id
-      setIsOwnProfile(isOwn)
+      const targetUserId = userId || user.id;
+      const isOwn = targetUserId === user.id;
+      setIsOwnProfile(isOwn);
 
       // Load profile, stats, activity, and follow counts in parallel
       const [profileData, statsData, activityData, followCountsData] = await Promise.all([
         getUserProfile(targetUserId),
         getUserStats(targetUserId),
         getUserActivity(targetUserId),
-        getUserFollowCounts(targetUserId)
-      ])
+        getUserFollowCounts(targetUserId),
+      ]);
 
-      setProfile(profileData)
-      setStats(statsData)
-      setFollowCounts(followCountsData)
+      setProfile(profileData);
+      setStats(statsData);
+      setFollowCounts(followCountsData);
       setEditForm({
         display_name: profileData.display_name || '',
-        bio: profileData.bio || ''
-      })
+        bio: profileData.bio || '',
+      });
 
       // Enhance activity with TMDB data
       const enhancedActivity = await Promise.all(
-        activityData.map(async (item) => {
+        activityData.map(async item => {
           if (item.tmdb_id && item.media_type) {
             try {
-              const details = item.media_type === 'movie' 
-                ? await getMovieDetails(item.tmdb_id)
-                : await getTvShowDetails(item.tmdb_id)
-              
+              const details =
+                item.media_type === 'movie'
+                  ? await getMovieDetails(item.tmdb_id)
+                  : await getTvShowDetails(item.tmdb_id);
+
               return {
                 ...item,
                 title: details.title || details.name,
-                poster_path: details.poster_path
-              }
+                poster_path: details.poster_path,
+              };
             } catch (error) {
-              return item
+              return item;
             }
           }
-          return item
+          return item;
         })
-      )
+      );
 
-      setActivity(enhancedActivity)
+      setActivity(enhancedActivity);
     } catch (error) {
-      console.error('Error loading profile data:', error)
-      toast.error("Failed to load profile data")
+      console.error('Error loading profile data:', error);
+      toast.error('Failed to load profile data');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleEditProfile = async () => {
     try {
       const updatedProfile = await updateUserProfile({
         display_name: editForm.display_name || undefined,
-        bio: editForm.bio || undefined
-      })
-      
-      setProfile(updatedProfile)
-      setIsEditOpen(false)
-      toast.success("Profile updated successfully")
+        bio: editForm.bio || undefined,
+      });
+
+      setProfile(updatedProfile);
+      setIsEditOpen(false);
+      toast.success('Profile updated successfully');
     } catch (error) {
-      console.error('Error updating profile:', error)
-      toast.error("Failed to update profile")
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
     }
-  }
+  };
+
+  const handleAvatarChange = async (newAvatarUrl: string | null) => {
+    if (profile) {
+      // Update local state immediately for responsive UI
+      setProfile(prev =>
+        prev
+          ? {
+              ...prev,
+              avatar_url: newAvatarUrl || undefined,
+            }
+          : null
+      );
+
+      // Also refetch the profile data from database to ensure sync
+      try {
+        const supabase = createClient();
+        const { data: updatedProfile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', profile.id)
+          .single();
+
+        if (updatedProfile) {
+          setProfile(updatedProfile);
+        }
+      } catch (error) {
+        console.error('Error refetching profile after avatar change:', error);
+      }
+    }
+  };
+
+  const getInitials = () => {
+    if (profile?.display_name) {
+      return profile.display_name
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    if (profile?.email) {
+      return profile.email.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
 
   if (isLoading) {
     return (
@@ -142,7 +207,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!profile) {
@@ -150,28 +215,38 @@ export function ProfileContent({ userId }: ProfileContentProps) {
       <div className="text-center py-12">
         <p className="text-muted-foreground">Please log in to view your profile.</p>
       </div>
-    )
+    );
   }
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'watched': return <Eye className="h-4 w-4" />
-      case 'watchlist': return <Bookmark className="h-4 w-4" />
-      case 'review': return <Star className="h-4 w-4" />
-      case 'list': return <List className="h-4 w-4" />
-      default: return <Calendar className="h-4 w-4" />
+      case 'watched':
+        return <Eye className="h-4 w-4" />;
+      case 'watchlist':
+        return <Bookmark className="h-4 w-4" />;
+      case 'review':
+        return <Star className="h-4 w-4" />;
+      case 'list':
+        return <List className="h-4 w-4" />;
+      default:
+        return <Calendar className="h-4 w-4" />;
     }
-  }
+  };
 
   const getActivityColor = (type: string) => {
     switch (type) {
-      case 'watched': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-      case 'watchlist': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
-      case 'review': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-      case 'list': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300'
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
+      case 'watched':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'watchlist':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      case 'review':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+      case 'list':
+        return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -179,44 +254,57 @@ export function ProfileContent({ userId }: ProfileContentProps) {
       <Card>
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={profile.avatar_url} alt={profile.display_name || profile.email} />
-              <AvatarFallback className="text-lg">
-                {(profile.display_name || profile.email || 'U').charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            
+            {/* Avatar with upload functionality for own profile, static for others */}
+            {isOwnProfile ? (
+              <AvatarUpload
+                currentAvatarUrl={profile.avatar_url}
+                fallbackText={getInitials()}
+                onAvatarChange={handleAvatarChange}
+                userId={profile.id}
+                size="lg"
+                className="shrink-0"
+                key={profile.avatar_url || 'no-avatar'}
+              />
+            ) : (
+              <Avatar className="h-20 w-20 shrink-0">
+                <AvatarImage src={profile.avatar_url} alt={profile.display_name || profile.email} />
+                <AvatarFallback className="text-lg">{getInitials()}</AvatarFallback>
+              </Avatar>
+            )}
+
             <div className="flex-1 space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
-                  <h1 className="text-2xl font-bold">
-                    {profile.display_name || 'Anonymous User'}
-                  </h1>
+                  <h1 className="text-2xl font-bold">{profile.display_name || 'Anonymous User'}</h1>
                   <p className="text-muted-foreground">{profile.email}</p>
-                  
+
                   {/* Follow counts */}
                   <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                    <Link 
+                    <Link
                       href={`/profile/${profile.id}/followers`}
                       className="hover:text-foreground hover:underline"
                     >
-                      <span className="font-medium text-foreground">{followCounts.followersCount}</span> followers
+                      <span className="font-medium text-foreground">
+                        {followCounts.followersCount}
+                      </span>{' '}
+                      followers
                     </Link>
-                    <Link 
+                    <Link
                       href={`/profile/${profile.id}/following`}
                       className="hover:text-foreground hover:underline"
                     >
-                      <span className="font-medium text-foreground">{followCounts.followingCount}</span> following
+                      <span className="font-medium text-foreground">
+                        {followCounts.followingCount}
+                      </span>{' '}
+                      following
                     </Link>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-2">
                   {/* Follow button for other users */}
-                  {!isOwnProfile && (
-                    <FollowButton userId={profile.id} />
-                  )}
-                  
+                  {!isOwnProfile && <FollowButton userId={profile.id} />}
+
                   {/* Edit button for own profile */}
                   {isOwnProfile && (
                     <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
@@ -236,7 +324,9 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                             <Input
                               id="display_name"
                               value={editForm.display_name}
-                              onChange={(e) => setEditForm(prev => ({ ...prev, display_name: e.target.value }))}
+                              onChange={e =>
+                                setEditForm(prev => ({ ...prev, display_name: e.target.value }))
+                              }
                               placeholder="Enter your display name"
                             />
                           </div>
@@ -245,7 +335,9 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                             <Textarea
                               id="bio"
                               value={editForm.bio}
-                              onChange={(e) => setEditForm(prev => ({ ...prev, bio: e.target.value }))}
+                              onChange={e =>
+                                setEditForm(prev => ({ ...prev, bio: e.target.value }))
+                              }
                               placeholder="Tell us about yourself..."
                               rows={3}
                             />
@@ -254,9 +346,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                             <Button variant="outline" onClick={() => setIsEditOpen(false)}>
                               Cancel
                             </Button>
-                            <Button onClick={handleEditProfile}>
-                              Save Changes
-                            </Button>
+                            <Button onClick={handleEditProfile}>Save Changes</Button>
                           </div>
                         </div>
                       </DialogContent>
@@ -264,14 +354,13 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                   )}
                 </div>
               </div>
-              
-              {profile.bio && (
-                <p className="text-sm text-muted-foreground">{profile.bio}</p>
-              )}
-              
+
+              {profile.bio && <p className="text-sm text-muted-foreground">{profile.bio}</p>}
+
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3 w-3" />
-                Joined {formatDistanceToNow(new Date(profile.created_at || ''), { addSuffix: true })}
+                Joined{' '}
+                {formatDistanceToNow(new Date(profile.created_at || ''), { addSuffix: true })}
               </div>
             </div>
           </div>
@@ -286,7 +375,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
               <TabsTrigger value="activity">Recent Activity</TabsTrigger>
               <TabsTrigger value="privacy">Privacy Settings</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="activity" className="space-y-4">
               <Card>
                 <CardHeader>
@@ -295,23 +384,24 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                 <CardContent>
                   {activity.length === 0 ? (
                     <p className="text-muted-foreground text-center py-8">
-                      No recent activity. Start watching movies and TV shows to see your activity here!
+                      No recent activity. Start watching movies and TV shows to see your activity
+                      here!
                     </p>
                   ) : (
                     <div className="space-y-4">
-                      {activity.map((item) => (
+                      {activity.map(item => (
                         <div key={item.id} className="flex items-start gap-3 p-3 rounded-lg border">
                           <div className={`p-2 rounded-full ${getActivityColor(item.type)}`}>
                             {getActivityIcon(item.type)}
                           </div>
-                          
+
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <div className="flex-1">
                                 <p className="text-sm">
                                   <span className="font-medium">You</span> {item.action}
                                   {item.title && (
-                                    <Link 
+                                    <Link
                                       href={`/${item.media_type}/${item.tmdb_id}`}
                                       className="font-medium text-primary hover:underline ml-1"
                                     >
@@ -319,7 +409,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                                     </Link>
                                   )}
                                 </p>
-                                
+
                                 {item.details?.rating && (
                                   <div className="flex items-center gap-1 mt-1">
                                     <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
@@ -329,9 +419,11 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                                   </div>
                                 )}
                               </div>
-                              
+
                               <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(item.created_at), {
+                                  addSuffix: true,
+                                })}
                               </span>
                             </div>
                           </div>
@@ -342,7 +434,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="privacy" className="space-y-4">
               <Card>
                 <CardHeader>
@@ -362,7 +454,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                         Public
                       </Badge>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="font-medium">Activity Visibility</h4>
@@ -375,7 +467,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                         Followers
                       </Badge>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="font-medium">Watchlist Visibility</h4>
@@ -388,7 +480,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                         Private
                       </Badge>
                     </div>
-                    
+
                     <p className="text-xs text-muted-foreground">
                       Privacy controls will be fully functional in a future update.
                     </p>
@@ -416,7 +508,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                     </div>
                     <Badge variant="secondary">{stats.moviesWatched}</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Tv className="h-4 w-4 text-muted-foreground" />
@@ -424,7 +516,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                     </div>
                     <Badge variant="secondary">{stats.tvShowsWatched}</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Star className="h-4 w-4 text-muted-foreground" />
@@ -432,7 +524,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                     </div>
                     <Badge variant="secondary">{stats.reviewsWritten}</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Bookmark className="h-4 w-4 text-muted-foreground" />
@@ -440,7 +532,7 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                     </div>
                     <Badge variant="secondary">{stats.watchlistItems}</Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <List className="h-4 w-4 text-muted-foreground" />
@@ -465,23 +557,25 @@ export function ProfileContent({ userId }: ProfileContentProps) {
                   View Watchlist
                 </Link>
               </Button>
-              
+
               <Button variant="outline" className="w-full justify-start" asChild>
                 <Link href="/lists">
                   <List className="h-4 w-4 mr-2" />
                   My Lists
                 </Link>
               </Button>
-              
+
               <Button variant="outline" className="w-full justify-start" disabled>
                 <Star className="h-4 w-4 mr-2" />
                 My Reviews
-                <Badge variant="secondary" className="ml-auto">Soon</Badge>
+                <Badge variant="secondary" className="ml-auto">
+                  Soon
+                </Badge>
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

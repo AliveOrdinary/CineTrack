@@ -1,4 +1,4 @@
-import { UserSearch } from "@/components/features/social/UserSearch"
+import { UserSearch } from '@/components/features/social/UserSearch';
 
 export default function DiscoverPage() {
   return (
@@ -9,8 +9,8 @@ export default function DiscoverPage() {
           Find and follow other movie and TV show enthusiasts to see their reviews and activity.
         </p>
       </div>
-      
+
       <UserSearch />
     </div>
-  )
-} 
+  );
+}

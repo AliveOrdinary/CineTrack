@@ -8,13 +8,16 @@ const supabase = createClient();
  */
 export async function getUserPreferences(): Promise<UserPreferences | null> {
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError) {
       console.error('Auth error:', authError);
       throw new Error(`Authentication error: ${authError.message}`);
     }
-    
+
     if (!user) {
       console.error('No authenticated user found');
       throw new Error('User not authenticated');
@@ -48,13 +51,16 @@ export async function getUserPreferences(): Promise<UserPreferences | null> {
  */
 export async function createUserPreferences(): Promise<UserPreferences> {
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError) {
       console.error('Auth error:', authError);
       throw new Error(`Authentication error: ${authError.message}`);
     }
-    
+
     if (!user) {
       console.error('No authenticated user found');
       throw new Error('User not authenticated');
@@ -64,7 +70,7 @@ export async function createUserPreferences(): Promise<UserPreferences> {
       .from('user_preferences')
       .insert({
         user_id: user.id,
-        ...DEFAULT_PREFERENCES
+        ...DEFAULT_PREFERENCES,
       })
       .select()
       .single();
@@ -84,15 +90,20 @@ export async function createUserPreferences(): Promise<UserPreferences> {
 /**
  * Update user preferences
  */
-export async function updateUserPreferences(updates: UserPreferencesUpdate): Promise<UserPreferences> {
+export async function updateUserPreferences(
+  updates: UserPreferencesUpdate
+): Promise<UserPreferences> {
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError) {
       console.error('Auth error:', authError);
       throw new Error(`Authentication error: ${authError.message}`);
     }
-    
+
     if (!user) {
       console.error('No authenticated user found');
       throw new Error('User not authenticated');
@@ -122,13 +133,16 @@ export async function updateUserPreferences(updates: UserPreferencesUpdate): Pro
  */
 export async function resetUserPreferences(): Promise<UserPreferences> {
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError) {
       console.error('Auth error:', authError);
       throw new Error(`Authentication error: ${authError.message}`);
     }
-    
+
     if (!user) {
       console.error('No authenticated user found');
       throw new Error('User not authenticated');
@@ -189,34 +203,61 @@ export async function updateTheme(theme: 'light' | 'dark' | 'system'): Promise<U
 /**
  * Update notification preferences
  */
-export async function updateNotificationPreferences(notifications: Partial<Pick<UserPreferences, 
-  'email_notifications' | 'push_notifications' | 'notify_on_follow' | 'notify_on_review_like' | 
-  'notify_on_review_comment' | 'notify_on_list_like' | 'notify_on_list_comment' | 
-  'notify_on_recommendation' | 'notify_on_system_updates'>>): Promise<UserPreferences> {
+export async function updateNotificationPreferences(
+  notifications: Partial<
+    Pick<
+      UserPreferences,
+      | 'email_notifications'
+      | 'push_notifications'
+      | 'notify_on_follow'
+      | 'notify_on_review_like'
+      | 'notify_on_review_comment'
+      | 'notify_on_list_like'
+      | 'notify_on_list_comment'
+      | 'notify_on_recommendation'
+      | 'notify_on_system_updates'
+    >
+  >
+): Promise<UserPreferences> {
   return updateUserPreferences(notifications);
 }
 
 /**
  * Update visibility preferences
  */
-export async function updateVisibilityPreferences(visibility: Partial<Pick<UserPreferences,
-  'default_review_visibility' | 'default_list_visibility' | 'default_watchlist_visibility' | 
-  'default_activity_visibility'>>): Promise<UserPreferences> {
+export async function updateVisibilityPreferences(
+  visibility: Partial<
+    Pick<
+      UserPreferences,
+      | 'default_review_visibility'
+      | 'default_list_visibility'
+      | 'default_watchlist_visibility'
+      | 'default_activity_visibility'
+    >
+  >
+): Promise<UserPreferences> {
   return updateUserPreferences(visibility);
 }
 
 /**
  * Update regional preferences
  */
-export async function updateRegionalPreferences(regional: Partial<Pick<UserPreferences,
-  'language' | 'region' | 'timezone' | 'date_format'>>): Promise<UserPreferences> {
+export async function updateRegionalPreferences(
+  regional: Partial<Pick<UserPreferences, 'language' | 'region' | 'timezone' | 'date_format'>>
+): Promise<UserPreferences> {
   return updateUserPreferences(regional);
 }
 
 /**
  * Update content preferences
  */
-export async function updateContentPreferences(content: Partial<Pick<UserPreferences,
-  'adult_content' | 'spoiler_protection' | 'auto_mark_watched' | 'items_per_page'>>): Promise<UserPreferences> {
+export async function updateContentPreferences(
+  content: Partial<
+    Pick<
+      UserPreferences,
+      'adult_content' | 'spoiler_protection' | 'auto_mark_watched' | 'items_per_page'
+    >
+  >
+): Promise<UserPreferences> {
   return updateUserPreferences(content);
-} 
+}

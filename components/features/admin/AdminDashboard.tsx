@@ -3,15 +3,15 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Users, 
-  BarChart3, 
-  Activity, 
-  Settings, 
+import {
+  Users,
+  BarChart3,
+  Activity,
+  Settings,
   Shield,
   Database,
   Flag,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import { UserManagement } from './UserManagement';
 import { SiteAnalytics } from './SiteAnalytics';
@@ -59,9 +59,7 @@ export function AdminDashboard() {
                 <Users className="h-5 w-5" />
                 User Management
               </CardTitle>
-              <CardDescription>
-                Manage user accounts, roles, and permissions
-              </CardDescription>
+              <CardDescription>Manage user accounts, roles, and permissions</CardDescription>
             </CardHeader>
             <CardContent>
               <UserManagement />
@@ -76,9 +74,7 @@ export function AdminDashboard() {
                 <BarChart3 className="h-5 w-5" />
                 Site Analytics
               </CardTitle>
-              <CardDescription>
-                View platform usage statistics and trends
-              </CardDescription>
+              <CardDescription>View platform usage statistics and trends</CardDescription>
             </CardHeader>
             <CardContent>
               <SiteAnalytics />
@@ -93,9 +89,7 @@ export function AdminDashboard() {
                 <Activity className="h-5 w-5" />
                 System Health
               </CardTitle>
-              <CardDescription>
-                Monitor system performance and health metrics
-              </CardDescription>
+              <CardDescription>Monitor system performance and health metrics</CardDescription>
             </CardHeader>
             <CardContent>
               <SystemHealth />
@@ -110,9 +104,7 @@ export function AdminDashboard() {
                 <Flag className="h-5 w-5" />
                 Feature Flags
               </CardTitle>
-              <CardDescription>
-                Manage feature toggles and experimental features
-              </CardDescription>
+              <CardDescription>Manage feature toggles and experimental features</CardDescription>
             </CardHeader>
             <CardContent>
               <FeatureFlags />
@@ -122,4 +114,4 @@ export function AdminDashboard() {
       </Tabs>
     </div>
   );
-} 
+}

@@ -3,16 +3,7 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Settings, 
-  Palette, 
-  Bell, 
-  Eye, 
-  Globe, 
-  Shield,
-  Monitor,
-  LogIn
-} from 'lucide-react';
+import { Settings, Palette, Bell, Eye, Globe, Shield, Monitor, LogIn } from 'lucide-react';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { useUser } from '@/hooks/use-user';
 import { ThemeSettings } from './ThemeSettings';
@@ -38,8 +29,8 @@ export function SettingsPage() {
           <p className="text-muted-foreground mb-4">
             You need to be signed in to access your settings
           </p>
-          <Link 
-            href="/login" 
+          <Link
+            href="/login"
             className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
           >
             Sign In
@@ -77,9 +68,7 @@ export function SettingsPage() {
         <CardContent className="py-12 text-center">
           <Settings className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">No preferences found</h3>
-          <p className="text-muted-foreground">
-            Unable to load your preferences
-          </p>
+          <p className="text-muted-foreground">Unable to load your preferences</p>
         </CardContent>
       </Card>
     );
@@ -122,9 +111,7 @@ export function SettingsPage() {
                 <Palette className="h-5 w-5" />
                 Theme & Appearance
               </CardTitle>
-              <CardDescription>
-                Customize how CineTrack looks and feels
-              </CardDescription>
+              <CardDescription>Customize how CineTrack looks and feels</CardDescription>
             </CardHeader>
             <CardContent>
               <ThemeSettings preferences={preferences} />
@@ -139,9 +126,7 @@ export function SettingsPage() {
                 <Bell className="h-5 w-5" />
                 Notification Preferences
               </CardTitle>
-              <CardDescription>
-                Control when and how you receive notifications
-              </CardDescription>
+              <CardDescription>Control when and how you receive notifications</CardDescription>
             </CardHeader>
             <CardContent>
               <NotificationSettings preferences={preferences} />
@@ -156,9 +141,7 @@ export function SettingsPage() {
                 <Eye className="h-5 w-5" />
                 Privacy & Visibility
               </CardTitle>
-              <CardDescription>
-                Control who can see your content and activity
-              </CardDescription>
+              <CardDescription>Control who can see your content and activity</CardDescription>
             </CardHeader>
             <CardContent>
               <VisibilitySettings preferences={preferences} />
@@ -173,9 +156,7 @@ export function SettingsPage() {
                 <Globe className="h-5 w-5" />
                 Regional Settings
               </CardTitle>
-              <CardDescription>
-                Set your language, region, and timezone preferences
-              </CardDescription>
+              <CardDescription>Set your language, region, and timezone preferences</CardDescription>
             </CardHeader>
             <CardContent>
               <RegionalSettings preferences={preferences} />
@@ -190,9 +171,7 @@ export function SettingsPage() {
                 <Shield className="h-5 w-5" />
                 Content Preferences
               </CardTitle>
-              <CardDescription>
-                Control content filtering and safety features
-              </CardDescription>
+              <CardDescription>Control content filtering and safety features</CardDescription>
             </CardHeader>
             <CardContent>
               <ContentSettings preferences={preferences} />
@@ -207,9 +186,7 @@ export function SettingsPage() {
                 <Monitor className="h-5 w-5" />
                 Display Settings
               </CardTitle>
-              <CardDescription>
-                Customize how content is displayed and formatted
-              </CardDescription>
+              <CardDescription>Customize how content is displayed and formatted</CardDescription>
             </CardHeader>
             <CardContent>
               <DisplaySettings preferences={preferences} />
@@ -219,4 +196,4 @@ export function SettingsPage() {
       </div>
     </Tabs>
   );
-} 
+}

@@ -14,7 +14,9 @@ export function useUser() {
     // Get initial user
     const getUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         setUser(user);
       } catch (error) {
         console.error('Error getting user:', error);
@@ -27,15 +29,15 @@ export function useUser() {
     getUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
     return () => subscription.unsubscribe();
   }, []);
 
   return { user, loading };
-} 
+}

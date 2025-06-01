@@ -34,7 +34,7 @@ export function ReportButton({
   className,
   variant = 'ghost',
   size = 'sm',
-  showText = false
+  showText = false,
 }: ReportButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [hasReported, setHasReported] = useState(false);
@@ -64,12 +64,7 @@ export function ReportButton({
 
   if (isLoading) {
     return (
-      <Button
-        variant={variant}
-        size={size}
-        className={className}
-        disabled
-      >
+      <Button variant={variant} size={size} className={className} disabled>
         <Flag className="h-4 w-4" />
         {showText && <span className="ml-2">Report</span>}
       </Button>
@@ -94,12 +89,7 @@ export function ReportButton({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant={variant}
-          size={size}
-          className={className}
-          title="Report this content"
-        >
+        <Button variant={variant} size={size} className={className} title="Report this content">
           <Flag className="h-4 w-4" />
           {showText && <span className="ml-2">Report</span>}
         </Button>
@@ -121,4 +111,4 @@ export function ReportButton({
       </DialogContent>
     </Dialog>
   );
-} 
+}

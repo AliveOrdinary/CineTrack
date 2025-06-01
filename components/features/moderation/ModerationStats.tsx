@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Clock, 
-  CheckCircle, 
+import {
+  BarChart3,
+  TrendingUp,
+  Clock,
+  CheckCircle,
   XCircle,
   AlertTriangle,
-  Flag
+  Flag,
 } from 'lucide-react';
 import { getReportStats } from '@/lib/supabase/reports';
 import { type ReportStats } from '@/types/reports';
@@ -50,25 +50,20 @@ export function ModerationStats() {
         <CardContent className="py-12 text-center">
           <BarChart3 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium mb-2">No statistics available</h3>
-          <p className="text-muted-foreground">
-            Unable to load moderation statistics
-          </p>
+          <p className="text-muted-foreground">Unable to load moderation statistics</p>
         </CardContent>
       </Card>
     );
   }
 
-  const pendingPercentage = stats.total_reports > 0 
-    ? Math.round((stats.pending_reports / stats.total_reports) * 100)
-    : 0;
+  const pendingPercentage =
+    stats.total_reports > 0 ? Math.round((stats.pending_reports / stats.total_reports) * 100) : 0;
 
-  const resolvedPercentage = stats.total_reports > 0 
-    ? Math.round((stats.resolved_reports / stats.total_reports) * 100)
-    : 0;
+  const resolvedPercentage =
+    stats.total_reports > 0 ? Math.round((stats.resolved_reports / stats.total_reports) * 100) : 0;
 
-  const dismissedPercentage = stats.total_reports > 0 
-    ? Math.round((stats.dismissed_reports / stats.total_reports) * 100)
-    : 0;
+  const dismissedPercentage =
+    stats.total_reports > 0 ? Math.round((stats.dismissed_reports / stats.total_reports) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -81,9 +76,7 @@ export function ModerationStats() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total_reports}</div>
-            <p className="text-xs text-muted-foreground">
-              All time reports
-            </p>
+            <p className="text-xs text-muted-foreground">All time reports</p>
           </CardContent>
         </Card>
 
@@ -93,12 +86,8 @@ export function ModerationStats() {
             <Clock className="h-4 w-4 text-yellow-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">
-              {stats.pending_reports}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {pendingPercentage}% of total reports
-            </p>
+            <div className="text-2xl font-bold text-yellow-600">{stats.pending_reports}</div>
+            <p className="text-xs text-muted-foreground">{pendingPercentage}% of total reports</p>
           </CardContent>
         </Card>
 
@@ -108,12 +97,8 @@ export function ModerationStats() {
             <CheckCircle className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {stats.resolved_reports}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {resolvedPercentage}% of total reports
-            </p>
+            <div className="text-2xl font-bold text-green-600">{stats.resolved_reports}</div>
+            <p className="text-xs text-muted-foreground">{resolvedPercentage}% of total reports</p>
           </CardContent>
         </Card>
 
@@ -123,12 +108,8 @@ export function ModerationStats() {
             <XCircle className="h-4 w-4 text-gray-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-gray-600">
-              {stats.dismissed_reports}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {dismissedPercentage}% of total reports
-            </p>
+            <div className="text-2xl font-bold text-gray-600">{stats.dismissed_reports}</div>
+            <p className="text-xs text-muted-foreground">{dismissedPercentage}% of total reports</p>
           </CardContent>
         </Card>
       </div>
@@ -151,12 +132,12 @@ export function ModerationStats() {
                 </span>
               </div>
               <div className="w-full bg-muted rounded-full h-2">
-                <div 
+                <div
                   className="bg-green-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${resolvedPercentage}%` }}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Dismissed</span>
                 <span className="text-sm text-muted-foreground">
@@ -164,12 +145,12 @@ export function ModerationStats() {
                 </span>
               </div>
               <div className="w-full bg-muted rounded-full h-2">
-                <div 
+                <div
                   className="bg-gray-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${dismissedPercentage}%` }}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Pending</span>
                 <span className="text-sm text-muted-foreground">
@@ -177,7 +158,7 @@ export function ModerationStats() {
                 </span>
               </div>
               <div className="w-full bg-muted rounded-full h-2">
-                <div 
+                <div
                   className="bg-yellow-600 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${pendingPercentage}%` }}
                 />
@@ -200,24 +181,27 @@ export function ModerationStats() {
                   {stats.pending_reports === 0 ? '✅' : '⚠️'}
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {stats.pending_reports === 0 
+                  {stats.pending_reports === 0
                     ? 'All reports have been reviewed'
-                    : `${stats.pending_reports} reports awaiting review`
-                  }
+                    : `${stats.pending_reports} reports awaiting review`}
                 </p>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Response Rate</span>
                   <span className="font-medium">
-                    {stats.total_reports > 0 
-                      ? Math.round(((stats.resolved_reports + stats.dismissed_reports) / stats.total_reports) * 100)
-                      : 0
-                    }%
+                    {stats.total_reports > 0
+                      ? Math.round(
+                          ((stats.resolved_reports + stats.dismissed_reports) /
+                            stats.total_reports) *
+                            100
+                        )
+                      : 0}
+                    %
                   </span>
                 </div>
-                
+
                 <div className="flex justify-between text-sm">
                   <span>Total Processed</span>
                   <span className="font-medium">
@@ -231,4 +215,4 @@ export function ModerationStats() {
       </div>
     </div>
   );
-} 
+}

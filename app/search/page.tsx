@@ -1,9 +1,9 @@
-import { Suspense } from "react";
-import { searchMulti, searchMovies, searchTvShows, searchPeople } from "@/lib/tmdb/client";
-import MediaGrid from "@/components/features/content/MediaGrid";
-import MediaSectionSkeleton from "@/components/features/content/MediaSectionSkeleton";
-import SearchFilters from "@/components/features/search/SearchFilters";
-import { TmdbMedia } from "@/lib/tmdb/types";
+import { Suspense } from 'react';
+import { searchMulti, searchMovies, searchTvShows, searchPeople } from '@/lib/tmdb/client';
+import MediaGrid from '@/components/features/content/MediaGrid';
+import MediaSectionSkeleton from '@/components/features/content/MediaSectionSkeleton';
+import SearchFilters from '@/components/features/search/SearchFilters';
+import { TmdbMedia } from '@/lib/tmdb/types';
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -21,19 +21,19 @@ async function SearchResults({ query, type, page }: { query: string; type: strin
     switch (type) {
       case 'movie':
         results = await searchMovies(query, page);
-        title = "Movie Results";
+        title = 'Movie Results';
         break;
       case 'tv':
         results = await searchTvShows(query, page);
-        title = "TV Show Results";
+        title = 'TV Show Results';
         break;
       case 'person':
         results = await searchPeople(query, page);
-        title = "People Results";
+        title = 'People Results';
         break;
       default:
         results = await searchMulti(query, page);
-        title = "All Results";
+        title = 'All Results';
         break;
     }
 
@@ -41,9 +41,7 @@ async function SearchResults({ query, type, page }: { query: string; type: strin
       return (
         <div className="text-center py-8 md:py-12">
           <h2 className="text-xl md:text-2xl font-semibold mb-4">No results found</h2>
-          <p className="text-muted-foreground">
-            Try adjusting your search terms or filters
-          </p>
+          <p className="text-muted-foreground">Try adjusting your search terms or filters</p>
         </div>
       );
     }
@@ -56,12 +54,9 @@ async function SearchResults({ query, type, page }: { query: string; type: strin
             {results.total_results.toLocaleString()} results found
           </p>
         </div>
-        
-        <MediaGrid 
-          items={results.results} 
-          showMediaType={type === 'all'}
-        />
-        
+
+        <MediaGrid items={results.results} showMediaType={type === 'all'} />
+
         {/* Pagination could be added here */}
         {results.total_pages > 1 && (
           <div className="flex justify-center py-6 md:py-8">
@@ -109,9 +104,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <div className="space-y-6 md:space-y-8">
         {/* Search header */}
         <div className="text-center py-4 md:py-8">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">
-            Search Results for "{query}"
-          </h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">Search Results for "{query}"</h1>
         </div>
 
         {/* Filters */}
@@ -124,4 +117,4 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </div>
     </div>
   );
-} 
+}

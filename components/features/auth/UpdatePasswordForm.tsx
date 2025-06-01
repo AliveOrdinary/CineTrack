@@ -51,11 +51,11 @@ export default function UpdatePasswordForm() {
     setMessage(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError('Passwords do not match.');
       return;
     }
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+      setError('Password must be at least 6 characters long.');
       return;
     }
 
@@ -70,7 +70,7 @@ export default function UpdatePasswordForm() {
       if (updateError) {
         throw updateError;
       }
-      
+
       setMessage('Password updated successfully! Redirecting to login...');
       // Clear form or show success state before redirect
       setPassword('');
@@ -78,10 +78,11 @@ export default function UpdatePasswordForm() {
       setTimeout(() => {
         router.push('/login');
       }, 2000); // Delay redirect for message visibility
-
     } catch (err: any) {
       console.error('Update password error:', err);
-      setError(err.message || 'Failed to update password. Please try again or request a new reset link.');
+      setError(
+        err.message || 'Failed to update password. Please try again or request a new reset link.'
+      );
     } finally {
       setLoading(false);
     }
@@ -96,7 +97,7 @@ export default function UpdatePasswordForm() {
           type="password"
           required
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           disabled={loading}
           minLength={6}
         />
@@ -108,26 +109,26 @@ export default function UpdatePasswordForm() {
           type="password"
           required
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={e => setConfirmPassword(e.target.value)}
           disabled={loading}
           minLength={6}
         />
       </div>
-      {error && (
-        <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
-      )}
-      {message && (
-        <p className="text-sm text-green-500 dark:text-green-400">{message}</p>
-      )}
+      {error && <p className="text-sm text-red-500 dark:text-red-400">{error}</p>}
+      {message && <p className="text-sm text-green-500 dark:text-green-400">{message}</p>}
       <Button type="submit" className="w-full" disabled={loading}>
         {loading ? 'Updating Password...' : 'Update Password'}
       </Button>
       <div className="mt-4 text-center text-sm">
         Remembered your password? Or need to request a new link?{' '}
-        <Link href="/login" legacyBehavior={false} className="font-medium text-primary underline-offset-4 hover:underline">
+        <Link
+          href="/login"
+          legacyBehavior={false}
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
           Back to Login
         </Link>
       </div>
     </form>
   );
-} 
+}

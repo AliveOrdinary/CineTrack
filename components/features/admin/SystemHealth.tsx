@@ -4,18 +4,18 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { 
-  Activity, 
-  Database, 
-  Server, 
-  Wifi, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  Activity,
+  Database,
+  Server,
+  Wifi,
+  AlertTriangle,
+  CheckCircle,
   Clock,
   RefreshCw,
   HardDrive,
   Cpu,
-  MemoryStick
+  MemoryStick,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -45,32 +45,27 @@ export function SystemHealth() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const startTime = Date.now();
-      
+
       // Test database connectivity and get basic stats
-      const [
-        usersCount,
-        reviewsCount,
-        listsCount,
-        watchedCount,
-        reportsCount
-      ] = await Promise.all([
+      const [usersCount, reviewsCount, listsCount, watchedCount, reportsCount] = await Promise.all([
         supabase.from('users').select('id', { count: 'exact', head: true }),
         supabase.from('reviews').select('id', { count: 'exact', head: true }),
         supabase.from('lists').select('id', { count: 'exact', head: true }),
         supabase.from('watched_content').select('id', { count: 'exact', head: true }),
-        supabase.from('review_reports').select('id', { count: 'exact', head: true })
+        supabase.from('review_reports').select('id', { count: 'exact', head: true }),
       ]);
 
       const responseTime = Date.now() - startTime;
-      
+
       // Calculate total rows
-      const totalRows = (usersCount.count || 0) + 
-                       (reviewsCount.count || 0) + 
-                       (listsCount.count || 0) + 
-                       (watchedCount.count || 0) + 
-                       (reportsCount.count || 0);
+      const totalRows =
+        (usersCount.count || 0) +
+        (reviewsCount.count || 0) +
+        (listsCount.count || 0) +
+        (watchedCount.count || 0) +
+        (reportsCount.count || 0);
 
       // Determine database status based on response time
       let databaseStatus: 'healthy' | 'warning' | 'error' = 'healthy';
@@ -90,7 +85,7 @@ export function SystemHealth() {
         totalRows,
         errorCount24h: 0,
         uptime: '99.9%',
-        responseTime
+        responseTime,
       });
     } catch (error) {
       console.error('Error loading system health:', error);
@@ -104,7 +99,7 @@ export function SystemHealth() {
         totalRows: 0,
         errorCount24h: 1,
         uptime: 'Unknown',
-        responseTime: 0
+        responseTime: 0,
       });
     } finally {
       setLoading(false);
@@ -121,14 +116,20 @@ export function SystemHealth() {
     switch (status) {
       case 'healthy':
         return (
-          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+          <Badge
+            variant="secondary"
+            className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+          >
             <CheckCircle className="h-3 w-3 mr-1" />
             Healthy
           </Badge>
         );
       case 'warning':
         return (
-          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
+          <Badge
+            variant="secondary"
+            className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+          >
             <AlertTriangle className="h-3 w-3 mr-1" />
             Warning
           </Badge>
@@ -199,12 +200,7 @@ export function SystemHealth() {
             Last updated: {new Date().toLocaleTimeString()}
           </p>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={refreshMetrics}
-          disabled={refreshing}
-        >
+        <Button variant="outline" size="sm" onClick={refreshMetrics} disabled={refreshing}>
           <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
           Refresh
         </Button>
@@ -219,9 +215,7 @@ export function SystemHealth() {
           </CardHeader>
           <CardContent>
             {getStatusBadge(metrics.databaseStatus)}
-            <p className="text-xs text-muted-foreground mt-2">
-              Response: {metrics.responseTime}ms
-            </p>
+            <p className="text-xs text-muted-foreground mt-2">Response: {metrics.responseTime}ms</p>
           </CardContent>
         </Card>
 
@@ -232,9 +226,7 @@ export function SystemHealth() {
           </CardHeader>
           <CardContent>
             {getStatusBadge(metrics.apiStatus)}
-            <p className="text-xs text-muted-foreground mt-2">
-              Uptime: {metrics.uptime}
-            </p>
+            <p className="text-xs text-muted-foreground mt-2">Uptime: {metrics.uptime}</p>
           </CardContent>
         </Card>
 
@@ -245,9 +237,7 @@ export function SystemHealth() {
           </CardHeader>
           <CardContent>
             {getStatusBadge(metrics.storageStatus)}
-            <p className="text-xs text-muted-foreground mt-2">
-              Available
-            </p>
+            <p className="text-xs text-muted-foreground mt-2">Available</p>
           </CardContent>
         </Card>
       </div>
@@ -261,9 +251,7 @@ export function SystemHealth() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.totalTables}</div>
-            <p className="text-xs text-muted-foreground">
-              Active tables
-            </p>
+            <p className="text-xs text-muted-foreground">Active tables</p>
           </CardContent>
         </Card>
 
@@ -274,9 +262,7 @@ export function SystemHealth() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.totalRows.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">
-              Database rows
-            </p>
+            <p className="text-xs text-muted-foreground">Database rows</p>
           </CardContent>
         </Card>
 
@@ -287,9 +273,7 @@ export function SystemHealth() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.errorCount24h}</div>
-            <p className="text-xs text-muted-foreground">
-              System errors
-            </p>
+            <p className="text-xs text-muted-foreground">System errors</p>
           </CardContent>
         </Card>
 
@@ -300,9 +284,7 @@ export function SystemHealth() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.responseTime}ms</div>
-            <p className="text-xs text-muted-foreground">
-              Average latency
-            </p>
+            <p className="text-xs text-muted-foreground">Average latency</p>
           </CardContent>
         </Card>
       </div>
@@ -314,9 +296,7 @@ export function SystemHealth() {
             <Server className="h-5 w-5" />
             Backup & Recovery
           </CardTitle>
-          <CardDescription>
-            Database backup and recovery status
-          </CardDescription>
+          <CardDescription>Database backup and recovery status</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -325,16 +305,16 @@ export function SystemHealth() {
               <div className="flex items-center gap-2">
                 <Clock className="h-3 w-3 text-muted-foreground" />
                 <span className="text-sm">
-                  {metrics.lastBackup 
-                    ? new Date(metrics.lastBackup).toLocaleString()
-                    : 'Never'
-                  }
+                  {metrics.lastBackup ? new Date(metrics.lastBackup).toLocaleString() : 'Never'}
                 </span>
               </div>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm">Backup Status</span>
-              <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+              <Badge
+                variant="secondary"
+                className="bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+              >
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Automated
               </Badge>
@@ -348,7 +328,9 @@ export function SystemHealth() {
       </Card>
 
       {/* System Alerts */}
-      {(metrics.databaseStatus !== 'healthy' || metrics.apiStatus !== 'healthy' || metrics.storageStatus !== 'healthy') && (
+      {(metrics.databaseStatus !== 'healthy' ||
+        metrics.apiStatus !== 'healthy' ||
+        metrics.storageStatus !== 'healthy') && (
         <Card className="border-yellow-200 dark:border-yellow-800">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
@@ -361,7 +343,9 @@ export function SystemHealth() {
               {metrics.databaseStatus !== 'healthy' && (
                 <div className="flex items-center gap-2 text-sm">
                   <AlertTriangle className="h-3 w-3 text-yellow-500" />
-                  <span>Database performance degraded - Response time: {metrics.responseTime}ms</span>
+                  <span>
+                    Database performance degraded - Response time: {metrics.responseTime}ms
+                  </span>
                 </div>
               )}
               {metrics.apiStatus !== 'healthy' && (
@@ -382,4 +366,4 @@ export function SystemHealth() {
       )}
     </div>
   );
-} 
+}

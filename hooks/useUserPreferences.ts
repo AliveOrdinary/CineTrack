@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { UserPreferences, UserPreferencesUpdate } from '@/types/preferences';
-import { 
-  getUserPreferences, 
-  updateUserPreferences, 
+import {
+  getUserPreferences,
+  updateUserPreferences,
   resetUserPreferences,
   updateTheme,
   updateNotificationPreferences,
   updateVisibilityPreferences,
   updateRegionalPreferences,
-  updateContentPreferences
+  updateContentPreferences,
 } from '@/lib/supabase/preferences';
 import { createClient } from '@/lib/supabase/client';
 import { useUser } from './use-user';
@@ -45,7 +45,7 @@ export function useUserPreferences() {
       console.error('Error loading preferences:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to load preferences';
       setError(errorMessage);
-      
+
       // If it's an authentication error, don't keep trying
       if (errorMessage.includes('not authenticated')) {
         setPreferences(null);
@@ -56,21 +56,24 @@ export function useUserPreferences() {
   }, [user, userLoading]);
 
   // Update preferences
-  const updatePreferences = useCallback(async (updates: UserPreferencesUpdate) => {
-    if (!user) throw new Error('User not authenticated');
+  const updatePreferences = useCallback(
+    async (updates: UserPreferencesUpdate) => {
+      if (!user) throw new Error('User not authenticated');
 
-    try {
-      setError(null);
-      const updatedPreferences = await updateUserPreferences(updates);
-      setPreferences(updatedPreferences);
-      return updatedPreferences;
-    } catch (err) {
-      console.error('Error updating preferences:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update preferences';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [user]);
+      try {
+        setError(null);
+        const updatedPreferences = await updateUserPreferences(updates);
+        setPreferences(updatedPreferences);
+        return updatedPreferences;
+      } catch (err) {
+        console.error('Error updating preferences:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to update preferences';
+        setError(errorMessage);
+        throw err;
+      }
+    },
+    [user]
+  );
 
   // Reset preferences to defaults
   const resetPreferences = useCallback(async () => {
@@ -90,85 +93,102 @@ export function useUserPreferences() {
   }, [user]);
 
   // Specific update functions
-  const updateThemePreference = useCallback(async (theme: 'light' | 'dark' | 'system') => {
-    if (!user) throw new Error('User not authenticated');
+  const updateThemePreference = useCallback(
+    async (theme: 'light' | 'dark' | 'system') => {
+      if (!user) throw new Error('User not authenticated');
 
-    try {
-      setError(null);
-      const updatedPreferences = await updateTheme(theme);
-      setPreferences(updatedPreferences);
-      return updatedPreferences;
-    } catch (err) {
-      console.error('Error updating theme:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update theme';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [user]);
+      try {
+        setError(null);
+        const updatedPreferences = await updateTheme(theme);
+        setPreferences(updatedPreferences);
+        return updatedPreferences;
+      } catch (err) {
+        console.error('Error updating theme:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to update theme';
+        setError(errorMessage);
+        throw err;
+      }
+    },
+    [user]
+  );
 
-  const updateNotifications = useCallback(async (notifications: Parameters<typeof updateNotificationPreferences>[0]) => {
-    if (!user) throw new Error('User not authenticated');
+  const updateNotifications = useCallback(
+    async (notifications: Parameters<typeof updateNotificationPreferences>[0]) => {
+      if (!user) throw new Error('User not authenticated');
 
-    try {
-      setError(null);
-      const updatedPreferences = await updateNotificationPreferences(notifications);
-      setPreferences(updatedPreferences);
-      return updatedPreferences;
-    } catch (err) {
-      console.error('Error updating notifications:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update notifications';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [user]);
+      try {
+        setError(null);
+        const updatedPreferences = await updateNotificationPreferences(notifications);
+        setPreferences(updatedPreferences);
+        return updatedPreferences;
+      } catch (err) {
+        console.error('Error updating notifications:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to update notifications';
+        setError(errorMessage);
+        throw err;
+      }
+    },
+    [user]
+  );
 
-  const updateVisibility = useCallback(async (visibility: Parameters<typeof updateVisibilityPreferences>[0]) => {
-    if (!user) throw new Error('User not authenticated');
+  const updateVisibility = useCallback(
+    async (visibility: Parameters<typeof updateVisibilityPreferences>[0]) => {
+      if (!user) throw new Error('User not authenticated');
 
-    try {
-      setError(null);
-      const updatedPreferences = await updateVisibilityPreferences(visibility);
-      setPreferences(updatedPreferences);
-      return updatedPreferences;
-    } catch (err) {
-      console.error('Error updating visibility:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update visibility';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [user]);
+      try {
+        setError(null);
+        const updatedPreferences = await updateVisibilityPreferences(visibility);
+        setPreferences(updatedPreferences);
+        return updatedPreferences;
+      } catch (err) {
+        console.error('Error updating visibility:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to update visibility';
+        setError(errorMessage);
+        throw err;
+      }
+    },
+    [user]
+  );
 
-  const updateRegional = useCallback(async (regional: Parameters<typeof updateRegionalPreferences>[0]) => {
-    if (!user) throw new Error('User not authenticated');
+  const updateRegional = useCallback(
+    async (regional: Parameters<typeof updateRegionalPreferences>[0]) => {
+      if (!user) throw new Error('User not authenticated');
 
-    try {
-      setError(null);
-      const updatedPreferences = await updateRegionalPreferences(regional);
-      setPreferences(updatedPreferences);
-      return updatedPreferences;
-    } catch (err) {
-      console.error('Error updating regional settings:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update regional settings';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [user]);
+      try {
+        setError(null);
+        const updatedPreferences = await updateRegionalPreferences(regional);
+        setPreferences(updatedPreferences);
+        return updatedPreferences;
+      } catch (err) {
+        console.error('Error updating regional settings:', err);
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to update regional settings';
+        setError(errorMessage);
+        throw err;
+      }
+    },
+    [user]
+  );
 
-  const updateContent = useCallback(async (content: Parameters<typeof updateContentPreferences>[0]) => {
-    if (!user) throw new Error('User not authenticated');
+  const updateContent = useCallback(
+    async (content: Parameters<typeof updateContentPreferences>[0]) => {
+      if (!user) throw new Error('User not authenticated');
 
-    try {
-      setError(null);
-      const updatedPreferences = await updateContentPreferences(content);
-      setPreferences(updatedPreferences);
-      return updatedPreferences;
-    } catch (err) {
-      console.error('Error updating content settings:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update content settings';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [user]);
+      try {
+        setError(null);
+        const updatedPreferences = await updateContentPreferences(content);
+        setPreferences(updatedPreferences);
+        return updatedPreferences;
+      } catch (err) {
+        console.error('Error updating content settings:', err);
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to update content settings';
+        setError(errorMessage);
+        throw err;
+      }
+    },
+    [user]
+  );
 
   // Load preferences on mount and user change
   useEffect(() => {
@@ -187,9 +207,9 @@ export function useUserPreferences() {
           event: '*',
           schema: 'public',
           table: 'user_preferences',
-          filter: `user_id=eq.${user.id}`
+          filter: `user_id=eq.${user.id}`,
         },
-        (payload) => {
+        payload => {
           console.log('Preferences changed:', payload);
           if (payload.eventType === 'UPDATE' && payload.new) {
             setPreferences(payload.new as UserPreferences);
@@ -218,6 +238,6 @@ export function useUserPreferences() {
     updateVisibility,
     updateRegional,
     updateContent,
-    refetch: loadPreferences
+    refetch: loadPreferences,
   };
-} 
+}
