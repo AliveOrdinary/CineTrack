@@ -1,5 +1,18 @@
 import { withSentryConfig } from '@sentry/nextjs';
 
+// Extract Supabase hostname from environment variable
+const getSupabaseDomain = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (supabaseUrl) {
+    try {
+      return new URL(supabaseUrl).hostname;
+    } catch (error) {
+      console.warn('Invalid NEXT_PUBLIC_SUPABASE_URL format:', supabaseUrl);
+    }
+  }
+  return null;
+};
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   serverExternalPackages: ['@sentry/nextjs'],
@@ -80,7 +93,10 @@ const nextConfig = {
 
   // Image optimization
   images: {
-    domains: ['image.tmdb.org'],
+    domains: [
+      'image.tmdb.org',
+      ...(getSupabaseDomain() ? [getSupabaseDomain()] : []),
+    ].filter(Boolean),
     formats: ['image/webp', 'image/avif'],
   },
 
