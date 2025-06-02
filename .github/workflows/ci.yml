@@ -54,7 +54,7 @@ jobs:
         run: npm run test:ci
 
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage/lcov.info
           flags: unittests
@@ -87,7 +87,7 @@ jobs:
           NEXT_PUBLIC_TMDB_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_TMDB_API_BASE_URL }}
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-files
           path: .next/
