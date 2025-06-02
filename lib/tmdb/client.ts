@@ -27,11 +27,12 @@ import { ExternalServiceError, withRetry } from '@/lib/api-error-handler';
 
 const TMDB_API_BASE_URL = process.env.NEXT_PUBLIC_TMDB_API_BASE_URL;
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+const TMDB_READ_ACCESS_TOKEN = process.env.TMDB_API_READ_ACCESS_TOKEN;
 
 if (!TMDB_API_BASE_URL) {
   throw new Error('Missing environment variable NEXT_PUBLIC_TMDB_API_BASE_URL');
 }
-if (!TMDB_API_KEY) {
+if (!TMDB_API_KEY && !TMDB_READ_ACCESS_TOKEN) {
   throw new Error(
     'Missing environment variable NEXT_PUBLIC_TMDB_API_KEY or TMDB_API_READ_ACCESS_TOKEN'
   );
@@ -48,25 +49,32 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
   const startTime = Date.now();
   const { method = 'GET', params = {}, headers = {}, body } = options;
 
-  const defaultParams: Record<string, string> = {
-    api_key: TMDB_API_KEY as string,
-  };
+  // Use API key authentication if available, otherwise use read access token
+  const authHeaders: Record<string, string> = {};
+  const queryParams = new URLSearchParams();
 
-  const queryParams = new URLSearchParams(
-    Object.entries(params)
-      .filter(([, value]) => value !== undefined)
-      .reduce((acc, [key, value]) => {
-        acc[key] = String(value);
-        return acc;
-      }, defaultParams)
-  ).toString();
+  if (TMDB_API_KEY) {
+    // API Key authentication via query parameter
+    queryParams.set('api_key', TMDB_API_KEY);
+  } else if (TMDB_READ_ACCESS_TOKEN) {
+    // Bearer token authentication via header
+    authHeaders['Authorization'] = `Bearer ${TMDB_READ_ACCESS_TOKEN}`;
+  }
 
-  const url = `${TMDB_API_BASE_URL}${endpoint}?${queryParams}`;
+  // Add other query parameters
+  Object.entries(params)
+    .filter(([, value]) => value !== undefined)
+    .forEach(([key, value]) => {
+      queryParams.set(key, String(value));
+    });
+
+  const url = `${TMDB_API_BASE_URL}${endpoint}?${queryParams.toString()}`;
 
   const config: RequestInit = {
     method,
     headers: {
       'Content-Type': 'application/json;charset=utf-8',
+      ...authHeaders,
       ...headers,
     },
   };
