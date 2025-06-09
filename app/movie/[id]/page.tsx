@@ -153,13 +153,29 @@ async function MovieDetails({ id }: { id: string }) {
               {/* Trailer */}
               {trailer && (
                 <div>
-                  <h2 className="text-2xl font-semibold mb-4">Trailer</h2>
-                  <div className="aspect-video">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-semibold">Trailer</h2>
+                    <a
+                      href={`https://www.youtube.com/watch?v=${trailer.key}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      Watch on YouTube
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  <div className="aspect-video relative bg-black rounded-lg overflow-hidden">
                     <iframe
-                      src={`https://www.youtube.com/embed/${trailer.key}`}
+                      src={`https://www.youtube-nocookie.com/embed/${trailer.key}?rel=0&modestbranding=1&playsinline=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
                       title={trailer.name}
-                      className="w-full h-full rounded-lg"
+                      className="w-full h-full"
                       allowFullScreen
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      loading="lazy"
                     />
                   </div>
                 </div>

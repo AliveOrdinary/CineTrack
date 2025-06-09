@@ -151,49 +151,38 @@ export function WatchProviders({ providers, title, mediaType }: WatchProvidersPr
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {providers.map((provider, index) => (
-            <a
-              key={`${provider.provider_name}-${index}`}
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group"
-            >
-              <Card className="transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer">
-                <CardContent className="p-3">
-                  <div className="flex flex-col items-center gap-2">
-                    {provider.logo_path ? (
-                      <div className="relative w-12 h-12 flex items-center justify-center">
-                        <Image
-                          src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
-                          alt={provider.provider_name}
-                          width={48}
-                          height={48}
-                          className="object-contain rounded-lg"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
-                        {getProviderTypeIcon(type)}
-                      </div>
-                    )}
-                    <div className="text-center">
-                      <p
-                        className="text-sm font-medium truncate w-full"
-                        title={provider.provider_name}
-                      >
-                        {provider.provider_name}
-                      </p>
-                      <div className="flex items-center gap-1 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <ExternalLink className="h-3 w-3" />
-                        <span className="text-xs text-muted-foreground">
-                          {getProviderTypeLabel(type)}
-                        </span>
-                      </div>
+            <Card key={`${provider.provider_name}-${index}`} className="transition-all duration-200 hover:shadow-md">
+              <CardContent className="p-3">
+                <div className="flex flex-col items-center gap-2">
+                  {provider.logo_path ? (
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                      <Image
+                        src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+                        alt={provider.provider_name}
+                        width={48}
+                        height={48}
+                        className="object-contain rounded-lg"
+                      />
                     </div>
+                  ) : (
+                    <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
+                      {getProviderTypeIcon(type)}
+                    </div>
+                  )}
+                  <div className="text-center">
+                    <p
+                      className="text-sm font-medium truncate w-full"
+                      title={provider.provider_name}
+                    >
+                      {provider.provider_name}
+                    </p>
+                    <Badge variant="secondary" className="text-xs mt-1">
+                      {getProviderTypeLabel(type)}
+                    </Badge>
                   </div>
-                </CardContent>
-              </Card>
-            </a>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>
@@ -258,7 +247,7 @@ export function WatchProviders({ providers, title, mediaType }: WatchProvidersPr
                   className="flex items-center gap-1"
                 >
                   <ExternalLink className="h-3 w-3" />
-                  View All Options
+                  Find on Streaming Services
                 </a>
               </Button>
             )}

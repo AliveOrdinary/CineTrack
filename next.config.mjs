@@ -34,7 +34,7 @@ const nextConfig = {
               "img-src 'self' data: blob: https://image.tmdb.org https://www.themoviedb.org https://vercel.com",
               "media-src 'self' https://image.tmdb.org",
               "connect-src 'self' https://api.themoviedb.org https://*.supabase.co wss://*.supabase.co https://vercel.live https://vitals.vercel-insights.com https://o4507902068293632.ingest.us.sentry.io",
-              "frame-src 'self' https://www.youtube.com https://player.vimeo.com",
+              "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self'",

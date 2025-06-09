@@ -1,8 +1,8 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { getTvShowDetails, getTvShowWatchProviders } from '@/lib/tmdb/client';
-import { TmdbTvDetails, TmdbGenre } from '@/lib/tmdb/types';
+import { getTvShowDetails, getTvShowWatchProviders, getTvShowVideos } from '@/lib/tmdb/client';
+import { TmdbTvDetails, TmdbGenre, TmdbVideo } from '@/lib/tmdb/types';
 import MediaSection from '@/components/features/content/MediaSection';
 import MediaSectionSkeleton from '@/components/features/content/MediaSectionSkeleton';
 import { WatchProviders } from '@/components/features/content/WatchProviders';
@@ -27,10 +27,20 @@ async function TvShowDetails({ id }: { id: string }) {
       notFound();
     }
 
-    // Fetch watch providers
-    const [providers] = await Promise.allSettled([getTvShowWatchProviders(parseInt(id))]);
+    // Fetch videos and watch providers
+    const [videos, providers] = await Promise.allSettled([
+      getTvShowVideos(parseInt(id)),
+      getTvShowWatchProviders(parseInt(id))
+    ]);
 
+    const tvVideos = videos.status === 'fulfilled' ? videos.value : null;
     const providersValue = providers.status === 'fulfilled' ? providers.value : null;
+
+    // Find main trailer
+    const trailer =
+      tvVideos?.results?.find(
+        (video: TmdbVideo) => video.type === 'Trailer' && video.site === 'YouTube'
+      ) || tvVideos?.results?.[0];
 
     const backdropUrl = tvShow.backdrop_path
       ? `https://image.tmdb.org/t/p/w1280${tvShow.backdrop_path}`
@@ -149,6 +159,37 @@ async function TvShowDetails({ id }: { id: string }) {
                   </div>
                 )}
               </div>
+
+              {/* Trailer */}
+              {trailer && (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-semibold">Trailer</h2>
+                    <a
+                      href={`https://www.youtube.com/watch?v=${trailer.key}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      Watch on YouTube
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  <div className="aspect-video relative bg-black rounded-lg overflow-hidden">
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${trailer.key}?rel=0&modestbranding=1&playsinline=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
+                      title={trailer.name}
+                      className="w-full h-full"
+                      allowFullScreen
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Where to Watch */}
               {providersValue && (
