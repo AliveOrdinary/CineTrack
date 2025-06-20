@@ -72,6 +72,24 @@ export interface ReportWithReporter extends Report {
     display_name: string;
     avatar_url?: string;
   };
+  reported_content?: {
+    id: string;
+    content?: string;
+    name?: string;
+    description?: string;
+    bio?: string;
+    rating?: number;
+    tmdb_id?: number;
+    media_type?: string;
+    is_public?: boolean;
+    created_at: string;
+    updated_at: string;
+    user?: {
+      id: string;
+      display_name: string;
+      avatar_url?: string;
+    };
+  };
 }
 
 export interface ReportStats {

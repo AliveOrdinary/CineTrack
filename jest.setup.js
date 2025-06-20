@@ -65,3 +65,57 @@ global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
 };
+
+// Mock Request for Node.js environment
+global.Request = class Request {
+  constructor(input, init) {
+    this.url = input;
+    this.method = init?.method || 'GET';
+    this.headers = new Headers(init?.headers);
+  }
+};
+
+// Mock Response for Node.js environment
+global.Response = class Response {
+  constructor(body, init) {
+    this.body = body;
+    this.status = init?.status || 200;
+    this.statusText = init?.statusText || 'OK';
+    this.ok = this.status >= 200 && this.status < 300;
+    this.headers = new Headers(init?.headers);
+  }
+  
+  async json() {
+    return JSON.parse(this.body);
+  }
+  
+  async text() {
+    return this.body;
+  }
+};
+
+// Mock Headers
+global.Headers = class Headers {
+  constructor(init) {
+    this.map = new Map();
+    if (init) {
+      if (Array.isArray(init)) {
+        init.forEach(([key, value]) => this.map.set(key.toLowerCase(), value));
+      } else if (typeof init === 'object') {
+        Object.entries(init).forEach(([key, value]) => this.map.set(key.toLowerCase(), value));
+      }
+    }
+  }
+  
+  get(name) {
+    return this.map.get(name.toLowerCase());
+  }
+  
+  set(name, value) {
+    this.map.set(name.toLowerCase(), value);
+  }
+  
+  has(name) {
+    return this.map.has(name.toLowerCase());
+  }
+};

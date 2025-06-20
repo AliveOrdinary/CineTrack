@@ -274,3 +274,113 @@ export async function getContentReports(
 
   return data || [];
 }
+
+/**
+ * Get the actual content that was reported
+ */
+export async function getReportedContent(
+  contentType: ReportedContentType,
+  contentId: string
+): Promise<any | null> {
+  try {
+    switch (contentType) {
+      case 'review': {
+        const { data, error } = await supabase
+          .from('reviews')
+          .select(`
+            id,
+            content,
+            rating,
+            tmdb_id,
+            media_type,
+            created_at,
+            updated_at,
+            user:users(id, display_name, avatar_url)
+          `)
+          .eq('id', contentId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching reported review:', error);
+          return null;
+        }
+
+        return data;
+      }
+
+      case 'list': {
+        const { data, error } = await supabase
+          .from('lists')
+          .select(`
+            id,
+            name,
+            description,
+            is_public,
+            created_at,
+            updated_at,
+            user:users(id, display_name, avatar_url)
+          `)
+          .eq('id', contentId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching reported list:', error);
+          return null;
+        }
+
+        return data;
+      }
+
+      case 'user': {
+        const { data, error } = await supabase
+          .from('users')
+          .select(`
+            id,
+            display_name,
+            bio,
+            avatar_url,
+            created_at,
+            updated_at
+          `)
+          .eq('id', contentId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching reported user:', error);
+          return null;
+        }
+
+        return data;
+      }
+
+      case 'comment': {
+        // Assuming you have a comments table - adjust as needed
+        const { data, error } = await supabase
+          .from('comments')
+          .select(`
+            id,
+            content,
+            created_at,
+            updated_at,
+            user:users(id, display_name, avatar_url)
+          `)
+          .eq('id', contentId)
+          .single();
+
+        if (error) {
+          console.error('Error fetching reported comment:', error);
+          return null;
+        }
+
+        return data;
+      }
+
+      default:
+        console.error('Unknown content type:', contentType);
+        return null;
+    }
+  } catch (error) {
+    console.error('Error fetching reported content:', error);
+    return null;
+  }
+}

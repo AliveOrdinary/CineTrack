@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { withRateLimit, RateLimitConfigs } from '@/lib/rate-limit';
 
-export async function GET(request: Request) {
+async function handleCallback(request: NextRequest) {
   // The `/auth/callback` route is required for the server-side auth flow implemented
   // by the SSR package. It exchanges an auth code for the user's session.
   // https://supabase.com/docs/guides/auth/server-side/nextjs
@@ -22,3 +23,5 @@ export async function GET(request: Request) {
   // URL to redirect to after sign up process completes - redirect to homepage instead of /protected
   return NextResponse.redirect(`${origin}/`);
 }
+
+export const GET = withRateLimit(RateLimitConfigs.auth)(handleCallback);

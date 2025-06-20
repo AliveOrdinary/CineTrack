@@ -5,6 +5,7 @@ import { getTvShowDetails, getTvShowWatchProviders, getTvShowVideos } from '@/li
 import { TmdbTvDetails, TmdbGenre, TmdbVideo } from '@/lib/tmdb/types';
 import MediaSection from '@/components/features/content/MediaSection';
 import MediaSectionSkeleton from '@/components/features/content/MediaSectionSkeleton';
+import { YoutubeEmbed } from '@/components/features/content/YoutubeEmbed';
 import { WatchProviders } from '@/components/features/content/WatchProviders';
 import { WatchedContentButton } from '@/components/features/tracking/WatchedContentButton';
 import { WatchlistButton } from '@/components/features/tracking/WatchlistButton';
@@ -12,6 +13,10 @@ import { AddToListButton } from '@/components/features/lists/AddToListButton';
 import { ReviewButton } from '@/components/features/reviews/ReviewButton';
 import { ReviewsSection } from '@/components/features/reviews/ReviewsSection';
 import { TvShowProgress } from '@/components/features/tracking/TvShowProgress';
+import { DetailedRatingForm } from '@/components/features/ratings/DetailedRatingForm';
+import { DetailedRatingDisplay } from '@/components/features/ratings/DetailedRatingDisplay';
+import { RecommendationForm } from '@/components/features/recommendations/RecommendationForm';
+import { getRecommendableUsers } from '@/lib/supabase/users';
 
 interface TvPageProps {
   params: Promise<{
@@ -27,14 +32,16 @@ async function TvShowDetails({ id }: { id: string }) {
       notFound();
     }
 
-    // Fetch videos and watch providers
-    const [videos, providers] = await Promise.allSettled([
+    // Fetch videos, watch providers, and recommendable users
+    const [videos, providers, recommendableUsers] = await Promise.allSettled([
       getTvShowVideos(parseInt(id)),
-      getTvShowWatchProviders(parseInt(id))
+      getTvShowWatchProviders(parseInt(id)),
+      getRecommendableUsers()
     ]);
 
     const tvVideos = videos.status === 'fulfilled' ? videos.value : null;
     const providersValue = providers.status === 'fulfilled' ? providers.value : null;
+    const users = recommendableUsers.status === 'fulfilled' ? recommendableUsers.value : [];
 
     // Find main trailer
     const trailer =
@@ -85,6 +92,15 @@ async function TvShowDetails({ id }: { id: string }) {
                 <AddToListButton tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
 
                 <ReviewButton tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
+
+                <DetailedRatingForm tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
+
+                <RecommendationForm 
+                  tmdbId={parseInt(id)} 
+                  mediaType="tv" 
+                  title={tvShow.name}
+                  users={users}
+                />
               </div>
 
               {/* Show Stats */}
@@ -177,17 +193,10 @@ async function TvShowDetails({ id }: { id: string }) {
                       </svg>
                     </a>
                   </div>
-                  <div className="aspect-video relative bg-black rounded-lg overflow-hidden">
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${trailer.key}?rel=0&modestbranding=1&playsinline=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
-                      title={trailer.name}
-                      className="w-full h-full"
-                      allowFullScreen
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      loading="lazy"
-                    />
-                  </div>
+                  <YoutubeEmbed 
+                    videoKey={trailer.key} 
+                    title={trailer.name || `${tvShow.name} Trailer`} 
+                  />
                 </div>
               )}
 
@@ -202,6 +211,11 @@ async function TvShowDetails({ id }: { id: string }) {
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Episode Tracking</h2>
                 <TvShowProgress tvShow={tvShow} />
+              </div>
+
+              {/* Detailed Ratings Section */}
+              <div className="mt-12">
+                <DetailedRatingDisplay tmdbId={parseInt(id)} mediaType="tv" title={tvShow.name} />
               </div>
 
               {/* Reviews Section */}

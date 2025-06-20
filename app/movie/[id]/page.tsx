@@ -18,6 +18,7 @@ import {
 } from '@/lib/tmdb/types';
 import MediaGrid from '@/components/features/content/MediaGrid';
 import MediaSection from '@/components/features/content/MediaSection';
+import { YoutubeEmbed } from '@/components/features/content/YoutubeEmbed';
 import MediaSectionSkeleton from '@/components/features/content/MediaSectionSkeleton';
 import { WatchProviders } from '@/components/features/content/WatchProviders';
 import { WatchedContentButton } from '@/components/features/tracking/WatchedContentButton';
@@ -25,6 +26,10 @@ import { WatchlistButton } from '@/components/features/tracking/WatchlistButton'
 import { AddToListButton } from '@/components/features/lists/AddToListButton';
 import { ReviewButton } from '@/components/features/reviews/ReviewButton';
 import { ReviewsSection } from '@/components/features/reviews/ReviewsSection';
+import { DetailedRatingForm } from '@/components/features/ratings/DetailedRatingForm';
+import { DetailedRatingDisplay } from '@/components/features/ratings/DetailedRatingDisplay';
+import { RecommendationForm } from '@/components/features/recommendations/RecommendationForm';
+import { getRecommendableUsers } from '@/lib/supabase/users';
 
 interface MoviePageProps {
   params: Promise<{
@@ -40,17 +45,19 @@ async function MovieDetails({ id }: { id: string }) {
       notFound();
     }
 
-    const [credits, videos, similar, providers] = await Promise.allSettled([
+    const [credits, videos, similar, providers, recommendableUsers] = await Promise.allSettled([
       getMovieCredits(parseInt(id)),
       getMovieVideos(parseInt(id)),
       getSimilarMovies(parseInt(id)),
       getMovieWatchProviders(parseInt(id)),
+      getRecommendableUsers(),
     ]);
 
     const movieCredits = credits.status === 'fulfilled' ? credits.value : null;
     const movieVideos = videos.status === 'fulfilled' ? videos.value : null;
     const similarMovies = similar.status === 'fulfilled' ? similar.value : null;
     const providersValue = providers.status === 'fulfilled' ? providers.value : null;
+    const users = recommendableUsers.status === 'fulfilled' ? recommendableUsers.value : [];
 
     // Find main trailer
     const trailer =
@@ -101,6 +108,15 @@ async function MovieDetails({ id }: { id: string }) {
                 <AddToListButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
 
                 <ReviewButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
+
+                <DetailedRatingForm tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
+
+                <RecommendationForm 
+                  tmdbId={parseInt(id)} 
+                  mediaType="movie" 
+                  title={movie.title}
+                  users={users}
+                />
               </div>
             </div>
 
@@ -167,17 +183,10 @@ async function MovieDetails({ id }: { id: string }) {
                       </svg>
                     </a>
                   </div>
-                  <div className="aspect-video relative bg-black rounded-lg overflow-hidden">
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${trailer.key}?rel=0&modestbranding=1&playsinline=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
-                      title={trailer.name}
-                      className="w-full h-full"
-                      allowFullScreen
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      loading="lazy"
-                    />
-                  </div>
+                  <YoutubeEmbed 
+                    videoKey={trailer.key} 
+                    title={trailer.name || `${movie.title} Trailer`} 
+                  />
                 </div>
               )}
 
@@ -253,6 +262,11 @@ async function MovieDetails({ id }: { id: string }) {
               </Suspense>
             </div>
           )}
+
+          {/* Detailed Ratings Section */}
+          <div className="mt-12">
+            <DetailedRatingDisplay tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
+          </div>
 
           {/* Reviews Section */}
           <div className="mt-12">

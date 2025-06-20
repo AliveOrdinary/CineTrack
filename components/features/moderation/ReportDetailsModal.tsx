@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -39,7 +39,8 @@ import {
   REPORT_STATUS_LABELS,
   RESOLUTION_ACTION_LABELS,
 } from '@/types/reports';
-import { updateReport } from '@/lib/supabase/reports';
+import { updateReport, getReportedContent } from '@/lib/supabase/reports';
+import { ReportedContentDisplay } from './ReportedContentDisplay';
 import { toast } from 'sonner';
 
 interface ReportDetailsModalProps {
@@ -58,6 +59,34 @@ export function ReportDetailsModal({
   const [isResolving, setIsResolving] = useState(false);
   const [resolutionAction, setResolutionAction] = useState<ResolutionAction>('no_action');
   const [moderatorNotes, setModeratorNotes] = useState('');
+  const [reportedContent, setReportedContent] = useState<any>(null);
+  const [isLoadingContent, setIsLoadingContent] = useState(true);
+  const [contentError, setContentError] = useState<string | null>(null);
+
+  // Fetch reported content when modal opens
+  useEffect(() => {
+    if (isOpen && report) {
+      const fetchReportedContent = async () => {
+        setIsLoadingContent(true);
+        setContentError(null);
+        
+        try {
+          const content = await getReportedContent(
+            report.reported_content_type,
+            report.reported_content_id
+          );
+          setReportedContent(content);
+        } catch (error) {
+          console.error('Error fetching reported content:', error);
+          setContentError('Failed to load reported content');
+        } finally {
+          setIsLoadingContent(false);
+        }
+      };
+
+      fetchReportedContent();
+    }
+  }, [isOpen, report]);
 
   const getContentTypeIcon = (contentType: string) => {
     switch (contentType) {
@@ -291,6 +320,14 @@ export function ReportDetailsModal({
               </div>
             </CardContent>
           </Card>
+
+          {/* Reported Content */}
+          <ReportedContentDisplay
+            contentType={report.reported_content_type}
+            content={reportedContent}
+            isLoading={isLoadingContent}
+            error={contentError || undefined}
+          />
 
           {/* Previous Resolution */}
           {(report.moderator || report.moderator_notes || report.resolution_action) && (

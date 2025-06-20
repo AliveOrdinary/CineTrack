@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, Palette, Bell, Eye, Globe, Shield, Monitor, LogIn } from 'lucide-react';
+import { Settings, Palette, Bell, Eye, Globe, Shield, Monitor, LogIn, User } from 'lucide-react';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { useUser } from '@/hooks/use-user';
+import { ProfileSettings } from './ProfileSettings';
 import { ThemeSettings } from './ThemeSettings';
 import { NotificationSettings } from './NotificationSettings';
 import { VisibilitySettings } from './VisibilitySettings';
@@ -17,7 +18,7 @@ import Link from 'next/link';
 export function SettingsPage() {
   const { user } = useUser();
   const { preferences, isLoading, error } = useUserPreferences();
-  const [activeTab, setActiveTab] = useState('theme');
+  const [activeTab, setActiveTab] = useState('profile');
 
   // Show login prompt if user is not authenticated
   if (!user) {
@@ -76,7 +77,11 @@ export function SettingsPage() {
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+      <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7">
+        <TabsTrigger value="profile" className="flex items-center gap-2">
+          <User className="h-4 w-4" />
+          <span className="hidden sm:inline">Profile</span>
+        </TabsTrigger>
         <TabsTrigger value="theme" className="flex items-center gap-2">
           <Palette className="h-4 w-4" />
           <span className="hidden sm:inline">Theme</span>
@@ -104,6 +109,10 @@ export function SettingsPage() {
       </TabsList>
 
       <div className="mt-6">
+        <TabsContent value="profile" className="space-y-6">
+          <ProfileSettings />
+        </TabsContent>
+
         <TabsContent value="theme" className="space-y-6">
           <Card>
             <CardHeader>

@@ -22,6 +22,7 @@ import {
   REPORT_REASON_LABELS,
   REPORT_STATUS_LABELS,
 } from '@/types/reports';
+import { ContentPreview } from './ContentPreview';
 
 interface ModerationQueueProps {
   reports: ReportWithReporter[];
@@ -193,15 +194,22 @@ export function ModerationQueue({
               </div>
             </CardHeader>
 
-            {report.details && (
-              <CardContent className="pt-0">
+            <CardContent className="pt-0 space-y-3">
+              {/* Content Preview */}
+              <ContentPreview 
+                contentType={report.reported_content_type}
+                contentId={report.reported_content_id}
+              />
+
+              {/* Report Details */}
+              {report.details && (
                 <div className="bg-muted/50 rounded-lg p-3">
                   <p className="text-sm text-muted-foreground">
-                    <strong>Details:</strong> {report.details}
+                    <strong>Report Details:</strong> {report.details}
                   </p>
                 </div>
-              </CardContent>
-            )}
+              )}
+            </CardContent>
           </Card>
         ))}
       </div>

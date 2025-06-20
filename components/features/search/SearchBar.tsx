@@ -12,14 +12,20 @@ interface SearchBarProps {
   placeholder?: string;
   className?: string;
   showSuggestions?: boolean;
+  autoFocus?: boolean;
+  initialValue?: string;
+  onSearch?: (query: string) => void;
 }
 
 export default function SearchBar({
   placeholder = 'Search movies, TV shows, and people...',
   className = '',
   showSuggestions = true,
+  autoFocus = false,
+  initialValue = '',
+  onSearch,
 }: SearchBarProps) {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialValue);
   const [suggestions, setSuggestions] = useState<TmdbMedia[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -90,7 +96,11 @@ export default function SearchBar({
 
     // Otherwise, go to search results
     if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+      if (onSearch) {
+        onSearch(query.trim());
+      } else {
+        router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+      }
       setShowDropdown(false);
       setSelectedIndex(-1);
     }
@@ -177,10 +187,12 @@ export default function SearchBar({
           onKeyDown={handleKeyDown}
           className="pl-10 pr-10"
           autoComplete="off"
+          autoFocus={autoFocus}
           aria-autocomplete="list"
           aria-controls={showDropdown ? listboxId : undefined}
           aria-activedescendant={selectedIndex >= 0 ? `suggestion-${selectedIndex}` : undefined}
           aria-describedby="search-instructions"
+          role="searchbox"
         />
         <div id="search-instructions" className="sr-only">
           Use arrow keys to navigate suggestions, Enter to select, Escape to close

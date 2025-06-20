@@ -1,8 +1,9 @@
 import { type EmailOtpType } from '@supabase/supabase-js';
 import { type NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server'; // We need a server client for this
+import { createClient } from '@/lib/supabase/server';
+import { withRateLimit, RateLimitConfigs } from '@/lib/rate-limit';
 
-export async function GET(request: NextRequest) {
+async function handleConfirm(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get('token_hash');
   const type = searchParams.get('type') as EmailOtpType | null;
@@ -37,3 +38,5 @@ export async function GET(request: NextRequest) {
   }
   return NextResponse.redirect(redirectUrl);
 }
+
+export const GET = withRateLimit(RateLimitConfigs.auth)(handleConfirm);
