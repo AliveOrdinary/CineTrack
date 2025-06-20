@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import {
-  createClient,
   getUserCustomLists,
   createCustomList,
   deleteCustomList,
   type CustomListWithItems,
   type CustomList,
 } from '@/lib/supabase/client';
+import { useUser } from '@/hooks/use-user';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +37,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export function ListsContent() {
+  const { user, loading: userLoading } = useUser();
   const [lists, setLists] = useState<CustomListWithItems[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -48,24 +49,18 @@ export function ListsContent() {
   });
 
   useEffect(() => {
-    loadLists();
-  }, []);
+    if (user) {
+      loadLists();
+    } else if (!userLoading) {
+      setIsLoading(false);
+    }
+  }, [user, userLoading]);
 
   const loadLists = async () => {
+    if (!user) return;
+    
     try {
       setIsLoading(true);
-
-      // Check if user is authenticated
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        toast.error('Please log in to view your lists');
-        return;
-      }
-
       const listsData = await getUserCustomLists();
       setLists(listsData);
     } catch (error) {
@@ -77,19 +72,14 @@ export function ListsContent() {
   };
 
   const handleCreateList = async () => {
+    if (!user) {
+      toast.error('Please log in to create lists');
+      return;
+    }
+
     try {
       if (!createForm.name.trim()) {
         toast.error('Please enter a list name');
-        return;
-      }
-
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        toast.error('Please log in to create lists');
         return;
       }
 
@@ -161,12 +151,29 @@ export function ListsContent() {
     }
   };
 
-  if (isLoading) {
+  // Show loading state while checking authentication or loading lists
+  if (userLoading || isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-64 bg-muted rounded-lg animate-pulse" />
         ))}
+      </div>
+    );
+  }
+
+  // Show login message for unauthenticated users
+  if (!user) {
+    return (
+      <div className="text-center py-12">
+        <List className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <h2 className="text-xl font-semibold mb-2">Sign in to manage your lists</h2>
+        <p className="text-muted-foreground mb-4">
+          Create an account to start building custom movie and TV show lists.
+        </p>
+        <Link href="/login?redirect=/lists">
+          <Button>Sign In</Button>
+        </Link>
       </div>
     );
   }

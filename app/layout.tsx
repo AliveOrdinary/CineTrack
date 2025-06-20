@@ -7,10 +7,10 @@ import { Toaster } from 'sonner';
 import { BottomNavigation } from '@/components/ui/bottom-navigation';
 import { ErrorBoundaryWrapper } from '@/components/error-boundary-wrapper';
 import { SecurityLogger } from '@/components/security-logger';
-import { BackupMonitorComponent } from '@/components/backup-monitor';
 import UserAvatar from '@/components/features/auth/UserAvatar';
 import { HeaderActions } from '@/components/features/header/HeaderActions';
 import { MobileNav } from '@/components/features/header/MobileNav';
+import { DesktopNav } from '@/components/features/header/DesktopNav';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -74,36 +74,7 @@ export default function RootLayout({
                   </div>
 
                   {/* Center - Desktop Navigation Links */}
-                  <div className="hidden lg:flex items-center gap-6">
-                    <Link
-                      href="/discover"
-                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                      aria-label="Discover new content"
-                    >
-                      Discover
-                    </Link>
-                    <Link
-                      href="/feed"
-                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                      aria-label="View activity feed"
-                    >
-                      Feed
-                    </Link>
-                    <Link
-                      href="/watchlist"
-                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                      aria-label="View your watchlist"
-                    >
-                      Watchlist
-                    </Link>
-                    <Link
-                      href="/lists"
-                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm px-2 py-1"
-                      aria-label="View your custom lists"
-                    >
-                      Lists
-                    </Link>
-                  </div>
+                  <DesktopNav />
 
                   {/* Center/Right - Search bar */}
                   <div
@@ -155,7 +126,6 @@ export default function RootLayout({
             </div>
           </ErrorBoundaryWrapper>
           <Toaster />
-          <BackupMonitorComponent />
         </ThemeProvider>
       </body>
     </html>

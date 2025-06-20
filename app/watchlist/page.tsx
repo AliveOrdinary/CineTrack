@@ -1,7 +1,16 @@
 import { Suspense } from 'react';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import { WatchlistContent } from '@/components/features/watchlist/WatchlistContent';
 
-export default function WatchlistPage() {
+export default async function WatchlistPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login?redirect=/watchlist');
+  }
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">

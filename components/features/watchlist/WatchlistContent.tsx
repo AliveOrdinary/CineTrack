@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import {
-  createClient,
   getUserWatchlist,
   removeFromWatchlist,
   type WatchlistEntry,
 } from '@/lib/supabase/client';
+import { useUser } from '@/hooks/use-user';
 import { getMovieDetails, getTvShowDetails } from '@/lib/tmdb/client';
 import { TmdbMovieDetails, TmdbTvDetails } from '@/lib/tmdb/types';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Trash2, Eye, EyeOff, Calendar, Star } from 'lucide-react';
+import { Trash2, Eye, EyeOff, Calendar, Star, Bookmark } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -37,7 +37,7 @@ const priorityLabels = {
 };
 
 export function WatchlistContent() {
-  const [user, setUser] = useState<any>(null);
+  const { user, loading: userLoading } = useUser();
   const [watchlist, setWatchlist] = useState<WatchlistItemWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortBy, setSortBy] = useState<'added_date' | 'priority'>('added_date');
@@ -45,17 +45,12 @@ export function WatchlistContent() {
   const [priorityFilter, setPriorityFilter] = useState<'all' | '0' | '1' | '2' | '3'>('all');
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-  }, []);
-
-  useEffect(() => {
     if (user) {
       loadWatchlist();
+    } else if (!userLoading) {
+      setIsLoading(false);
     }
-  }, [user, sortBy]);
+  }, [user, userLoading, sortBy]);
 
   const loadWatchlist = async () => {
     if (!user) return;
@@ -111,23 +106,29 @@ export function WatchlistContent() {
     return true;
   });
 
-  if (!user) {
-    return (
-      <div className="text-center py-12">
-        <h2 className="text-xl font-semibold mb-2">Sign in to view your watchlist</h2>
-        <p className="text-muted-foreground">
-          Create an account to start tracking what you want to watch.
-        </p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
+  // Show loading state while checking authentication or loading watchlist
+  if (userLoading || isLoading) {
     return (
       <div className="space-y-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="h-32 bg-muted rounded animate-pulse" />
         ))}
+      </div>
+    );
+  }
+
+  // Show login message for unauthenticated users
+  if (!user) {
+    return (
+      <div className="text-center py-12">
+        <Bookmark className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <h2 className="text-xl font-semibold mb-2">Sign in to view your watchlist</h2>
+        <p className="text-muted-foreground mb-4">
+          Create an account to start tracking what you want to watch.
+        </p>
+        <Link href="/login?redirect=/watchlist">
+          <Button>Sign In</Button>
+        </Link>
       </div>
     );
   }

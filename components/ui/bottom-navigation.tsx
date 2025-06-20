@@ -2,16 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Search, Heart, List, User, Activity, Compass, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useUser } from '@/hooks/use-user';
+import { Home, Search, Heart, User, Compass, LogIn } from 'lucide-react';
 
 interface NavItem {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   activePattern?: RegExp;
+  requiresAuth?: boolean;
 }
 
+// Keep a focused set of bottom navigation items - most important actions only
 const navItems: NavItem[] = [
   {
     href: '/',
@@ -32,21 +35,24 @@ const navItems: NavItem[] = [
     activePattern: /^\/search/,
   },
   {
-    href: '/settings',
-    label: 'Settings',
-    icon: Settings,
-    activePattern: /^\/settings/,
+    href: '/watchlist',
+    label: 'Watchlist',
+    icon: Heart,
+    activePattern: /^\/watchlist/,
+    requiresAuth: true,
   },
   {
     href: '/profile',
     label: 'Profile',
     icon: User,
     activePattern: /^\/profile/,
+    requiresAuth: true,
   },
 ];
 
 export function BottomNavigation() {
   const pathname = usePathname();
+  const { user, loading } = useUser();
 
   const isActive = (item: NavItem) => {
     if (item.activePattern) {
@@ -55,6 +61,23 @@ export function BottomNavigation() {
     return pathname === item.href;
   };
 
+  // Filter items based on authentication
+  const visibleItems = navItems.filter(item => {
+    if (item.requiresAuth && !user) return false;
+    return true;
+  });
+
+  // If user is not authenticated, show login item instead of profile
+  const displayItems = user ? visibleItems : [
+    ...visibleItems,
+    {
+      href: '/login',
+      label: 'Sign In',
+      icon: LogIn,
+      activePattern: /^\/login/,
+    }
+  ];
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border md:hidden"
@@ -62,7 +85,7 @@ export function BottomNavigation() {
       aria-label="Mobile bottom navigation"
     >
       <div className="flex items-center justify-around px-2 py-1">
-        {navItems.map(item => {
+        {displayItems.map(item => {
           const Icon = item.icon;
           const active = isActive(item);
 

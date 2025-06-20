@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useUser } from '@/hooks/use-user';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -199,6 +200,7 @@ function ActivityItemCard({ activity }: { activity: ActivityItemWithMedia }) {
 }
 
 export function ActivityFeed({ className }: ActivityFeedProps) {
+  const { user, loading: userLoading } = useUser();
   const [activities, setActivities] = useState<ActivityItemWithMedia[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -276,8 +278,56 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
   };
 
   useEffect(() => {
-    loadActivities();
-  }, [loadActivities]);
+    if (user) {
+      loadActivities();
+    } else if (!userLoading) {
+      setLoading(false);
+    }
+  }, [loadActivities, user, userLoading]);
+
+  // Show loading state while checking authentication or loading activities
+  if (userLoading || loading) {
+    return (
+      <div className={cn('space-y-6', className)}>
+        <div className="space-y-4">
+          {[...Array(5)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-muted rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-3 bg-muted rounded w-1/2" />
+                    <div className="h-16 bg-muted rounded" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show login message for unauthenticated users
+  if (!user) {
+    return (
+      <div className={cn('space-y-6', className)}>
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2">Sign in to view your activity feed</h3>
+            <p className="text-muted-foreground mb-4">
+              Create an account to see what people you follow are watching and reviewing
+            </p>
+            <Link href="/login?redirect=/feed">
+              <Button>Sign In</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -311,24 +361,7 @@ export function ActivityFeed({ className }: ActivityFeedProps) {
 
         {ACTIVITY_TYPES.map(type => (
           <TabsContent key={type.id} value={type.id} className="space-y-4">
-            {loading ? (
-              <div className="space-y-4">
-                {[...Array(5)].map((_, i) => (
-                  <Card key={i} className="animate-pulse">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-muted rounded-full" />
-                        <div className="flex-1 space-y-2">
-                          <div className="h-4 bg-muted rounded w-3/4" />
-                          <div className="h-3 bg-muted rounded w-1/2" />
-                          <div className="h-16 bg-muted rounded" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : activities.length === 0 ? (
+            {activities.length === 0 ? (
               <Card>
                 <CardContent className="p-8 text-center">
                   <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />

@@ -1,7 +1,16 @@
 import { Suspense } from 'react';
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
 import { ListsContent } from '@/components/features/lists/ListsContent';
 
-export default function ListsPage() {
+export default async function ListsPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login?redirect=/lists');
+  }
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">

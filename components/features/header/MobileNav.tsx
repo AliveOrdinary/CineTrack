@@ -4,64 +4,17 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, Home, Search, Heart, List, Activity, Compass, User, Settings } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-
-const navigationItems = [
-  {
-    title: 'Home',
-    href: '/',
-    icon: Home,
-    description: 'Discover trending content',
-  },
-  {
-    title: 'Discover',
-    href: '/discover',
-    icon: Compass,
-    description: 'Explore new movies and shows',
-  },
-  {
-    title: 'Search',
-    href: '/search',
-    icon: Search,
-    description: 'Find specific content',
-  },
-  {
-    title: 'Feed',
-    href: '/feed',
-    icon: Activity,
-    description: 'See what friends are watching',
-  },
-  {
-    title: 'Watchlist',
-    href: '/watchlist',
-    icon: Heart,
-    description: 'Your saved content',
-  },
-  {
-    title: 'My Lists',
-    href: '/lists',
-    icon: List,
-    description: 'Your custom collections',
-  },
-  {
-    title: 'Profile',
-    href: '/profile',
-    icon: User,
-    description: 'Your profile and stats',
-  },
-  {
-    title: 'Settings',
-    href: '/settings',
-    icon: Settings,
-    description: 'Customize your experience',
-  },
-];
+import { useUser } from '@/hooks/use-user';
+import { getFilteredNavigationItems } from '@/lib/navigation';
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { user, loading } = useUser();
+  const navigationItems = getFilteredNavigationItems(!!user, 'mobile');
 
   const isActive = (href: string) => {
     if (href === '/') {
@@ -121,6 +74,20 @@ export function MobileNav() {
                 </Link>
               );
             })}
+            {!user && !loading && (
+              <div className="mt-4 p-3 bg-muted rounded-lg">
+                <p className="text-sm text-muted-foreground mb-3">
+                  Sign in to access your watchlist, lists, and activity feed.
+                </p>
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium h-9 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 w-full"
+                >
+                  Sign In
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </SheetContent>
