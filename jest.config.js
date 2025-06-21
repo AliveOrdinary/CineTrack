@@ -27,15 +27,35 @@ const customJestConfig = {
     '!**/node_modules/**',
     '!**/.next/**',
   ],
-  // Coverage thresholds disabled for now - will be enabled when more tests are added
-  // coverageThreshold: {
-  //   global: {
-  //     branches: 70,
-  //     functions: 70,
-  //     lines: 70,
-  //     statements: 70,
-  //   },
-  // },
+  // Coverage thresholds - realistic targets
+  coverageThreshold: {
+    global: {
+      branches: 15,
+      functions: 15,
+      lines: 15,
+      statements: 15,
+    },
+    // Higher thresholds for critical utilities
+    'lib/utils/utils.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
+    },
+    'hooks/useDebounce.ts': {
+      branches: 90,
+      functions: 90,
+      lines: 90,
+      statements: 90,
+    },
+    // Moderate thresholds for tested areas
+    'lib/tmdb/client.ts': {
+      branches: 40,
+      functions: 30,
+      lines: 50,
+      statements: 50,
+    },
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

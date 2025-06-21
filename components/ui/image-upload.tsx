@@ -61,24 +61,42 @@ export function ImageUpload({
       const img = new window.Image();
 
       img.onload = () => {
-        // Calculate new dimensions
+        // Calculate new dimensions maintaining aspect ratio
         let { width, height } = img;
+        const aspectRatio = width / height;
+        
         if (width > maxWidth) {
-          height = (height * maxWidth) / width;
           width = maxWidth;
+          height = width / aspectRatio;
+        }
+        
+        // Ensure height doesn't exceed reasonable limits
+        const maxHeight = 1200;
+        if (height > maxHeight) {
+          height = maxHeight;
+          width = height * aspectRatio;
         }
 
         canvas.width = width;
         canvas.height = height;
 
+        // Enable image smoothing for better quality
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+
         // Draw and compress
         ctx.drawImage(img, 0, 0, width, height);
+
+        // Try WebP format first for better compression
+        const tryWebP = file.type === 'image/jpeg' || file.type === 'image/png';
+        const outputFormat = tryWebP ? 'image/webp' : file.type;
+        const outputQuality = tryWebP ? quality * 0.9 : quality; // WebP can use slightly lower quality
 
         canvas.toBlob(
           blob => {
             if (blob) {
               const compressedFile = new File([blob], file.name, {
-                type: file.type,
+                type: outputFormat,
                 lastModified: Date.now(),
               });
               resolve(compressedFile);
@@ -86,11 +104,12 @@ export function ImageUpload({
               resolve(file);
             }
           },
-          file.type,
-          quality
+          outputFormat,
+          outputQuality
         );
       };
 
+      img.onerror = () => resolve(file); // Fallback to original file
       img.src = URL.createObjectURL(file);
     });
   };

@@ -18,6 +18,7 @@ import { SiteAnalytics } from './SiteAnalytics';
 import { SystemHealth } from './SystemHealth';
 import { FeatureFlags } from './FeatureFlags';
 import { AdminOverview } from './AdminOverview';
+import CacheManagement from './CacheManagement';
 
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -25,7 +26,7 @@ export function AdminDashboard() {
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             <span className="hidden sm:inline">Overview</span>
@@ -41,6 +42,10 @@ export function AdminDashboard() {
           <TabsTrigger value="system" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
             <span className="hidden sm:inline">System</span>
+          </TabsTrigger>
+          <TabsTrigger value="cache" className="flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            <span className="hidden sm:inline">Cache</span>
           </TabsTrigger>
           <TabsTrigger value="features" className="flex items-center gap-2">
             <Flag className="h-4 w-4" />
@@ -95,6 +100,10 @@ export function AdminDashboard() {
               <SystemHealth />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="cache" className="space-y-6">
+          <CacheManagement />
         </TabsContent>
 
         <TabsContent value="features" className="space-y-6">

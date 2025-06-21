@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { TmdbMedia } from '@/lib/tmdb/types';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 
 interface MediaCardProps {
   media: TmdbMedia;
@@ -41,12 +41,14 @@ export default function MediaCard({ media, showMediaType = false }: MediaCardPro
         <div className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow active:scale-95 transition-transform">
           <div className="relative aspect-[2/3] bg-muted">
             {posterUrl ? (
-              <Image
+              <OptimizedImage
                 src={posterUrl}
                 alt={`${title} poster`}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                placeholder="blur"
+                quality={80}
               />
             ) : (
               <div

@@ -24,6 +24,17 @@ import {
 } from './types';
 import { logger, logPerformance } from '@/lib/error-logger';
 import { ExternalServiceError, withRetry } from '@/lib/api-error-handler';
+import {
+  withCache,
+  detailsCache,
+  searchCache,
+  trendingCache,
+  discoverCache,
+  personCache,
+  creditsCache,
+  videosCache,
+  providersCache,
+} from './cache';
 
 const TMDB_API_BASE_URL = process.env.NEXT_PUBLIC_TMDB_API_BASE_URL;
 const TMDB_API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
@@ -161,27 +172,45 @@ export const searchMulti = (
   page: number = 1,
   include_adult: boolean = false
 ): Promise<TmdbSearchMultiResponse> => {
-  return request<TmdbSearchMultiResponse>('/search/multi', {
-    params: { query, page, include_adult },
-  });
+  const endpoint = '/search/multi';
+  const params = { query, page, include_adult };
+  
+  return withCache(
+    searchCache,
+    endpoint,
+    () => request<TmdbSearchMultiResponse>(endpoint, { params }),
+    params
+  );
 };
 
 export const getMovieDetails = (
   movieId: number,
   appendToResponse?: string[]
 ): Promise<TmdbMovieDetails> => {
-  return request<TmdbMovieDetails>(`/movie/${movieId}`, {
-    params: { append_to_response: appendToResponse?.join(',') },
-  });
+  const endpoint = `/movie/${movieId}`;
+  const params = { append_to_response: appendToResponse?.join(',') };
+  
+  return withCache(
+    detailsCache,
+    endpoint,
+    () => request<TmdbMovieDetails>(endpoint, { params }),
+    params
+  );
 };
 
 export const getTvShowDetails = (
   tvId: number,
   appendToResponse?: string[]
 ): Promise<TmdbTvDetails> => {
-  return request<TmdbTvDetails>(`/tv/${tvId}`, {
-    params: { append_to_response: appendToResponse?.join(',') },
-  });
+  const endpoint = `/tv/${tvId}`;
+  const params = { append_to_response: appendToResponse?.join(',') };
+  
+  return withCache(
+    detailsCache,
+    endpoint,
+    () => request<TmdbTvDetails>(endpoint, { params }),
+    params
+  );
 };
 
 export const getTrending = (
@@ -189,40 +218,73 @@ export const getTrending = (
   timeWindow: 'day' | 'week' = 'week',
   page: number = 1
 ): Promise<TmdbTrendingResponse> => {
-  return request<TmdbTrendingResponse>(`/trending/${mediaType}/${timeWindow}`, {
-    params: { page },
-  });
+  const endpoint = `/trending/${mediaType}/${timeWindow}`;
+  const params = { page };
+  
+  return withCache(
+    trendingCache,
+    endpoint,
+    () => request<TmdbTrendingResponse>(endpoint, { params }),
+    params
+  );
 };
 
 export const discoverMedia = (
   mediaType: 'movie' | 'tv',
   params: TmdbDiscoverParams = {}
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> => {
-  return request<TmdbPaginatedResponse<TmdbMedia>>(`/discover/${mediaType}`, {
-    params: params as Record<string, any>,
-  });
+  const endpoint = `/discover/${mediaType}`;
+  
+  return withCache(
+    discoverCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, {
+      params: params as Record<string, any>,
+    }),
+    params as Record<string, any>
+  );
 };
 
 export const getPersonDetails = (
   personId: number,
   appendToResponse?: string[]
 ): Promise<TmdbPersonDetails> => {
-  return request<TmdbPersonDetails>(`/person/${personId}`, {
-    params: { append_to_response: appendToResponse?.join(',') },
-  });
+  const endpoint = `/person/${personId}`;
+  const params = { append_to_response: appendToResponse?.join(',') };
+  
+  return withCache(
+    personCache,
+    endpoint,
+    () => request<TmdbPersonDetails>(endpoint, { params }),
+    params
+  );
 };
 
 export const getPersonCombinedCredits = (
   personId: number
 ): Promise<TmdbCombinedCreditsResponse> => {
-  return request<TmdbCombinedCreditsResponse>(`/person/${personId}/combined_credits`);
+  const endpoint = `/person/${personId}/combined_credits`;
+  
+  return withCache(
+    creditsCache,
+    endpoint,
+    () => request<TmdbCombinedCreditsResponse>(endpoint),
+    { personId }
+  );
 };
 
 export const getWatchProviders = (
   mediaType: 'movie' | 'tv',
   id: number
 ): Promise<TmdbWatchProviderResponse> => {
-  return request<TmdbWatchProviderResponse>(`/${mediaType}/${id}/watch/providers`);
+  const endpoint = `/${mediaType}/${id}/watch/providers`;
+  
+  return withCache(
+    providersCache,
+    endpoint,
+    () => request<TmdbWatchProviderResponse>(endpoint),
+    { mediaType, id }
+  );
 };
 
 export const getContentRatings = (
@@ -247,43 +309,92 @@ export const tmdb = {
 export async function getNowPlayingMovies(
   page: number = 1
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> {
-  return request<TmdbPaginatedResponse<TmdbMedia>>('/movie/now_playing', { params: { page } });
+  const endpoint = '/movie/now_playing';
+  const params = { page };
+  
+  return withCache(
+    discoverCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    params
+  );
 }
 
 export async function getUpcomingMovies(
   page: number = 1
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> {
-  return request<TmdbPaginatedResponse<TmdbMedia>>('/movie/upcoming', { params: { page } });
+  const endpoint = '/movie/upcoming';
+  const params = { page };
+  
+  return withCache(
+    discoverCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    params
+  );
 }
 
 export async function getMovieCredits(movieId: number): Promise<TmdbMovieCreditsResponse> {
-  return request<TmdbMovieCreditsResponse>(`/movie/${movieId}/credits`);
+  const endpoint = `/movie/${movieId}/credits`;
+  
+  return withCache(
+    creditsCache,
+    endpoint,
+    () => request<TmdbMovieCreditsResponse>(endpoint),
+    { movieId }
+  );
 }
 
 export async function getMovieWatchProviders(movieId: number): Promise<TmdbWatchProviderResponse> {
-  return request<TmdbWatchProviderResponse>(`/movie/${movieId}/watch/providers`);
+  const endpoint = `/movie/${movieId}/watch/providers`;
+  
+  return withCache(
+    providersCache,
+    endpoint,
+    () => request<TmdbWatchProviderResponse>(endpoint),
+    { movieId }
+  );
 }
 
 export async function getMovieVideos(movieId: number): Promise<TmdbVideosResponse> {
-  return request<TmdbVideosResponse>(`/movie/${movieId}/videos`);
+  const endpoint = `/movie/${movieId}/videos`;
+  
+  return withCache(
+    videosCache,
+    endpoint,
+    () => request<TmdbVideosResponse>(endpoint),
+    { movieId }
+  );
 }
 
 export async function getMovieRecommendations(
   movieId: number,
   page: number = 1
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> {
-  return request<TmdbPaginatedResponse<TmdbMedia>>(`/movie/${movieId}/recommendations`, {
-    params: { page },
-  });
+  const endpoint = `/movie/${movieId}/recommendations`;
+  const params = { page };
+  
+  return withCache(
+    discoverCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    { movieId, ...params }
+  );
 }
 
 export async function getSimilarMovies(
   movieId: number,
   page: number = 1
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> {
-  return request<TmdbPaginatedResponse<TmdbMedia>>(`/movie/${movieId}/similar`, {
-    params: { page },
-  });
+  const endpoint = `/movie/${movieId}/similar`;
+  const params = { page };
+  
+  return withCache(
+    discoverCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    { movieId, ...params }
+  );
 }
 
 export const searchMovies = (
@@ -291,9 +402,15 @@ export const searchMovies = (
   page: number = 1,
   include_adult: boolean = false
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> => {
-  return request<TmdbPaginatedResponse<TmdbMedia>>('/search/movie', {
-    params: { query, page, include_adult },
-  });
+  const endpoint = '/search/movie';
+  const params = { query, page, include_adult };
+  
+  return withCache(
+    searchCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    params
+  );
 };
 
 export const searchTvShows = (
@@ -301,9 +418,15 @@ export const searchTvShows = (
   page: number = 1,
   include_adult: boolean = false
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> => {
-  return request<TmdbPaginatedResponse<TmdbMedia>>('/search/tv', {
-    params: { query, page, include_adult },
-  });
+  const endpoint = '/search/tv';
+  const params = { query, page, include_adult };
+  
+  return withCache(
+    searchCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    params
+  );
 };
 
 export const searchPeople = (
@@ -311,42 +434,90 @@ export const searchPeople = (
   page: number = 1,
   include_adult: boolean = false
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> => {
-  return request<TmdbPaginatedResponse<TmdbMedia>>('/search/person', {
-    params: { query, page, include_adult },
-  });
+  const endpoint = '/search/person';
+  const params = { query, page, include_adult };
+  
+  return withCache(
+    searchCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    params
+  );
 };
 
 export async function getTvShowCredits(tvId: number): Promise<TmdbTvCreditsResponse> {
-  return request<TmdbTvCreditsResponse>(`/tv/${tvId}/credits`);
+  const endpoint = `/tv/${tvId}/credits`;
+  
+  return withCache(
+    creditsCache,
+    endpoint,
+    () => request<TmdbTvCreditsResponse>(endpoint),
+    { tvId }
+  );
 }
 
 export async function getTvShowWatchProviders(tvId: number): Promise<TmdbWatchProviderResponse> {
-  return request<TmdbWatchProviderResponse>(`/tv/${tvId}/watch/providers`);
+  const endpoint = `/tv/${tvId}/watch/providers`;
+  
+  return withCache(
+    providersCache,
+    endpoint,
+    () => request<TmdbWatchProviderResponse>(endpoint),
+    { tvId }
+  );
 }
 
 export async function getTvShowVideos(tvId: number): Promise<TmdbVideosResponse> {
-  return request<TmdbVideosResponse>(`/tv/${tvId}/videos`);
+  const endpoint = `/tv/${tvId}/videos`;
+  
+  return withCache(
+    videosCache,
+    endpoint,
+    () => request<TmdbVideosResponse>(endpoint),
+    { tvId }
+  );
 }
 
 export async function getSimilarTvShows(
   tvId: number,
   page: number = 1
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> {
-  return request<TmdbPaginatedResponse<TmdbMedia>>(`/tv/${tvId}/similar`, { params: { page } });
+  const endpoint = `/tv/${tvId}/similar`;
+  const params = { page };
+  
+  return withCache(
+    discoverCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    { tvId, ...params }
+  );
 }
 
 export async function getTvShowRecommendations(
   tvId: number,
   page: number = 1
 ): Promise<TmdbPaginatedResponse<TmdbMedia>> {
-  return request<TmdbPaginatedResponse<TmdbMedia>>(`/tv/${tvId}/recommendations`, {
-    params: { page },
-  });
+  const endpoint = `/tv/${tvId}/recommendations`;
+  const params = { page };
+  
+  return withCache(
+    discoverCache,
+    endpoint,
+    () => request<TmdbPaginatedResponse<TmdbMedia>>(endpoint, { params }),
+    { tvId, ...params }
+  );
 }
 
 // TV Season and Episode functions
 export async function getTvSeason(tvId: number, seasonNumber: number): Promise<TmdbSeasonDetails> {
-  return request<TmdbSeasonDetails>(`/tv/${tvId}/season/${seasonNumber}`);
+  const endpoint = `/tv/${tvId}/season/${seasonNumber}`;
+  
+  return withCache(
+    detailsCache,
+    endpoint,
+    () => request<TmdbSeasonDetails>(endpoint),
+    { tvId, seasonNumber }
+  );
 }
 
 export async function getTvEpisode(
@@ -354,5 +525,12 @@ export async function getTvEpisode(
   seasonNumber: number,
   episodeNumber: number
 ): Promise<TmdbEpisodeDetails> {
-  return request<TmdbEpisodeDetails>(`/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`);
+  const endpoint = `/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`;
+  
+  return withCache(
+    detailsCache,
+    endpoint,
+    () => request<TmdbEpisodeDetails>(endpoint),
+    { tvId, seasonNumber, episodeNumber }
+  );
 }
