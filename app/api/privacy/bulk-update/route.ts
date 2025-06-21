@@ -59,7 +59,7 @@ async function handleBulkUpdate(request: NextRequest) {
       );
     }
 
-    let updatedCounts = {
+    const updatedCounts = {
       reviews: 0,
       lists: 0,
     };
