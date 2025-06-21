@@ -33,6 +33,7 @@ export const navigationItems: NavigationItem[] = [
     href: '/discover',
     icon: Compass,
     description: 'Explore new movies and shows',
+    requiresAuth: true,
     desktop: true,
     mobile: true,
   },

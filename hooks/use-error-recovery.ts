@@ -55,20 +55,23 @@ export function useErrorRecovery(options: UseErrorRecoveryOptions = {}) {
 
   const retry = useCallback(
     async <T>(operation: () => Promise<T>): Promise<T | null> => {
+      // Check current state values
       if (!state.canRetry || state.isRetrying) {
         return null;
       }
 
+      // Set retrying state and increment count
       setState(prev => ({
         ...prev,
         isRetrying: true,
         retryCount: prev.retryCount + 1,
       }));
 
-      onRetry?.(state.retryCount + 1);
+      const currentRetryCount = state.retryCount + 1;
+      onRetry?.(currentRetryCount);
 
       try {
-        // Add delay before retry
+        // Add delay before retry (but not on first attempt)
         if (state.retryCount > 0) {
           await new Promise(resolve => setTimeout(resolve, retryDelay * state.retryCount));
         }
@@ -86,7 +89,7 @@ export function useErrorRecovery(options: UseErrorRecoveryOptions = {}) {
         onSuccess?.();
         return result;
       } catch (error) {
-        const newRetryCount = state.retryCount + 1;
+        const newRetryCount = currentRetryCount;
         const canRetryAgain = newRetryCount < maxRetries;
 
         setState(prev => ({

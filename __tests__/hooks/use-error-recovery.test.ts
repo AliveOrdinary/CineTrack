@@ -142,10 +142,14 @@ describe('useErrorRecovery', () => {
       result.current.handleError(new Error('Test error'));
     });
 
-    // Start recovery but don't await it yet
-    const retryPromise = result.current.retry(mockOperation);
+    // Start recovery and check isRetrying state
+    let retryPromise: Promise<string | null>;
+    
+    act(() => {
+      retryPromise = result.current.retry(mockOperation);
+    });
 
-    // Should be retrying
+    // Should be retrying after the state update
     expect(result.current.isRetrying).toBe(true);
 
     // Resolve the operation

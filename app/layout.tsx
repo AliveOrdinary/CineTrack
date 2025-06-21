@@ -104,7 +104,7 @@ export default function RootLayout({
 
               <main
                 id="main-content"
-                className="flex-1 w-full flex flex-col items-center py-4 md:py-8 min-h-0"
+                className="flex-1 w-full flex flex-col items-center  min-h-0"
                 role="main"
                 tabIndex={-1}
               >

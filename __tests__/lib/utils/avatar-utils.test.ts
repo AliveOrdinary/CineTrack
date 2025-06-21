@@ -168,19 +168,22 @@ describe('avatar-utils', () => {
         height: 0
       } as any;
 
+      // Create mock image first
+      mockImage = {
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        width: 800,
+        height: 600,
+        onload: null,
+        onerror: null,
+        src: ''
+      } as any;
+
       // Mock document.createElement to return our mock canvas
       const originalCreateElement = document.createElement;
       document.createElement = jest.fn().mockImplementation((tagName) => {
         if (tagName === 'canvas') return mockCanvas;
-        if (tagName === 'img') {
-          mockImage = {
-            addEventListener: jest.fn(),
-            removeEventListener: jest.fn(),
-            width: 800,
-            height: 600
-          } as any;
-          return mockImage;
-        }
+        if (tagName === 'img') return mockImage;
         return originalCreateElement.call(document, tagName);
       });
 
@@ -196,18 +199,17 @@ describe('avatar-utils', () => {
         callback(processedBlob);
       });
 
-      // Set up the image mock to trigger onload immediately
-      let onloadHandler: (() => void) | null = null;
-      Object.defineProperty(mockImage, 'onload', {
-        set: (handler: () => void) => {
-          onloadHandler = handler;
-          // Trigger the handler immediately
-          setTimeout(() => handler(), 0);
-        },
-        configurable: true
-      });
+      // Start the resize operation
+      const resizePromise = resizeImage(file, 400, 400);
+      
+      // Trigger the onload event after a short delay
+      setTimeout(() => {
+        if (mockImage.onload) {
+          mockImage.onload({} as Event);
+        }
+      }, 0);
 
-      const result = await resizeImage(file, 400, 400);
+      const result = await resizePromise;
       
       expect(result).toBe(processedBlob);
       expect(mockContext.drawImage).toHaveBeenCalled();
@@ -241,18 +243,21 @@ describe('avatar-utils', () => {
         height: 0
       } as any;
 
+      // Create mock image first
+      mockImage = {
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        width: 800,
+        height: 600,
+        onload: null,
+        onerror: null,
+        src: ''
+      } as any;
+
       const originalCreateElement = document.createElement;
       document.createElement = jest.fn().mockImplementation((tagName) => {
         if (tagName === 'canvas') return mockCanvas;
-        if (tagName === 'img') {
-          mockImage = {
-            addEventListener: jest.fn(),
-            removeEventListener: jest.fn(),
-            width: 800,
-            height: 600
-          } as any;
-          return mockImage;
-        }
+        if (tagName === 'img') return mockImage;
         return originalCreateElement.call(document, tagName);
       });
     });
@@ -266,16 +271,17 @@ describe('avatar-utils', () => {
         callback(croppedBlob);
       });
 
-      // Set up the image mock to trigger onload immediately
-      Object.defineProperty(mockImage, 'onload', {
-        set: (handler: () => void) => {
-          // Trigger the handler immediately
-          setTimeout(() => handler(), 0);
-        },
-        configurable: true
-      });
+      // Start the crop operation
+      const cropPromise = createCircularCrop(file, 200);
+      
+      // Trigger the onload event after a short delay
+      setTimeout(() => {
+        if (mockImage.onload) {
+          mockImage.onload({} as Event);
+        }
+      }, 0);
 
-      const result = await createCircularCrop(file, 200);
+      const result = await cropPromise;
       
       expect(result).toBe(croppedBlob);
       expect(mockContext.beginPath).toHaveBeenCalled();

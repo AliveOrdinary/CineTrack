@@ -19,31 +19,34 @@ import type { CustomListWithEngagement, CreateListCloneInput } from '@/types/lis
 
 describe('list-likes types and utilities', () => {
   describe('formatListEngagementDate', () => {
+    const fixedDate = new Date('2023-06-01T12:00:00Z');
+    
     beforeEach(() => {
-      // Mock Date.now() to return a fixed timestamp
-      jest.spyOn(Date, 'now').mockReturnValue(new Date('2023-06-01T12:00:00Z').getTime());
+      // Mock the Date constructor to return a fixed date
+      jest.useFakeTimers();
+      jest.setSystemTime(fixedDate);
     });
 
     afterEach(() => {
-      jest.restoreAllMocks();
+      jest.useRealTimers();
     });
 
     it('should format recent dates correctly', () => {
       // Test with times that should trigger "just now"
-      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      const thirtyMinutesAgo = new Date(fixedDate.getTime() - 30 * 60 * 1000).toISOString();
       expect(formatListEngagementDate(thirtyMinutesAgo)).toBe('Just now');
       
       // Test different time periods
-      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+      const twoHoursAgo = new Date(fixedDate.getTime() - 2 * 60 * 60 * 1000).toISOString();
       expect(formatListEngagementDate(twoHoursAgo)).toContain('hour');
       
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const oneDayAgo = new Date(fixedDate.getTime() - 24 * 60 * 60 * 1000).toISOString();
       expect(formatListEngagementDate(oneDayAgo)).toContain('day');
     });
 
     it('should format older dates as calendar dates', () => {
       // Test with a date that's more than a week old
-      const oldDate = new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString();
+      const oldDate = new Date(fixedDate.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString();
       const result = formatListEngagementDate(oldDate);
       // Should contain some date format (could be various formats depending on locale)
       expect(result).toMatch(/\d/); // Should contain at least some digits
