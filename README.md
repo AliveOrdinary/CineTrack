@@ -1,7 +1,7 @@
 # 🎬 CineTrack
 
 <div align="center">
-  <img src="/banner.png" alt="CineTrack - Your Personal Movie & TV Show Companion" width="800">
+  <img src="./public/banner.png" alt="CineTrack - Your Personal Movie & TV Show Companion" width="800">
   
   <p align="center">
     <strong>A comprehensive web application for movie and TV show enthusiasts to track, review, and discover visual content</strong>
@@ -35,7 +35,7 @@
 - **Trending & Popular**: Stay updated with what's hot in entertainment
 - **Genre & Category Browsing**: Explore content by genres, networks, and curated collections
 
-<img src="/content-discovery.png" alt="Content Discovery" width="600">
+<img src="./public/content-discovery.png" alt="Content Discovery" width="600">
 
 ### 📝 Personal Tracking & Reviews
 - **Watch History**: Track what you've watched with dates and personal ratings
@@ -44,7 +44,7 @@
 - **Watchlist Management**: Organize what you want to watch next
 - **Custom Lists**: Create and share themed collections
 
-<img src="/personal-tracking.png" alt="Personal Tracking" width="600">
+<img src="./public/personal-tracking.png" alt="Personal Tracking" width="600">
 
 ### 🤝 Social Features
 - **User Profiles**: Showcase your viewing habits and reviews
@@ -53,7 +53,7 @@
 - **Review Interactions**: Like, comment, and engage with community reviews
 - **Public Lists**: Share and discover curated content collections
 
-<img src="/activity-feed.png" alt="Social Features" width="600">
+<img src="./public/activity-feed.png" alt="Social Features" width="600">
 
 ### 🎯 Advanced Features
 - **Enhanced Rating System**: Rate content across multiple categories (acting, story, directing, etc.)
@@ -63,7 +63,7 @@
 - **Dark/Light Theme**: Customizable viewing experience
 - **Mobile-First Design**: Optimized for all devices
 
-<img src="/enhanced-rating.png" alt="Enhanced Rating System" width="600">
+<img src="./public/enhanced-rating.png" alt="Enhanced Rating System" width="600">
 
 ### 🔒 Privacy & Security
 - **Granular Privacy Controls**: Control who sees your activity (public, followers, private)
@@ -84,16 +84,16 @@
 ## 📱 Screenshots
 
 ### Homepage & Discovery
-<img src="/homepage.png" alt="Homepage" width="800">
+<img src="./public/homepage.png" alt="Homepage" width="800">
 
 ### Movie/TV Show Details
-<img src="/content-details.png" alt="Content Details" width="800">
+<img src="./public/content-details.png" alt="Content Details" width="800">
 
 ### Mobile Experience
 <div align="center">
-  <img src="/mobile-1.png" alt="Mobile View 1" width="250">
-  <img src="/mobile-2.png" alt="Mobile View 2" width="250">
-  <img src="/mobile-3.png" alt="Mobile View 3" width="250">
+  <img src="./public/mobile-1.png" alt="Mobile View 1" width="250">
+  <img src="./public/mobile-2.png" alt="Mobile View 2" width="250">
+  <img src="./public/mobile-3.png" alt="Mobile View 3" width="250">
 </div>
 
 
@@ -205,7 +205,7 @@ The application uses a comprehensive PostgreSQL schema with the following key ta
 - **`notifications`** - System notifications
 - **`reports`** - Content moderation reports
 
-<img src="/database-schema.png" alt="Database Schema" width="800">
+<img src="./public/database-schema.png" alt="Database Schema" width="800">
 
 ## 🧪 Testing
 
