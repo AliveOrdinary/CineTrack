@@ -120,6 +120,7 @@ async function handleGetReviews(request: NextRequest) {
       );
     }
 
+    // eslint-disable-next-line prefer-const
     let query = supabase
       .from('reviews')
       .select(`
