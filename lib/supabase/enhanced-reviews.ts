@@ -454,7 +454,7 @@ export async function getUserReviewStats(userId?: string): Promise<UserReviewSta
   if (sortedDates.length > 0) {
     const today = new Date().toDateString();
     let currentStreak = 0;
-    let checkDate = new Date();
+    const checkDate = new Date();
     
     for (let i = 0; i < 365; i++) { // Check up to a year
       const dateStr = checkDate.toDateString();
