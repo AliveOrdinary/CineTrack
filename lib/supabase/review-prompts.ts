@@ -411,7 +411,7 @@ export async function getReviewPromptsStats(): Promise<ReviewPromptsStats> {
       const promptData = promptUsage?.find(p => p.prompt_id === promptId);
       return {
         prompt_id: promptId,
-        prompt_text: promptData?.review_prompts?.prompt_text || 'Unknown prompt',
+        prompt_text: (promptData?.review_prompts as any)?.prompt_text || 'Unknown prompt',
         usage_count: count,
       };
     })

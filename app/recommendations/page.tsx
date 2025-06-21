@@ -5,7 +5,7 @@ import { RecommendationInbox } from '@/components/features/recommendations/Recom
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default async function RecommendationsPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   
   const {
     data: { user },

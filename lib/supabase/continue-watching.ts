@@ -386,12 +386,13 @@ export async function getBingeWatchingSessions(
 
   Object.entries(showEpisodes).forEach(([tmdbTvIdStr, episodeList]) => {
     const tmdbTvId = parseInt(tmdbTvIdStr);
+    const episodes = episodeList as any[];
     
     // Detect sessions (3+ episodes watched within 24 hours)
     let sessionStart: Date | null = null;
     let sessionEpisodes: any[] = [];
     
-    episodeList.forEach((episode, index) => {
+    episodes.forEach((episode, index) => {
       const episodeDate = new Date(episode.watched_date);
       
       if (sessionStart === null) {
@@ -416,7 +417,7 @@ export async function getBingeWatchingSessions(
       }
       
       // Handle last episode
-      if (index === episodeList.length - 1 && sessionEpisodes.length >= 3) {
+      if (index === episodes.length - 1 && sessionEpisodes.length >= 3) {
         sessions.push(createBingeSession(tmdbTvId, sessionStart!, sessionEpisodes, activeDays));
       }
     });
@@ -434,7 +435,7 @@ function createBingeSession(
   episodes: any[],
   activeDays: number
 ): BingeWatchingSession {
-  const seasonNumbers = [...new Set(episodes.map(ep => ep.season_number))];
+  const seasonNumbers = Array.from(new Set(episodes.map(ep => ep.season_number)));
   const totalRuntime = episodes.length * 45; // Assume 45 min per episode
   const lastEpisodeDate = new Date(episodes[episodes.length - 1].watched_date);
   const isActive = (Date.now() - lastEpisodeDate.getTime()) / (1000 * 60 * 60 * 24) <= activeDays;

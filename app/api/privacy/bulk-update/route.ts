@@ -59,9 +59,11 @@ async function handleBulkUpdate(request: NextRequest) {
       );
     }
 
-    let updatedCounts = {
+    const updatedCounts = {
+      users: 0,
+      watchlist: 0,
       reviews: 0,
-      lists: 0,
+      lists: 0
     };
 
     const errors: any[] = [];

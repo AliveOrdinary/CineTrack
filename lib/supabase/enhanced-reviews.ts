@@ -429,7 +429,7 @@ export async function getUserReviewStats(userId?: string): Promise<UserReviewSta
     .eq('user_id', targetUserId);
 
   if (reviewError) {
-    console.error('Error fetching user review stats:', error);
+    console.error('Error fetching user review stats:', reviewError);
     throw new Error('Failed to fetch review statistics');
   }
 
@@ -452,9 +452,11 @@ export async function getUserReviewStats(userId?: string): Promise<UserReviewSta
 
   let reviewStreakDays = 0;
   if (sortedDates.length > 0) {
-    const today = new Date().toDateString();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(today);
+    checkDate.setDate(checkDate.getDate() - 1);
     let currentStreak = 0;
-    let checkDate = new Date();
     
     for (let i = 0; i < 365; i++) { // Check up to a year
       const dateStr = checkDate.toDateString();

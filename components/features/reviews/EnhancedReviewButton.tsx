@@ -251,9 +251,9 @@ export function EnhancedReviewButton({
   };
 
   const calculateOverallFromCategories = () => {
-    const ratings = RATING_CATEGORIES.map(cat => form[cat.key]).filter(Boolean);
+    const ratings = RATING_CATEGORIES.map(cat => form[cat.key]).filter((rating): rating is number => typeof rating === 'number' && rating > 0);
     if (ratings.length === 0) return null;
-    return Math.round(ratings.reduce((sum, rating) => sum + rating!, 0) / ratings.length);
+    return Math.round(ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length);
   };
 
   const hasAnyContent = () => {
@@ -436,7 +436,7 @@ export function EnhancedReviewButton({
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => updateForm({ overall_rating: calculateOverallFromCategories() })}
+                          onClick={() => updateForm({ overall_rating: calculateOverallFromCategories() || undefined })}
                           disabled={!calculateOverallFromCategories()}
                         >
                           Auto-calculate

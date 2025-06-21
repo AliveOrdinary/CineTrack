@@ -65,8 +65,16 @@ export function RecommendationCard({
 
   const isRecipient = recommendation.recipient.id === currentUserId;
   const isSender = recommendation.sender.id === currentUserId;
-  const canUpdate = canUpdateRecommendation(recommendation, currentUserId);
-  const canDelete = canDeleteRecommendation(recommendation, currentUserId);
+  
+  // Create a compatible object for utility functions that expect ContentRecommendation
+  const recommendationForUtils = {
+    ...recommendation,
+    sender_id: recommendation.sender.id,
+    recipient_id: recommendation.recipient.id,
+  };
+  
+  const canUpdate = canUpdateRecommendation(recommendationForUtils, currentUserId);
+  const canDelete = canDeleteRecommendation(recommendationForUtils, currentUserId);
   const statusConfig = getStatusConfig(recommendation.status);
 
   const handleStatusUpdate = async (status: 'accepted' | 'declined' | 'watched', message?: string) => {

@@ -120,21 +120,15 @@ async function handleGetReviews(request: NextRequest) {
       );
     }
 
-    let query = supabase
+    const query = supabase
       .from('reviews')
       .select(`
-        id,
-        content,
-        rating,
-        contains_spoilers,
-        is_anonymous,
-        created_at,
-        user:users(id, display_name, avatar_url)
+        *,
+        users!inner(display_name, avatar_url)
       `)
       .eq('tmdb_id', tmdb_id)
       .eq('media_type', media_type)
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
+      .order('created_at', { ascending: false });
 
     const { data: reviews, error } = await query;
 
