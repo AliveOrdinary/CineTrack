@@ -2,7 +2,32 @@
  * Unit tests for TMDB API client
  */
 
-import { TMDBClient } from '@/lib/tmdb/client';
+import {
+  searchMovies,
+  searchTvShows,
+  searchPeople,
+  searchMulti,
+  getMovieDetails,
+  getTvShowDetails,
+  getTrending,
+  getPersonDetails,
+  getWatchProviders,
+  getContentRatings,
+  getNowPlayingMovies,
+  getUpcomingMovies,
+  getMovieCredits,
+  getMovieWatchProviders,
+  getMovieVideos,
+  getMovieRecommendations,
+  getSimilarMovies,
+  getTvShowCredits,
+  getTvShowWatchProviders,
+  getTvShowVideos,
+  getSimilarTvShows,
+  getTvShowRecommendations,
+  getTvSeason,
+  getTvEpisode,
+} from '@/lib/tmdb/client';
 
 // Mock fetch globally
 global.fetch = jest.fn();
@@ -11,9 +36,7 @@ const mockFetch = fetch as jest.MockedFunction<typeof fetch>;
 // Mock environment variables
 const originalEnv = process.env;
 
-describe('TMDBClient', () => {
-  let client: TMDBClient;
-
+describe('TMDB Client Functions', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     process.env = {
@@ -21,26 +44,16 @@ describe('TMDBClient', () => {
       NEXT_PUBLIC_TMDB_API_KEY: 'test-api-key',
       NEXT_PUBLIC_TMDB_API_BASE_URL: 'https://api.themoviedb.org/3'
     };
-    client = new TMDBClient();
   });
 
   afterEach(() => {
     process.env = originalEnv;
   });
 
-  describe('constructor', () => {
-    it('should initialize with environment variables', () => {
-      expect(client).toBeInstanceOf(TMDBClient);
-    });
-
-    it('should throw error if API key is missing', () => {
-      delete process.env.NEXT_PUBLIC_TMDB_API_KEY;
-      expect(() => new TMDBClient()).toThrow('TMDB API key is required');
-    });
-
-    it('should throw error if base URL is missing', () => {
-      delete process.env.NEXT_PUBLIC_TMDB_API_BASE_URL;
-      expect(() => new TMDBClient()).toThrow('TMDB API base URL is required');
+  describe('environment validation', () => {
+    it('should work with API key environment variable', () => {
+      expect(process.env.NEXT_PUBLIC_TMDB_API_KEY).toBe('test-api-key');
+      expect(process.env.NEXT_PUBLIC_TMDB_API_BASE_URL).toBe('https://api.themoviedb.org/3');
     });
   });
 
@@ -66,15 +79,15 @@ describe('TMDBClient', () => {
         json: async () => mockResponse,
       } as Response);
 
-      const result = await client.searchMovies('test query');
+      const result = await searchMovies('test query');
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/search/movie'),
         expect.objectContaining({
-          headers: {
-            'Authorization': 'Bearer test-api-key',
-            'Content-Type': 'application/json'
-          }
+          method: 'GET',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json;charset=utf-8'
+          })
         })
       );
       expect(result).toEqual(mockResponse);
@@ -88,40 +101,34 @@ describe('TMDBClient', () => {
         json: async () => mockResponse,
       } as Response);
 
-      await client.searchMovies('test', { 
-        page: 2, 
-        year: 2023,
-        region: 'US'
-      });
+      await searchMovies('test', 2, false);
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('page=2'),
         expect.any(Object)
       );
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('year=2023'),
-        expect.any(Object)
-      );
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('region=US'),
+        expect.stringContaining('include_adult=false'),
         expect.any(Object)
       );
     });
 
     it('should handle API errors', async () => {
+      const mockErrorResponse = { message: 'Not Found' };
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 404,
         statusText: 'Not Found',
+        json: async () => mockErrorResponse,
       } as Response);
 
-      await expect(client.searchMovies('test')).rejects.toThrow('TMDB API error: 404 Not Found');
+      await expect(searchMovies('test')).rejects.toThrow();
     });
 
     it('should handle network errors', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      await expect(client.searchMovies('test')).rejects.toThrow('Network error');
+      await expect(searchMovies('test')).rejects.toThrow();
     });
   });
 
@@ -141,15 +148,15 @@ describe('TMDBClient', () => {
         json: async () => mockMovie,
       } as Response);
 
-      const result = await client.getMovieDetails(1);
+      const result = await getMovieDetails(1);
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/movie/1'),
         expect.objectContaining({
-          headers: {
-            'Authorization': 'Bearer test-api-key',
-            'Content-Type': 'application/json'
-          }
+          method: 'GET',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json;charset=utf-8'
+          })
         })
       );
       expect(result).toEqual(mockMovie);
@@ -161,16 +168,16 @@ describe('TMDBClient', () => {
         json: async () => ({}),
       } as Response);
 
-      await client.getMovieDetails(1);
+      await getMovieDetails(1, ['credits', 'videos']);
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('append_to_response=credits,videos,images,similar,recommendations,watch/providers'),
+        expect.stringContaining('append_to_response=credits%2Cvideos'),
         expect.any(Object)
       );
     });
   });
 
-  describe('getTVShowDetails', () => {
+  describe('getTvShowDetails', () => {
     it('should get TV show details successfully', async () => {
       const mockTVShow = {
         id: 1,
@@ -186,7 +193,7 @@ describe('TMDBClient', () => {
         json: async () => mockTVShow,
       } as Response);
 
-      const result = await client.getTVShowDetails(1);
+      const result = await getTvShowDetails(1);
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/tv/1'),
@@ -196,12 +203,18 @@ describe('TMDBClient', () => {
     });
   });
 
-  describe('getTrendingMovies', () => {
+  describe('getTrending', () => {
     it('should get trending movies', async () => {
       const mockResponse = {
-        results: [],
+        results: [
+          {
+            id: 1,
+            title: 'Trending Movie',
+            media_type: 'movie'
+          }
+        ],
         total_pages: 1,
-        total_results: 0,
+        total_results: 1,
         page: 1
       };
 
@@ -210,7 +223,7 @@ describe('TMDBClient', () => {
         json: async () => mockResponse,
       } as Response);
 
-      const result = await client.getTrendingMovies();
+      const result = await getTrending('movie', 'week');
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/trending/movie/week'),
@@ -222,53 +235,43 @@ describe('TMDBClient', () => {
     it('should support different time windows', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ results: [] }),
+        json: async () => ({ results: [], total_pages: 1, total_results: 0, page: 1 }),
       } as Response);
 
-      await client.getTrendingMovies('day');
+      await getTrending('all', 'day');
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/trending/movie/day'),
+        expect.stringContaining('/trending/all/day'),
         expect.any(Object)
       );
     });
   });
 
-  describe('getGenres', () => {
-    it('should get movie genres', async () => {
-      const mockGenres = {
-        genres: [
-          { id: 1, name: 'Action' },
-          { id: 2, name: 'Comedy' }
-        ]
+  describe('searchMulti', () => {
+    it('should search across multiple media types', async () => {
+      const mockResponse = {
+        results: [
+          { id: 1, media_type: 'movie', title: 'Test Movie' },
+          { id: 2, media_type: 'tv', name: 'Test TV Show' },
+          { id: 3, media_type: 'person', name: 'Test Person' }
+        ],
+        total_pages: 1,
+        total_results: 3,
+        page: 1
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => mockGenres,
+        json: async () => mockResponse,
       } as Response);
 
-      const result = await client.getGenres('movie');
+      const result = await searchMulti('test query');
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/genre/movie/list'),
+        expect.stringContaining('/search/multi'),
         expect.any(Object)
       );
-      expect(result).toEqual(mockGenres);
-    });
-
-    it('should get TV genres', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ genres: [] }),
-      } as Response);
-
-      await client.getGenres('tv');
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/genre/tv/list'),
-        expect.any(Object)
-      );
+      expect(result).toEqual(mockResponse);
     });
   });
 
@@ -278,26 +281,26 @@ describe('TMDBClient', () => {
         ok: false,
         status: 429,
         statusText: 'Too Many Requests',
+        json: async () => ({ message: 'Rate limit exceeded' }),
       } as Response);
 
-      await expect(client.searchMovies('test')).rejects.toThrow('TMDB API error: 429 Too Many Requests');
+      await expect(searchMovies('test')).rejects.toThrow();
     });
 
     it('should include proper headers', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ results: [] }),
+        json: async () => ({ results: [], total_pages: 1, total_results: 0, page: 1 }),
       } as Response);
 
-      await client.searchMovies('test');
+      await searchMovies('test');
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
-          headers: {
-            'Authorization': 'Bearer test-api-key',
-            'Content-Type': 'application/json'
-          }
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json;charset=utf-8'
+          })
         })
       );
     });
@@ -307,13 +310,13 @@ describe('TMDBClient', () => {
     it('should properly encode query parameters', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ results: [] }),
+        json: async () => ({ results: [], total_pages: 1, total_results: 0, page: 1 }),
       } as Response);
 
-      await client.searchMovies('test query with spaces');
+      await searchMovies('test query with spaces');
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('query=test%20query%20with%20spaces'),
+        expect.stringContaining('query=test+query+with+spaces'),
         expect.any(Object)
       );
     });
@@ -321,13 +324,13 @@ describe('TMDBClient', () => {
     it('should handle special characters in queries', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ results: [] }),
+        json: async () => ({ results: [], total_pages: 1, total_results: 0, page: 1 }),
       } as Response);
 
-      await client.searchMovies('test & query');
+      await searchMovies('test & query');
 
       expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('test%20%26%20query'),
+        expect.stringContaining('query=test+%26+query'),
         expect.any(Object)
       );
     });

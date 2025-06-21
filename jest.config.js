@@ -9,7 +9,12 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jsdom',
-  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  testPathIgnorePatterns: [
+    '<rootDir>/.next/', 
+    '<rootDir>/node_modules/',
+    '<rootDir>/__tests__/e2e/',  // Exclude Cypress E2E tests
+    '<rootDir>/__tests__/setup/' // Exclude setup files
+  ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },

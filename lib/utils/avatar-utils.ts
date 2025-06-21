@@ -70,15 +70,28 @@ export function getInitials(name: string, maxLength: number = 2): string {
     return '??';
   }
 
-  const words = name.trim().split(/\s+/);
+  // Split on whitespace first to get main word groups
+  const mainWords = name.trim().split(/\s+/);
   
-  if (words.length === 1) {
-    // Single word - use first two characters
-    return words[0].substring(0, maxLength).toUpperCase();
+  if (mainWords.length === 1) {
+    // Single word - check if it has apostrophe like "O'Brien"
+    const word = mainWords[0];
+    if (word.includes("'")) {
+      // Split on apostrophe and take first letter of each part
+      const parts = word.split("'").filter(part => part.length > 0);
+      return parts
+        .slice(0, maxLength)
+        .map(part => part.charAt(0))
+        .join('')
+        .toUpperCase();
+    }
+    // Regular single word - use first two characters
+    return word.substring(0, maxLength).toUpperCase();
   }
   
-  // Multiple words - use first letter of each word
-  return words
+  // Multiple main words - use first letter of each main word
+  // For hyphenated first names like "Jean-Paul", take just the first letter
+  return mainWords
     .slice(0, maxLength)
     .map(word => word.charAt(0))
     .join('')
@@ -107,20 +120,36 @@ export function validateAvatarFile(file: File): { valid: boolean; error?: string
     };
   }
 
-  // Check if it's actually an image by creating an Image object
+  // Basic validation passed
+  return { valid: true };
+}
+
+/**
+ * Validate image file for avatar upload (async version for full validation)
+ */
+export function validateAvatarFileAsync(file: File): Promise<{ valid: boolean; error?: string }> {
+  // First do synchronous validation
+  const syncResult = validateAvatarFile(file);
+  if (!syncResult.valid) {
+    return Promise.resolve(syncResult);
+  }
+
+  // Then check if it's actually an image by creating an Image object
   return new Promise<{ valid: boolean; error?: string }>((resolve) => {
     const img = new Image();
     img.onload = () => {
+      URL.revokeObjectURL(img.src);
       resolve({ valid: true });
     };
     img.onerror = () => {
+      URL.revokeObjectURL(img.src);
       resolve({
         valid: false,
         error: 'File is not a valid image'
       });
     };
     img.src = URL.createObjectURL(file);
-  }) as any; // TypeScript workaround for async validation
+  });
 }
 
 /**

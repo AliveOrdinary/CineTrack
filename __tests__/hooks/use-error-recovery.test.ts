@@ -10,8 +10,9 @@ describe('useErrorRecovery', () => {
     const { result } = renderHook(() => useErrorRecovery());
     
     expect(result.current.error).toBeNull();
-    expect(result.current.isRecovering).toBe(false);
+    expect(result.current.isRetrying).toBe(false);
     expect(result.current.retryCount).toBe(0);
+    expect(result.current.canRetry).toBe(true);
   });
 
   it('should capture and store errors', () => {
@@ -19,12 +20,11 @@ describe('useErrorRecovery', () => {
     const testError = new Error('Test error');
 
     act(() => {
-      result.current.captureError(testError);
+      result.current.handleError(testError);
     });
 
     expect(result.current.error).toBe(testError);
-    expect(result.current.isRecovering).toBe(false);
-    expect(result.current.retryCount).toBe(0);
+    expect(result.current.canRetry).toBe(true);
   });
 
   it('should clear errors', () => {
@@ -32,7 +32,7 @@ describe('useErrorRecovery', () => {
     const testError = new Error('Test error');
 
     act(() => {
-      result.current.captureError(testError);
+      result.current.handleError(testError);
     });
 
     expect(result.current.error).toBe(testError);
@@ -43,121 +43,188 @@ describe('useErrorRecovery', () => {
 
     expect(result.current.error).toBeNull();
     expect(result.current.retryCount).toBe(0);
+    expect(result.current.canRetry).toBe(true);
   });
 
   it('should handle recovery attempts', async () => {
     const { result } = renderHook(() => useErrorRecovery());
-    const mockRecoveryFn = jest.fn().mockResolvedValue(undefined);
+    const mockOperation = jest.fn().mockResolvedValue('success');
 
     act(() => {
-      result.current.captureError(new Error('Test error'));
+      result.current.handleError(new Error('Test error'));
     });
 
     await act(async () => {
-      await result.current.retry(mockRecoveryFn);
+      const returnValue = await result.current.retry(mockOperation);
+      expect(returnValue).toBe('success');
     });
 
-    expect(mockRecoveryFn).toHaveBeenCalledTimes(1);
-    expect(result.current.retryCount).toBe(1);
+    expect(mockOperation).toHaveBeenCalledTimes(1);
     expect(result.current.error).toBeNull();
-    expect(result.current.isRecovering).toBe(false);
+    expect(result.current.retryCount).toBe(0);
   });
 
   it('should handle recovery failures', async () => {
-    const { result } = renderHook(() => useErrorRecovery());
-    const recoveryError = new Error('Recovery failed');
-    const mockRecoveryFn = jest.fn().mockRejectedValue(recoveryError);
+    const { result } = renderHook(() => useErrorRecovery({ maxRetries: 2 }));
+    const mockOperation = jest.fn().mockRejectedValue(new Error('Operation failed'));
 
     act(() => {
-      result.current.captureError(new Error('Original error'));
+      result.current.handleError(new Error('Original error'));
     });
 
     await act(async () => {
-      await result.current.retry(mockRecoveryFn);
+      try {
+        await result.current.retry(mockOperation);
+      } catch (error) {
+        // Expected to throw
+      }
     });
 
-    expect(mockRecoveryFn).toHaveBeenCalledTimes(1);
+    expect(mockOperation).toHaveBeenCalledTimes(1);
+    expect(result.current.error).toEqual(new Error('Operation failed'));
     expect(result.current.retryCount).toBe(1);
-    expect(result.current.error).toBe(recoveryError);
-    expect(result.current.isRecovering).toBe(false);
+    expect(result.current.canRetry).toBe(true); // Still can retry since maxRetries is 2
   });
 
   it('should track retry attempts correctly', async () => {
-    const { result } = renderHook(() => useErrorRecovery());
-    const mockRecoveryFn = jest.fn()
-      .mockRejectedValueOnce(new Error('First retry failed'))
-      .mockRejectedValueOnce(new Error('Second retry failed'))
-      .mockResolvedValue(undefined);
+    const { result } = renderHook(() => useErrorRecovery({ maxRetries: 3 }));
+    const mockOperation = jest.fn().mockRejectedValue(new Error('Operation failed'));
 
     act(() => {
-      result.current.captureError(new Error('Original error'));
+      result.current.handleError(new Error('Original error'));
     });
 
     // First retry
     await act(async () => {
-      await result.current.retry(mockRecoveryFn);
+      try {
+        await result.current.retry(mockOperation);
+      } catch (error) {
+        // Expected to throw
+      }
     });
+
     expect(result.current.retryCount).toBe(1);
+    expect(result.current.canRetry).toBe(true);
 
     // Second retry
     await act(async () => {
-      await result.current.retry(mockRecoveryFn);
+      try {
+        await result.current.retry(mockOperation);
+      } catch (error) {
+        // Expected to throw
+      }
     });
-    expect(result.current.retryCount).toBe(2);
 
-    // Third retry (successful)
+    expect(result.current.retryCount).toBe(2);
+    expect(result.current.canRetry).toBe(true);
+
+    // Third retry (should reach max)
     await act(async () => {
-      await result.current.retry(mockRecoveryFn);
+      try {
+        await result.current.retry(mockOperation);
+      } catch (error) {
+        // Expected to throw
+      }
     });
+
     expect(result.current.retryCount).toBe(3);
-    expect(result.current.error).toBeNull();
+    expect(result.current.canRetry).toBe(false); // Should be false after reaching max retries
   });
 
-  it('should set isRecovering state during recovery', async () => {
+  it('should set isRetrying state during recovery', async () => {
     const { result } = renderHook(() => useErrorRecovery());
-    let resolveRecovery: () => void;
-    const recoveryPromise = new Promise<void>((resolve) => {
-      resolveRecovery = resolve;
-    });
-    const mockRecoveryFn = jest.fn().mockReturnValue(recoveryPromise);
+    let resolveOperation: (value: string) => void;
+    const mockOperation = jest.fn(() => new Promise<string>(resolve => {
+      resolveOperation = resolve;
+    }));
 
     act(() => {
-      result.current.captureError(new Error('Test error'));
+      result.current.handleError(new Error('Test error'));
     });
 
-    // Start recovery
-    const retryPromise = act(async () => {
-      await result.current.retry(mockRecoveryFn);
+    // Start recovery but don't await it yet
+    const retryPromise = result.current.retry(mockOperation);
+
+    // Should be retrying
+    expect(result.current.isRetrying).toBe(true);
+
+    // Resolve the operation
+    resolveOperation!('success');
+    
+    // Now await the promise
+    await act(async () => {
+      await retryPromise;
     });
 
-    // Should be recovering
-    expect(result.current.isRecovering).toBe(true);
-
-    // Complete recovery
-    resolveRecovery!();
-    await retryPromise;
-
-    expect(result.current.isRecovering).toBe(false);
+    // Should no longer be retrying
+    expect(result.current.isRetrying).toBe(false);
   });
 
   it('should handle recovery with custom options', async () => {
+    const onError = jest.fn();
+    const onRetry = jest.fn();
+    const onSuccess = jest.fn();
+
     const { result } = renderHook(() => useErrorRecovery({
       maxRetries: 2,
-      retryDelay: 100
+      onError,
+      onRetry,
+      onSuccess
     }));
-    
-    const mockRecoveryFn = jest.fn().mockRejectedValue(new Error('Always fails'));
 
     act(() => {
-      result.current.captureError(new Error('Original error'));
+      result.current.handleError(new Error('Original error'));
     });
+
+    expect(onError).toHaveBeenCalledWith(new Error('Original error'));
 
     // Test that maxRetries is respected (though the hook doesn't enforce it internally,
-    // this tests that the options are accepted)
+    // it's used to determine canRetry)
+    const mockOperation = jest.fn().mockResolvedValue('success');
+
     await act(async () => {
-      await result.current.retry(mockRecoveryFn);
+      await result.current.retry(mockOperation);
     });
 
-    expect(result.current.retryCount).toBe(1);
+    expect(onRetry).toHaveBeenCalledWith(1);
+    expect(onSuccess).toHaveBeenCalled();
+  });
+
+  it('should execute operations with recovery', async () => {
+    const { result } = renderHook(() => useErrorRecovery());
+    const mockOperation = jest.fn().mockResolvedValue('success');
+
+    const returnValue = await act(async () => {
+      return result.current.executeWithRecovery(mockOperation);
+    });
+
+    expect(returnValue).toBe('success');
+    expect(result.current.error).toBeNull();
+  });
+
+  it('should handle executeWithRecovery failures', async () => {
+    const { result } = renderHook(() => useErrorRecovery());
+    const testError = new Error('Operation failed');
+    const mockOperation = jest.fn().mockRejectedValue(testError);
+
+    const returnValue = await act(async () => {
+      return result.current.executeWithRecovery(mockOperation);
+    });
+
+    expect(returnValue).toBeNull();
+    expect(result.current.error).toEqual(testError);
+  });
+
+  it('should provide user-friendly error messages', () => {
+    const { result } = renderHook(() => useErrorRecovery());
+    const testError = new Error('Test error');
+
+    act(() => {
+      result.current.handleError(testError);
+    });
+
+    const friendlyMessage = result.current.getUserFriendlyError();
+    expect(friendlyMessage).toBeDefined();
+    expect(typeof friendlyMessage).toBe('string');
   });
 });

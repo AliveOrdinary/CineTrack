@@ -191,21 +191,23 @@ describe('avatar-utils', () => {
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
       const processedBlob = new Blob(['processed'], { type: 'image/jpeg' });
 
-      const resizePromise = resizeImage(file, 400, 400);
-
-      // Simulate image load event
-      Object.defineProperty(mockImage, 'onload', {
-        set: jest.fn().mockImplementation((handler) => {
-          handler();
-        })
-      });
-
-      // Mock canvas toBlob
+      // Mock canvas toBlob to call callback immediately
       (mockCanvas.toBlob as jest.Mock).mockImplementation((callback) => {
         callback(processedBlob);
       });
 
-      const result = await resizePromise;
+      // Set up the image mock to trigger onload immediately
+      let onloadHandler: (() => void) | null = null;
+      Object.defineProperty(mockImage, 'onload', {
+        set: (handler: () => void) => {
+          onloadHandler = handler;
+          // Trigger the handler immediately
+          setTimeout(() => handler(), 0);
+        },
+        configurable: true
+      });
+
+      const result = await resizeImage(file, 400, 400);
       
       expect(result).toBe(processedBlob);
       expect(mockContext.drawImage).toHaveBeenCalled();
@@ -259,20 +261,21 @@ describe('avatar-utils', () => {
       const file = new File(['test'], 'test.jpg', { type: 'image/jpeg' });
       const croppedBlob = new Blob(['cropped'], { type: 'image/jpeg' });
 
-      const cropPromise = createCircularCrop(file, 200);
-
-      // Simulate image load
-      Object.defineProperty(mockImage, 'onload', {
-        set: jest.fn().mockImplementation((handler) => {
-          handler();
-        })
-      });
-
+      // Mock canvas toBlob to call callback immediately
       (mockCanvas.toBlob as jest.Mock).mockImplementation((callback) => {
         callback(croppedBlob);
       });
 
-      const result = await cropPromise;
+      // Set up the image mock to trigger onload immediately
+      Object.defineProperty(mockImage, 'onload', {
+        set: (handler: () => void) => {
+          // Trigger the handler immediately
+          setTimeout(() => handler(), 0);
+        },
+        configurable: true
+      });
+
+      const result = await createCircularCrop(file, 200);
       
       expect(result).toBe(croppedBlob);
       expect(mockContext.beginPath).toHaveBeenCalled();
