@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useUser } from '@/hooks/use-user';
-import { Home, Search, Heart, User, Compass, LogIn } from 'lucide-react';
+import { Heart, User, Compass, LogIn, Home } from 'lucide-react';
 
 interface NavItem {
   href: string;
@@ -17,22 +17,16 @@ interface NavItem {
 // Keep a focused set of bottom navigation items - most important actions only
 const navItems: NavItem[] = [
   {
-    href: '/',
-    label: 'Home',
-    icon: Home,
-    activePattern: /^\/$/,
-  },
-  {
     href: '/discover',
     label: 'Discover',
     icon: Compass,
     activePattern: /^\/discover/,
   },
   {
-    href: '/search',
-    label: 'Search',
-    icon: Search,
-    activePattern: /^\/search/,
+    href: '/',
+    label: 'Home',
+    icon: Home,
+    activePattern: /^\/$/,
   },
   {
     href: '/watchlist',

@@ -25,7 +25,7 @@ export const navigationItems: NavigationItem[] = [
     href: '/',
     icon: Home,
     description: 'Discover trending content',
-    desktop: true,
+    desktop: false,
     mobile: true,
   },
   {
@@ -51,7 +51,7 @@ export const navigationItems: NavigationItem[] = [
     description: 'See what friends are watching',
     requiresAuth: true,
     desktop: true,
-    mobile: true,
+    mobile: false,
   },
   {
     title: 'Watchlist',

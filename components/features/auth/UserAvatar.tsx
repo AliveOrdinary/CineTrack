@@ -140,7 +140,7 @@ export default function UserAvatar() {
 
   if (!user) {
     return (
-      <div className="flex items-center gap-2">
+      <div className="hidden md:flex items-center gap-2">
         <Button asChild variant="ghost" size="sm">
           <Link href="/login">Sign In</Link>
         </Button>
