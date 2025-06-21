@@ -24,9 +24,8 @@ import { WatchProviders } from '@/components/features/content/WatchProviders';
 import { WatchedContentButton } from '@/components/features/tracking/WatchedContentButton';
 import { WatchlistButton } from '@/components/features/tracking/WatchlistButton';
 import { AddToListButton } from '@/components/features/lists/AddToListButton';
-import { ReviewButton } from '@/components/features/reviews/ReviewButton';
 import { ReviewsSection } from '@/components/features/reviews/ReviewsSection';
-import { DetailedRatingForm } from '@/components/features/ratings/DetailedRatingForm';
+import { EnhancedReviewButton } from '@/components/features/reviews/EnhancedReviewButton';
 import { DetailedRatingDisplay } from '@/components/features/ratings/DetailedRatingDisplay';
 import { RecommendationForm } from '@/components/features/recommendations/RecommendationForm';
 import { getRecommendableUsers } from '@/lib/supabase/users';
@@ -107,9 +106,7 @@ async function MovieDetails({ id }: { id: string }) {
 
                 <AddToListButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
 
-                <ReviewButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
-
-                <DetailedRatingForm tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
+                <EnhancedReviewButton tmdbId={parseInt(id)} mediaType="movie" title={movie.title} />
 
                 <RecommendationForm 
                   tmdbId={parseInt(id)} 
