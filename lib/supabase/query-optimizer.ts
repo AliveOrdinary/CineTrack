@@ -28,7 +28,7 @@ function initializeCacheCleanup() {
   
   cleanupInterval = setInterval(() => {
     const now = Date.now();
-    for (const [key, cached] of queryCache.entries()) {
+    for (const [key, cached] of Array.from(queryCache.entries())) {
       if (now - cached.timestamp > cached.ttl) {
         queryCache.delete(key);
       }
@@ -63,7 +63,7 @@ export async function optimizedQuery<T>(
   if (cache) {
     const cached = queryCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < cached.ttl) {
-      return cached.data;
+      return cached.data as T[];
     }
   }
   
@@ -96,7 +96,7 @@ export async function optimizedQuery<T>(
     throw error;
   }
   
-  const result = data || [];
+  const result = (data || []) as T[];
   
   // Cache the result
   if (cache) {
@@ -120,7 +120,7 @@ export async function batchQuery<T>(
   }>
 ): Promise<T[][]> {
   const promises = queries.map(({ table, params, options }) => 
-    optimizedQuery(table, params, options)
+    optimizedQuery<T>(table, params, options)
   );
   
   return Promise.all(promises);
@@ -180,7 +180,7 @@ export function invalidateCache(pattern?: string) {
     return;
   }
   
-  for (const key of queryCache.keys()) {
+  for (const key of Array.from(queryCache.keys())) {
     if (key.includes(pattern)) {
       queryCache.delete(key);
     }
@@ -193,7 +193,7 @@ export function getCacheStats() {
   let validEntries = 0;
   let expiredEntries = 0;
   
-  for (const cached of queryCache.values()) {
+  for (const cached of Array.from(queryCache.values())) {
     if (now - cached.timestamp < cached.ttl) {
       validEntries++;
     } else {

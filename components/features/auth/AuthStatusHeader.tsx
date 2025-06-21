@@ -1,52 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/hooks/use-user';
 import { supabase } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
-import type { User } from '@supabase/supabase-js';
 
 export default function AuthStatusHeader() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useUser();
   const router = useRouter();
 
-  useEffect(() => {
-    async function getUserSession() {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Error getting session:', error);
-      } else {
-        setUser(data.session?.user ?? null);
-      }
-      setLoading(false);
-    }
-
-    getUserSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (event === 'SIGNED_IN') {
-        // Can add logic here if needed upon sign in, e.g. router.refresh()
-      }
-      if (event === 'SIGNED_OUT') {
-        router.push('/'); // Redirect to home on logout
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [router]);
-
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error logging out:', error);
+      } else {
+        router.push('/');
+      }
+    } catch (error) {
       console.error('Error logging out:', error);
-      // Optionally show an error message to the user
     }
-    // onAuthStateChange will handle redirect via SIGNED_OUT event
   };
 
   if (loading) {

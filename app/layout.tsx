@@ -12,6 +12,7 @@ import { HeaderActions } from '@/components/features/header/HeaderActions';
 import { MobileNav } from '@/components/features/header/MobileNav';
 import { DesktopNav } from '@/components/features/header/DesktopNav';
 
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : 'http://localhost:3000';
@@ -42,14 +43,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {/* Skip to main content link for keyboard users */}
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg"
-          >
-            Skip to main content
-          </a>
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg"
+            >
+              Skip to main content
+            </a>
 
-          <ErrorBoundaryWrapper>
+            <ErrorBoundaryWrapper>
             <SecurityLogger />
             <div className="flex min-h-screen flex-col pb-16 md:pb-0">
               <header

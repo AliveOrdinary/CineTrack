@@ -73,10 +73,10 @@
 
 ## 🚀 Demo
 
-**Live Demo**: [Add your deployment URL here]
+**Live Demo**: [https://cine-track-nine.vercel.app/](https://cine-track-nine.vercel.app/)
 
 **Test Account**: 
-- Email: demo@cinetrack.app
+- Email: demo@cine-track.app
 - Password: demo123
 
 > Note: The demo account has sample data to showcase all features.
@@ -139,7 +139,7 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/cine-track.git
+git clone https://github.com/AliveOrdinary/cine-track.git
 cd cine-track
 ```
 
@@ -315,20 +315,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **[Shadcn/UI](https://ui.shadcn.com/)** - For beautiful, accessible UI components
 - **[Vercel](https://vercel.com/)** - For seamless deployment platform
 
-## 📞 Support
+<!-- ## 📞 Support
 
 - **Documentation**: [Link to detailed docs]
 - **Issues**: [GitHub Issues](https://github.com/yourusername/cine-track/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/cine-track/discussions)
-- **Email**: support@cinetrack.app
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/cine-track/discussions) -->
+
 
 ---
 
 <div align="center">
-  <p>Made with ❤️ by the CineTrack team</p>
+  <p>Made with ❤️ by AliveOrdinary</p>
   <p>
-    <a href="https://twitter.com/yourusername">Twitter</a> ·
-    <a href="https://github.com/yourusername">GitHub</a> ·
-    <a href="https://cinetrack.app">Website</a>
+    <a href="https://github.com/AliveOrdinary">GitHub</a> ·
+    <a href="https://cine-track-nine.vercel.app/">Website</a>
   </p>
 </div>

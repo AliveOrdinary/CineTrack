@@ -10,32 +10,38 @@ export function PerformanceMonitor() {
     // Web Vitals monitoring
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        const metric = entry as PerformanceEventTiming;
+        let metricValue = 0;
+        
+        // Get the appropriate value based on entry type
+        if ('value' in entry) {
+          metricValue = (entry as any).value;
+        } else if ('startTime' in entry) {
+          metricValue = entry.startTime;
+        } else if ('duration' in entry) {
+          metricValue = (entry as any).duration;
+        }
         
         // Track Core Web Vitals
-        switch (metric.name) {
-          case 'FCP': // First Contentful Paint
-            console.log('FCP:', metric.value);
+        switch (entry.name) {
+          case 'first-contentful-paint':
+            console.log('FCP:', metricValue);
             break;
-          case 'LCP': // Largest Contentful Paint
-            console.log('LCP:', metric.value);
+          case 'largest-contentful-paint':
+            console.log('LCP:', metricValue);
             break;
-          case 'FID': // First Input Delay
-            console.log('FID:', metric.value);
+          case 'first-input-delay':
+            console.log('FID:', metricValue);
             break;
-          case 'CLS': // Cumulative Layout Shift
-            console.log('CLS:', metric.value);
-            break;
-          case 'TTFB': // Time to First Byte
-            console.log('TTFB:', metric.value);
+          case 'cumulative-layout-shift':
+            console.log('CLS:', metricValue);
             break;
         }
 
         // Send to analytics if available
         if (typeof window !== 'undefined' && 'gtag' in window) {
-          (window as any).gtag('event', metric.name, {
+          (window as any).gtag('event', entry.name, {
             event_category: 'Web Vitals',
-            value: Math.round(metric.value),
+            value: Math.round(metricValue),
             non_interaction: true,
           });
         }

@@ -206,7 +206,7 @@ export class TMDBCache {
     let oldestKey = '';
     let oldestTime = Date.now();
 
-    for (const [key, entry] of this.cache.entries()) {
+    for (const [key, entry] of Array.from(this.cache.entries())) {
       if (entry.lastAccessed < oldestTime) {
         oldestTime = entry.lastAccessed;
         oldestKey = key;
@@ -376,7 +376,7 @@ export class TMDBCache {
   private cleanup(): void {
     const expiredKeys: string[] = [];
 
-    for (const [key, entry] of this.cache.entries()) {
+    for (const [key, entry] of Array.from(this.cache.entries())) {
       if (!this.isValid(entry)) {
         expiredKeys.push(key);
       }

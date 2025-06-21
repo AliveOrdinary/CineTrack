@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { avatarEvents } from '@/lib/utils/avatar-events';
+import { useUser } from '@/hooks/use-user';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -26,45 +27,19 @@ interface UserProfile {
 }
 
 export default function UserAvatar() {
-  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const { user, loading } = useUser();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    async function getUserSession() {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Error getting session:', error);
-      } else {
-        const currentUser = data.session?.user ?? null;
-        setUser(currentUser);
-
-        // Fetch user profile if user exists
-        if (currentUser) {
-          await fetchUserProfile(currentUser.id);
-        }
-      }
-      setLoading(false);
+    if (user) {
+      fetchUserProfile(user.id);
+    } else {
+      setProfile(null);
     }
+  }, [user]);
 
-    getUserSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-
-      if (currentUser) {
-        await fetchUserProfile(currentUser.id);
-      } else {
-        setProfile(null);
-      }
-
-      if (event === 'SIGNED_OUT') {
-        router.push('/');
-      }
-    });
-
+  useEffect(() => {
     // Listen for avatar changes
     const unsubscribeAvatarEvents = avatarEvents.subscribe((userId, newAvatarUrl) => {
       if (user && userId === user.id) {
@@ -80,10 +55,9 @@ export default function UserAvatar() {
     });
 
     return () => {
-      authListener.subscription.unsubscribe();
       unsubscribeAvatarEvents();
     };
-  }, [router, user?.id]);
+  }, [user?.id]);
 
   const fetchUserProfile = async (userId: string) => {
     try {
@@ -104,8 +78,14 @@ export default function UserAvatar() {
   };
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error logging out:', error);
+      } else {
+        router.push('/');
+      }
+    } catch (error) {
       console.error('Error logging out:', error);
     }
   };
