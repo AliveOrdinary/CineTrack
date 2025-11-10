@@ -44,7 +44,7 @@
     "@supabase/auth-helpers-react": "^0.5.0",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
-    "autoprefixer": "10.4.20",
+    "autoprefixer": "10.4.21",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
